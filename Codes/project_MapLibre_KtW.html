@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapLibre Geoportal</title>
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+    <script>
+        const key = 'abo4rrmyo7yCMz9jb9CC';
+
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://tiles.stadiamaps.com/styles/alidade_smooth.json',
+            center: [8.4626, 49.4875], // Zentrum der Karte auf Mannheim, Deutschland
+            zoom: 12
+        });
+
+        // Beispielmarker für den Käfertaler Wald
+        const marker = new maplibregl.Marker()
+            .setLngLat([8.4701, 49.4902]) // Koordinaten des Käfertaler Waldes
+            .addTo(map);
+
+        // Beispiel-Popup mit Link zum Audioguide
+        const popup = new maplibregl.Popup()
+            .setHTML('<a href="LINK_ZUM_AUDIOGUIDE" target="_blank">Audioguide Käfertaler Wald</a>')
+            .addTo(map);
+
+        // Beispiel für das Laden von Audiodateien und Abspielen
+        // Hier kannst du deine JavaScript-Funktionalität zum Abspielen des Audioguides integrieren
+        function playAudioGuide() {
+            // Füge hier den Code zum Laden und Abspielen des Audioguides ein
+        }
+    </script>
+
+</body>
+</html>
