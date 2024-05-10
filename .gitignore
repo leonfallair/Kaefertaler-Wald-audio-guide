@@ -1,0 +1,6 @@
+# Temporäre Dateien von Microsoft Word ignorieren
+*~
+~$*
+
+# Temporäre Dateien von Microsoft Office ignorieren
+~WRL*.tmp
