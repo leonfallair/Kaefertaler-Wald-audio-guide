@@ -7,14 +7,9 @@
     <script src="https://cdn.maptiler.com/maplibre-gl-js/v2.4.0/maplibre-gl.js"></script>
     <link href="https://cdn.maptiler.com/maplibre-gl-js/v2.4.0/maplibre-gl.css" rel="stylesheet" />
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
         }
 
         #map {
@@ -24,17 +19,14 @@
             width: 100%;
         }
 
-       .popup-content {
-            display: none;
-            background-color: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            cursor: pointer;
+        .popup-content {
+            text-align: center;
         }
 
-       .popup-content.active {
-            display: block;
+        .popup-button {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -42,44 +34,55 @@
     <div id="map"></div>
     <script>
         const key = 'abo4rrmyo7yCMz9jb9CC';
-const map = new maplibregl.Map({
-    container: 'map',
-    style: `https://api.maptiler.com/maps/basic-v2/style.json?key=${key}`,
-    center: [8.511855, 49.537275],
-    zoom: 6
-});
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: `https://api.maptiler.com/maps/basic-v2/style.json?key=${key}`,
+            center:([8.511855, 49.537275]),
+            zoom: 6
+        });
 
-const image = document.createElement('img');
-image.src = '../images/KtW.jpg';
-image.style.width = '32px';
-image.style.height = '32px';
+        const image = document.createElement('img');
+        image.src = '../images/KtW.jpg';
+        image.style.width = '32px';
+        image.style.height = '32px';
 
-const mannheim = new maplibregl.Marker({element: image})
-    .setLngLat([8.511855, 49.537275])
-    .addTo(map);
+        const popupContent = document.createElement('div');
+        popupContent.className = 'popup-content';
+        const moreInfoButton = document.createElement('span');
+        moreInfoButton.textContent = 'Mehr erfahren';
+        moreInfoButton.className = 'popup-button';
+        popupContent.appendChild(moreInfoButton);
+        const welcomeText = document.createElement('span');
+        welcomeText.textContent = ' Herzlich Willkommen';
+        welcomeText.style.display = 'none';
+        popupContent.appendChild(welcomeText);
 
-const popup = new maplibregl.Popup()
-    .setHTML('<h3>Station 1</h3><button id="more-info-btn">Mehr erfahren</button><div class="popup-content" id="popup-content">Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald</div>');
+        const mannheim = new maplibregl.Marker({element: image})
+            .setLngLat([8.511855, 49.537275])
+            .addTo(map)
+            .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
 
-mannheim.setPopup(popup);
+        const mannheim2 = new maplibregl.Marker()
+            .setLngLat([8.5, 49.5])
+            .addTo(map);
 
-map.on('error', function(err) {
-    throw new Error("To load the map, you must replace YOUR_MAPTILER_API_KEY_HERE first, see README");
-});
+        map.on('error', function(err) {
+            throw new Error("To load the map, you must replace YOUR_MAPTILER_API_KEY_HERE first, see README");
+        });
 
-map.addControl(
-    new maplibregl.GeolocateControl({
-        positionOptions: {
-            enableHighAccuracy: true
-        },
-        trackUserLocation: true
-    })
-);
+        moreInfoButton.addEventListener('click', function() {
+            welcomeText.style.display = 'inline';
+        });
 
-document.getElementById('more-info-btn').addEventListener('click', function() {
-    const popupContent = document.getElementById('popup-content');
-    popup.toggle(); // Open or close the popup
-});
+                // Add geolocate control to the map.
+    map.addControl(
+        new maplibregl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            trackUserLocation: true
+        })
+    );
     </script>
 </body>
 </html>
