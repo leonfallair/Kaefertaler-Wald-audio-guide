@@ -7,9 +7,14 @@
     <script src="https://cdn.maptiler.com/maplibre-gl-js/v2.4.0/maplibre-gl.js"></script>
     <link href="https://cdn.maptiler.com/maplibre-gl-js/v2.4.0/maplibre-gl.css" rel="stylesheet" />
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             padding: 0;
+            font-family: Arial, sans-serif;
         }
 
         #map {
@@ -19,60 +24,62 @@
             width: 100%;
         }
 
-        .map-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            background-color: #fff;
-            padding: 5px 10px;
+       .popup-content {
+            display: none;
+            background-color: white;
+            padding: 10px;
             border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             cursor: pointer;
+        }
+
+       .popup-content.active {
+            display: block;
         }
     </style>
 </head>
 <body>
     <div id="map"></div>
-    <div class="map-button" onclick="toggleMap()">Toggle Map</div>
     <script>
         const key = 'abo4rrmyo7yCMz9jb9CC';
-        let mapType = 'basic';
-        let map;
+const map = new maplibregl.Map({
+    container: 'map',
+    style: `https://api.maptiler.com/maps/basic-v2/style.json?key=${key}`,
+    center: [8.511855, 49.537275],
+    zoom: 6
+});
 
-        function initializeMap() {
-            map = new maplibregl.Map({
-                container: 'map',
-                style: `https://api.maptiler.com/maps/${mapType}-v2/style.json?key=${key}`,
-                center: [8.511855, 49.537275],
-                zoom: 6
-            });
+const image = document.createElement('img');
+image.src = '../images/KtW.jpg';
+image.style.width = '32px';
+image.style.height = '32px';
 
-            const image = document.createElement('img');
-            image.src = '../Bilder/KtW.jpg'; // Passe den Pfad zum Bild an
-            image.style.width = '32px'; // Passe die Größe des Bildes an
-            image.style.height = '32px';
+const mannheim = new maplibregl.Marker({element: image})
+    .setLngLat([8.511855, 49.537275])
+    .addTo(map);
 
-            const mannheim = new maplibregl.Marker({ element: image })
-                .setLngLat([8.511855, 49.537275])
-                .addTo(map)
-                .setPopup(new maplibregl.Popup().setHTML('<h3>Station 1</h3>'));
+const popup = new maplibregl.Popup()
+    .setHTML('<h3>Station 1</h3><button id="more-info-btn">Mehr erfahren</button><div class="popup-content" id="popup-content">Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald</div>');
 
-            const mannheim2 = new maplibregl.Marker()
-                .setLngLat([8.5, 49.5])
-                .addTo(map);
-        }
+mannheim.setPopup(popup);
 
-        function toggleMap() {
-            if (mapType === 'basic') {
-                mapType = 'satellite';
-            } else {
-                mapType = 'basic';
-            }
-            map.remove();
-            initializeMap();
-        }
+map.on('error', function(err) {
+    throw new Error("To load the map, you must replace YOUR_MAPTILER_API_KEY_HERE first, see README");
+});
 
-        initializeMap();
+map.addControl(
+    new maplibregl.GeolocateControl({
+        positionOptions: {
+            enableHighAccuracy: true
+        },
+        trackUserLocation: true
+    })
+);
+
+document.getElementById('more-info-btn').addEventListener('click', function() {
+    const popupContent = document.getElementById('popup-content');
+    popup.toggle(); // Open or close the popup
+});
     </script>
 </body>
 </html>
