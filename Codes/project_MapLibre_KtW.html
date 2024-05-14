@@ -1,53 +1,122 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MapLibre Geoportal</title>
-    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css">
+    <meta charset="utf-8" />
+    <title>Display markers and route</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://cdn.maptiler.com/maplibre-gl-js/v2.4.0/maplibre-gl.js"></script>
+    <link href="https://cdn.maptiler.com/maplibre-gl-js/v2.4.0/maplibre-gl.css" rel="stylesheet" />
     <style>
-        body, html {
+        body {
             margin: 0;
             padding: 0;
-            height: 100%;
         }
+
         #map {
-            height: 100%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
             width: 100%;
+        }
+
+        .popup-content {
+            text-align: center;
+        }
+
+        .popup-button {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        /* Rundes Bild */
+        .marker-image {
+            border-radius: 50%;
         }
     </style>
 </head>
 <body>
-
     <div id="map"></div>
-
-    <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
     <script>
         const key = 'abo4rrmyo7yCMz9jb9CC';
-
         const map = new maplibregl.Map({
             container: 'map',
-            style: 'https://tiles.stadiamaps.com/styles/alidade_smooth.json',
-            center: [8.4626, 49.4875], // Zentrum der Karte auf Mannheim, Deutschland
-            zoom: 12
+            style: `https://api.maptiler.com/maps/basic-v2/style.json?key=${key}`,
+            center: ([8.513906, 49.536799]),
+            zoom: 11
         });
 
-        // Beispielmarker für den Käfertaler Wald
-        const marker = new maplibregl.Marker()
-            .setLngLat([8.4701, 49.4902]) // Koordinaten des Käfertaler Waldes
-            .addTo(map);
+        // Funktion zur Erstellung eines Markers und eines Popups
+        function createMarkerAndPopup(imageSrc, lngLat, title, description) {
+            const image = document.createElement('img');
+            image.src = imageSrc;
+            image.className = 'marker-image';
+            image.style.width = '32px';
+            image.style.height = '32px';
 
-        // Beispiel-Popup mit Link zum Audioguide
-        const popup = new maplibregl.Popup()
-            .setHTML('<a href="LINK_ZUM_AUDIOGUIDE" target="_blank">Audioguide Käfertaler Wald</a>')
-            .addTo(map);
+            const popupContent = document.createElement('div');
+            popupContent.className = 'popup-content';
 
-        // Beispiel für das Laden von Audiodateien und Abspielen
-        // Hier kannst du deine JavaScript-Funktionalität zum Abspielen des Audioguides integrieren
-        function playAudioGuide() {
-            // Füge hier den Code zum Laden und Abspielen des Audioguides ein
+            const stationText = document.createElement('strong');
+            stationText.textContent = title;
+            popupContent.appendChild(stationText);
+
+            const moreInfoButton = document.createElement('p');
+            moreInfoButton.textContent = 'Mehr erfahren';
+            moreInfoButton.className = 'popup-button';
+            popupContent.appendChild(moreInfoButton);
+
+            const welcomeText = document.createElement('span');
+            welcomeText.textContent = description;
+            welcomeText.style.display = 'none';
+            popupContent.appendChild(welcomeText);
+
+            const marker = new maplibregl.Marker({ element: image })
+                .setLngLat(lngLat)
+                .addTo(map)
+                .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
+
+            
         }
-    </script>
 
+        // Array mit den Standorten und deren Informationen
+        const locations = [
+            {
+                imageSrc: '../images/KtW.jpg',
+                lngLat: [8.511855, 49.537275],
+                title: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+                description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.'
+            },
+            // Füge hier weitere Standorte hinzu...
+            {
+                imageSrc: '../images/KtW_Station_2.jpg',
+                lngLat: [8.514687, 49.542651],
+                title: 'Station 2: Beispielstandort 2',
+                description: 'Beschreibung für den Beispielstandort 2.'
+            },
+            {
+                imageSrc: '../images/.jpg',
+                lngLat: [8.519568, 49.538817],
+                title: 'Station 3: Beispielstandort 3',
+                description: 'Beschreibung für den Beispielstandort 3.'
+            }
+            // Füge hier weitere Standorte hinzu...
+        ];
+
+        // Iteriere über die Standorte und erstelle Marker und Popups für jeden Standort
+        locations.forEach(location => {
+            createMarkerAndPopup(location.imageSrc, location.lngLat, location.title, location.description);
+        });
+
+        // Add geolocate control to the map.
+        map.addControl(
+            new maplibregl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                trackUserLocation: true
+            })
+        );
+    </script>
 </body>
 </html>

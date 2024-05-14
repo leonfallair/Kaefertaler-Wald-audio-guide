@@ -28,6 +28,12 @@
             color: blue;
             text-decoration: underline;
         }
+
+        /* Rundes Bild */
+        .marker-image {
+            border-radius: 50%;
+        }
+
     </style>
 </head>
 <body>
@@ -37,23 +43,30 @@
         const map = new maplibregl.Map({
             container: 'map',
             style: `https://api.maptiler.com/maps/basic-v2/style.json?key=${key}`,
-            center:([8.511855, 49.537275]),
-            zoom: 6
+            center:([8.513906, 49.536799]),
+            zoom:10
         });
 
         const image = document.createElement('img');
         image.src = '../images/KtW.jpg';
+        image.className = 'marker-image'; // Füge die Klasse hinzu, um das Bild rund zu machen
         image.style.width = '32px';
         image.style.height = '32px';
 
         const popupContent = document.createElement('div');
         popupContent.className = 'popup-content';
-        const moreInfoButton = document.createElement('span');
+        const stationText = document.createElement('strong');
+        stationText.textContent = "Station 1: Auf geht's in den Käfertaler Wald!"; // Text "Station 1: Auf geht's in den Käfertaler Wald!" hinzugefügt
+        stationText.className = 'none'; // Als Button formatiert
+        popupContent.appendChild(stationText);
+
+        const moreInfoButton = document.createElement('p');
         moreInfoButton.textContent = 'Mehr erfahren';
         moreInfoButton.className = 'popup-button';
         popupContent.appendChild(moreInfoButton);
+
         const welcomeText = document.createElement('span');
-        welcomeText.textContent = ' Herzlich Willkommen';
+        welcomeText.textContent = 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.';
         welcomeText.style.display = 'none';
         popupContent.appendChild(welcomeText);
 
@@ -63,26 +76,98 @@
             .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
 
         const mannheim2 = new maplibregl.Marker()
-            .setLngLat([8.5, 49.5])
+            .setLngLat([8.514687, 49.542651])
             .addTo(map);
 
-        map.on('error', function(err) {
-            throw new Error("To load the map, you must replace YOUR_MAPTILER_API_KEY_HERE first, see README");
-        });
+        // GeoJSON für die Route um den Käfertaler Wald
+        const geojson = {
+            "type": "Feature",
+            "properties": {
+                "name": "Route um den Käfertaler Wald"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [8.511855, 49.537275],
+                    [8.514687, 49.542651], // Weitere Koordinatenpunkte
+                    [8.519568, 49.538817], // Weitere Koordinatenpunkte
+                    [8.511855, 49.537275]  // Zurück zum Startpunkt, um die Route zu schließen
+                ]
+            }
+        };
+
+        map.on('load', function () {
+            map.addLayer({
+                'id': 'route',
+                'type': 'line',
+                'source': {
+                    'type': 'geojson',
+                    'data': geojson
+                },
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': 'blue',
+                    'line-width': 4
+                }
+            });
+        });            
 
         moreInfoButton.addEventListener('click', function() {
             welcomeText.style.display = 'inline';
         });
 
-                // Add geolocate control to the map.
-    map.addControl(
-        new maplibregl.GeolocateControl({
-            positionOptions: {
-                enableHighAccuracy: true
-            },
-            trackUserLocation: true
-        })
-    );
+        // Add geolocate control to the map.
+        map.addControl(
+            new maplibregl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                trackUserLocation: true
+            })
+        );
+    
+        // Definiere die Koordinaten für Station 1
+        const station1Coordinates = [8.511855, 49.537275];
+
+        // Definiere den Aktivierungsradius in Metern
+        const activationRadius = 30; // Zum Beispiel 30 Meter
+
+        // Funktion zum Berechnen der Entfernung zwischen zwei Koordinaten
+        function calculateDistance(coord1, coord2) {
+            const R = 6371e3; // Radius der Erde in Metern
+            const φ1 = coord1[1] * Math.PI / 180; // Breitengrad in Radiant umrechnen
+            const φ2 = coord2[1] * Math.PI / 180;
+            const Δφ = (coord2[1] - coord1[1]) * Math.PI / 180;
+            const Δλ = (coord2[0] - coord1[0]) * Math.PI / 180;
+
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                      Math.cos(φ1) * Math.cos(φ2) *
+                      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            const distance = R * c; // Entfernung in Metern
+            return distance;
+        }
+
+        // Eventlistener für die Geolokalisierung
+        map.on('locationfound', function(e) {
+            const userCoordinates = [e.lngLat.lng, e.lngLat.lat];
+            const distanceToStation1 = calculateDistance(userCoordinates, station1Coordinates);
+            
+            // Wenn sich der Benutzer im Aktivierungsradius um Station 1 befindet, zeige den Text an
+            if (distanceToStation1 <= activationRadius) {
+                welcomeText.style.display = 'inline';
+            } else {
+                welcomeText.style.display = 'none';
+            }
+        });
+
+        // Starte die Geolokalisierung
+        map.locate({ enableHighAccuracy: true });
+
     </script>
 </body>
 </html>

@@ -2,10 +2,10 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Display a marker</title>
+    <title>Display markers and route</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <script src="https://cdn.maptiler.com/maplibre-gl-js/v2.4.0/maplibre-gl.js"></script>
-    <link href="https://cdn.maptiler.com/maplibre-gl-js/v2.4.0/maplibre-gl.css" rel="stylesheet" />
+    <script src='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js'></script>
+    <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
     <style>
         body {
             margin: 0;
@@ -18,46 +18,262 @@
             bottom: 0;
             width: 100%;
         }
+
+        .popup-content {
+            text-align: center;
+        }
+
+        .popup-button {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .marker-image {
+            border-radius: 50%;
+        }
+
+        .maplibregl-ctrl-basemaps {
+            display: flex;
+            flex-direction: row;
+            pointer-events: auto;
+            bottom: 15px;
+            position: relative;
+        }
+        .maplibregl-ctrl-basemaps.reverse {
+            flex-direction: row-reverse;
+        }
+        .maplibregl-ctrl-basemaps.column {
+            flex-direction: column;
+        }
+        .maplibregl-ctrl-basemaps.column.reverse {
+            flex-direction: column-reverse;
+        }
+        .maplibregl-ctrl-basemaps .basemap {
+            padding: 8px;
+            margin: 2px;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            background-color: #fff;
+        }
+        .maplibregl-ctrl-basemaps .basemap.active {
+            border-color: orange;
+        }
+        .maplibregl-ctrl-basemaps.closed .basemap {
+            display: none;
+        }
+        .maplibregl-ctrl-basemaps.closed .basemap.active {
+            display: block;
+            border: 2px solid #ccc;
+        }
     </style>
 </head>
 <body>
     <div id="map"></div>
     <script>
-        const key = 'abo4rrmyo7yCMz9jb9CC';
+        const baseMaps = {
+          "STREETS": {
+            style: "https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json"
+          },
+          "WINTER": {
+            style: "https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_grey.json"
+          },
+          "HYBRID": {
+            style: "https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_high.json"
+          }
+        };
+
+        const initialStyle = baseMaps["STREETS"].style;
+
         const map = new maplibregl.Map({
-            container: 'map',
-            style: `https://api.maptiler.com/maps/basic-v2/style.json?key=${key}`,
-            center:([8.511855, 49.537275]),
-            zoom: 6
+          container: 'map',
+          style: initialStyle,
+          center: [8.513906, 49.536799], // Beispielkoordinaten in Deutschland
+          zoom: 10,
         });
 
-        const image = document.createElement('img');
-        image.src = '../images/KtW.jpg'; // Passe den Pfad zum Bild an
-        image.style.width = '32px'; // Passe die Größe des Bildes an
-        image.style.height = '32px';
+        class layerSwitcherControl {
+          constructor(options) {
+            this._options = { ...options };
+            this._container = document.createElement("div");
+            this._container.classList.add("maplibregl-ctrl", "maplibregl-ctrl-basemaps", "closed");
 
-        const mannheim = new maplibregl.Marker({element: image})
-            .setLngLat([8.511855, 49.537275])
-            .addTo(map)
-            .setPopup(new maplibregl.Popup().setHTML('<h3>Station 1</h3>'));
-			
-		const mannheim2 = new maplibregl.Marker()
-			.setLngLat([8.5, 49.5])
-            .addTo(map);
-			
-        map.on('error', function(err) {
-            throw new Error("To load the map, you must replace YOUR_MAPTILER_API_KEY_HERE first, see README");
-        });
-        
-        // Add geolocate control to the map.
-    map.addControl(
-        new maplibregl.GeolocateControl({
+            switch (this._options.expandDirection || "right") {
+              case "top":
+                this._container.classList.add("reverse");
+                break;
+              case "down":
+                this._container.classList.add("column");
+                break;
+              case "left":
+                this._container.classList.add("reverse");
+                break;
+              case "right":
+                this._container.classList.add("row");
+            }
+
+            this._container.addEventListener("mouseenter", () => {
+              this._container.classList.remove("closed");
+            });
+            this._container.addEventListener("mouseleave", () => {
+              this._container.classList.add("closed");
+            });
+          }
+
+          onAdd(map) {
+            this._map = map;
+            const basemaps = this._options.basemaps;
+            Object.keys(basemaps).forEach((layerId) => {
+              const base = basemaps[layerId];
+              const basemapContainer = document.createElement("div");
+              basemapContainer.textContent = layerId;
+              basemapContainer.classList.add("basemap");
+              basemapContainer.dataset.id = layerId;
+
+              basemapContainer.addEventListener("click", () => {
+                const activeElement = this._container.querySelector(".active");
+                if (activeElement) {
+                  activeElement.classList.remove("active");
+                }
+                basemapContainer.classList.add("active");
+                map.setStyle(base.style);
+              });
+
+              this._container.appendChild(basemapContainer);
+
+              if (this._options.initialBasemap === layerId) {
+                basemapContainer.classList.add("active");
+              }
+            });
+            return this._container;
+          }
+
+          onRemove() {
+            this._container.parentNode?.removeChild(this._container);
+            delete this._map;
+          }
+        }
+
+        map.addControl(new layerSwitcherControl({ basemaps: baseMaps, initialBasemap: "STREETS" }), 'bottom-left');
+
+        function createMarkerAndPopup(imageSrc, lngLat, title, description) {
+    const image = document.createElement('img');
+    image.src = imageSrc;
+    image.className = 'marker-image';
+    image.style.width = '32px';
+    image.style.height = '32px';
+
+    const popupContent = document.createElement('div');
+    popupContent.className = 'popup-content';
+
+    const stationText = document.createElement('strong');
+    stationText.textContent = title;
+    popupContent.appendChild(stationText);
+
+    const moreInfoButton = document.createElement('p');
+    moreInfoButton.textContent = 'Mehr erfahren';
+    moreInfoButton.className = 'popup-button';
+    popupContent.appendChild(moreInfoButton);
+
+    const welcomeText = document.createElement('span');
+    welcomeText.textContent = description;
+    welcomeText.style.display = 'none';
+    popupContent.appendChild(welcomeText);
+
+    moreInfoButton.addEventListener('click', function() {
+        if (welcomeText.style.display === 'none') {
+            welcomeText.style.display = 'inline';
+        } else {
+            welcomeText.style.display = 'none';
+        }
+    });
+
+    const marker = new maplibregl.Marker({ element: image })
+        .setLngLat(lngLat)
+        .addTo(map)
+        .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
+}
+
+const locations = [
+    {
+        imageSrc: '../images/KtW.jpg',
+        lngLat: [8.513828, 49.536785],
+        title: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+        description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.'
+    },
+    {
+        imageSrc: '../images/KtW_Station_2.jpg',
+        lngLat: [8.513168, 49.538550],
+        title: 'Station 2: Beispielstandort 2',
+        description: 'Beschreibung für den Beispielstandort 2.'
+    },
+    {
+        imageSrc: '../images/.jpg',
+        lngLat: [8.513125, 49.540607],
+        title: 'Station 3: Beispielstandort 3',
+        description: 'Beschreibung für den Beispielstandort 3.'
+    },
+    {
+        imageSrc: '../images/KtW.jpg',
+        lngLat: [8.510588, 49.544454],
+        title: 'Station 4: Auf geht\'s in den Käfertaler Wald!',
+        description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.'
+    },
+    {
+        imageSrc: '../images/KtW.jpg',
+        lngLat: [8.511162, 49.543998],
+        title: 'Station 5: Auf geht\'s in den Käfertaler Wald!',
+        description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.'
+    },
+    {
+        imageSrc: '../images/KtW.jpg',
+        lngLat: [8.514445, 49.542731],
+        title: 'Station 6: Auf geht\'s in den Käfertaler Wald!',
+        description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.'
+    },
+    {
+        imageSrc: '../images/KtW.jpg',
+        lngLat: [8.516912, 49.541787],
+        title: 'Station 7: Auf geht\'s in den Käfertaler Wald!',
+        description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.'
+    },
+    {
+        imageSrc: '../images/KtW.jpg',
+        lngLat: [8.520297, 49.540555],
+        title: 'Station 8: Auf geht\'s in den Käfertaler Wald!',
+        description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.'
+    },
+    {
+        imageSrc: '../images/KtW.jpg',
+        lngLat: [8.519723, 49.539229],
+        title: 'Station 9: Auf geht\'s in den Käfertaler Wald!',
+        description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.'
+    },
+    {
+        imageSrc: '../images/KtW.jpg',
+        lngLat: [8.516869, 49.537704],
+        title: 'Station 10: Auf geht\'s in den Käfertaler Wald!',
+        description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.'
+    },
+    {
+        imageSrc: '../images/KtW.jpg',
+        lngLat: [8.514058, 49.536604],
+        title: 'Station 11: Auf geht\'s in den Käfertaler Wald!',
+        description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.'
+    },
+];
+
+locations.forEach(location => {
+    createMarkerAndPopup(location.imageSrc, location.lngLat, location.title, location.description);
+});
+
+
+        map.addControl(new maplibregl.GeolocateControl({
             positionOptions: {
                 enableHighAccuracy: true
             },
             trackUserLocation: true
-        })
-    );
+        }));
     </script>
 </body>
 </html>
