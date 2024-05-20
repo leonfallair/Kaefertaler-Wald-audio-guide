@@ -18,11 +18,43 @@
             bottom: 0;
             width: 100%;
         }
-
         .popup-content {
+            display: absolute;
+            flex-direction: column;
+            background-color: white;
+            align-items: flex-start;
+            position: relative;
             text-align: center;
-            border-radius: 120px;
+            border-radius: 10px;
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
         }
+
+        .maplibregl-popup-content {
+            background: none; /* Entfernt den Standard-Hintergrund der Popup-Bibliothek */
+            box-shadow: none; /* Entfernt den Standard-Schatten der Popup-Bibliothek */
+            border: none; /* Entfernt den Standard-Rahmen der Popup-Bibliothek */
+            padding: 0; /* Entfernt das Standard-Padding der Popup-Bibliothek */
+          }
+
+      .maplibregl-popup-tip {
+            display: none; /* Entfernt das kleine Dreieck der Popup-Bibliothek */
+        }
+        .popup-image {
+          align-self: flex-start;
+          margin-bottom: 10px;
+          border-radius: 10px;
+          position: relative;
+        }
+        .close-button {
+          position: absolute;
+          top: 0px;
+          left: 0px;
+          color: white;
+          border: none;
+          cursor: pointer;
+        } 
 
         .popup-button {
             cursor: pointer;
@@ -44,7 +76,7 @@
             border: 3px solid #32cd32;
         }
 
-        /*layerSwitcherControl*/
+        /* layerSwitcherControl */
         .maplibregl-ctrl-basemaps {
           display: flex;
           flex-direction: row;
@@ -66,11 +98,29 @@
           height: 64px;
           margin: 2px;
           border: 2px solid #ccc;
-            cursor: pointer;
-            background-color: #fff;
+          box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+          cursor: pointer;
+          position: relative;
         }
         .maplibregl-ctrl-basemaps .basemap.active {
           border-color: orange;
+        }
+        .maplibregl-ctrl-basemaps .basemap img {
+          width: 100%;
+          height: 100%;
+        }
+        .maplibregl-ctrl-basemaps .basemap-label {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          text-align: center;
+          background: rgba(0, 0, 0, 0.5);
+          color: white;
+          display: none;
+        }
+        .maplibregl-ctrl-basemaps .basemap:hover .basemap-label {
+          display: block;
         }
         .maplibregl-ctrl-basemaps.closed .basemap {
           display: none;
@@ -104,6 +154,34 @@
           center: [8.513906, 49.536799], // Beispielkoordinaten in Deutschland
           zoom: 10,
         });
+
+        function createThumbnail(styleUrl, callback) {
+          const miniMapContainer = document.createElement('div');
+          miniMapContainer.style.width = '200px';
+          miniMapContainer.style.height = '200px';
+          miniMapContainer.style.position = 'absolute';
+          miniMapContainer.style.top = '-9999px';
+          document.body.appendChild(miniMapContainer);
+
+          const miniMap = new maplibregl.Map({
+            container: miniMapContainer,
+            style: styleUrl,
+            center: [8.513906, 49.536799], // Beispielkoordinaten
+            zoom: 10,
+            interactive: false,
+          });
+
+          miniMap.on('load', () => {
+            miniMap.resize();
+            setTimeout(() => {
+              const canvas = miniMap.getCanvas();
+              const dataUrl = canvas.toDataURL('image/png');
+              callback(dataUrl);
+              miniMap.remove();
+              document.body.removeChild(miniMapContainer);
+            }, 500);
+          });
+        }
 
         class layerSwitcherControl {
           constructor(options) {
@@ -139,9 +217,21 @@
             Object.keys(basemaps).forEach((layerId) => {
               const base = basemaps[layerId];
               const basemapContainer = document.createElement("div");
-              basemapContainer.textContent = layerId;
               basemapContainer.classList.add("basemap");
               basemapContainer.dataset.id = layerId;
+
+              createThumbnail(base.style, (dataUrl) => {
+                const basemapImage = document.createElement("img");
+                basemapImage.src = dataUrl;
+                basemapImage.alt = layerId;
+                basemapImage.classList.add("basemap-thumbnail");
+                basemapContainer.appendChild(basemapImage);
+
+                const basemapLabel = document.createElement("div");
+                basemapLabel.textContent = layerId;
+                basemapLabel.classList.add("basemap-label");
+                basemapContainer.appendChild(basemapLabel);
+              });
 
               basemapContainer.addEventListener("click", () => {
                 const activeElement = this._container.querySelector(".active");
@@ -149,7 +239,7 @@
                   activeElement.classList.remove("active");
                 }
                 basemapContainer.classList.add("active");
-                this._map.setStyle(base.style); // Use this._map instead of map
+                this._map.setStyle(base.style);
               });
 
               this._container.appendChild(basemapContainer);
@@ -169,7 +259,7 @@
 
         map.addControl(new layerSwitcherControl({ basemaps: baseMaps, initialBasemap: "Basemap DE Farbig" }), 'bottom-left');
 
-  function createMarkerAndPopup(imageSrc, lngLat, title, description, audioSrc) {
+  function createMarkerAndPopup(imageSrc, lngLat, gallery, title, description, audioSrc) {
     const image = document.createElement('img');
     image.src = imageSrc;
     image.className = 'marker-image';
@@ -178,6 +268,15 @@
 
     const popupContent = document.createElement('div');
     popupContent.className = 'popup-content';
+
+    let currentImageIndex = 0;
+
+    const popupimage = document.createElement('img');
+      popupimage.src = gallery[currentImageIndex];
+      popupimage.className = 'popup-image';
+      popupimage.style.width = '32px';
+      popupimage.style.height = '32px';
+      popupContent.appendChild(popupimage);
 
     const stationText = document.createElement('strong');
     stationText.textContent = title;
@@ -218,7 +317,31 @@
 
     playButton.addEventListener('click', function() {
         audioElement.play();
-    });    
+    });
+    
+    popupimage.addEventListener('click', function() {
+        if (popupimage.style.width === '32px') {
+            popupimage.style.width = '100%';
+            popupimage.style.height = '100%';
+            popupimage.style.cursor = 'zoom-out';
+        } else {
+            currentImageIndex = (currentImageIndex + 1) % gallery.length;
+            popupimage.src = gallery[currentImageIndex];
+        }
+
+    // Add close button
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-button';
+    closeButton.innerHTML = 'X';
+    closeButton.addEventListener('click', function() {
+      popupimage.style.width = '32px';
+      popupimage.style.height = '32px';
+      popupimage.style.cursor = 'zoom-in';
+      popupimage.parentNode.removeChild(closeButton);
+    });
+    popupimage.parentNode.appendChild(closeButton);
+  });  
+
 
     const marker = new maplibregl.Marker({ element: image })
         .setLngLat(lngLat)
@@ -231,13 +354,15 @@ const locations = [
     {
         imageSrc: '../images/KtW.jpg',
         lngLat: [8.513828, 49.536785],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
         description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht. Eine Übersichtskarte der einzelnen Stationen und auch den Routenverlauf fnden Sie auf unserer Homepage <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. Die Tour ist etwa 3,5 km lang und dauert - mit Verweilzeiten – ca. 2 bis 2,5 Stunden. Und jetzt: wünschen wir Ihnen viel Spaß beim Rundgang Nun bewegen wir uns etwas weg vom Trubel am Karlstern. Bitte folgen Sie der Kastanienallee bis zum Vogelpark. Dort geht es los mit der Station zum Thema Entwicklung des Stadtwaldes.',
         audioSrc: '../Audio/Test.m4a'
     },
     {
-        imageSrc: '../images/KtW.jpg',
+        imageSrc: '../images/KtW_Station_2.jpg',
         lngLat: [8.513168, 49.538550],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 2: Warum sieht der Stadtwald so aus wie heute?',
         description: 'Beschreibung für den Beispielstandort 2.',
         audioSrc: '../Audio/Test.m4a'
@@ -245,6 +370,7 @@ const locations = [
     {
         imageSrc: '../images/KtW.jpg',
         lngLat: [8.513125, 49.540607],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 3: Auswirkungen des Klimawandels auf den Wald',
         description: 'Beschreibung für den Beispielstandort 3.',
         audioSrc: '../Audio/Test.m4a'
@@ -252,6 +378,7 @@ const locations = [
     {
         imageSrc: '../images/KtW.jpg',
         lngLat: [8.510588, 49.544454],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 4: Warum werden Bäume gepflanzt',
         description: 'Wir stehen hier vor einer Pfanzfläche im Käfertaler Wald. Es sind viele junge Bäume und verschiedene Baumarten zu sehen und die Fläche ist eingezäunt. Lassen Sie uns die P􀀁anz􀀁äche über die Kastanienallee mal kurz umrunden, bis wir wieder auf Weg Nr. 6 kommen. Dann haben wir einen besseren Blick. Warum werden hier nun Bäume gep􀀁anzt? Grundsätzlich wird im Mannheimer Stadtwald das Ziel verfolgt, naturnahe, klimastabile Mischwälder zu entwickeln, die vor allem aus Laubbäumen bestehen sollen. Die Baumarten orientieren sich dabei an der natürlichen Waldgesellschaft, also den Baumarten, die natürlicherweise dort vorkommen würden. Berücksichtigt werden hier die Standorteignung und die klimatische Entwicklung. Deshalb werden dort wo besonders viele Bäume vom Absterben betroffen sind, nun neue Bäume gep􀀁anzt. Das sind Flächen, auf denen die Kiefer größtenteils abstirbt und wo kaum klimastabile Laubbaumarten vorhanden sind. Und außerdem Flächen, auf denen der starke Bewuchs und die Beschattung durch die Spätblühende Traubenkirsche eine natürliche Verjüngung von Laubbaumarten verhindert. Also nur die Stellen im Wald, auf denen die ausgewachsenen Bäume absterben und klimastabile Baumarten sich nicht vermehren können. Neu gep􀀁anzt werden dann klimastabile, standortangepasste und vor allem verschiedene Laubbaumarten, wie z.B. Eichen, Ahorn oder die Kirsche. Diese Mischung macht es sehr unwahrscheinlich, dass eines Tages eine Baumart ausfällt und dann plötzlich kein Wald mehr vorhanden ist. Was im Moment mit der Kiefer und mit unserem.',
         audioSrc: '../Audio/Test.m4a'
@@ -259,6 +386,7 @@ const locations = [
     {
         imageSrc: '../images/KtW.jpg',
         lngLat: [8.511162, 49.543998],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 5: Zukunftsbaumarten',
         description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.',
         audioSrc: '../Audio/Test.m4a'
@@ -266,6 +394,7 @@ const locations = [
     {
         imageSrc: '../images/KtW.jpg',
         lngLat: [8.514445, 49.542731],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 6: Die Spätblühende Traubenkirsche',
         description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.',
         audioSrc: '../Audio/Test.m4a'
@@ -273,6 +402,7 @@ const locations = [
     {
         imageSrc: '../images/KtW.jpg',
         lngLat: [8.516912, 49.541787],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 7: Die Eiche als zukunftsbaum',
         description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.',
         audioSrc: '../Audio/Test.m4a'
@@ -280,6 +410,7 @@ const locations = [
     {
         imageSrc: '../images/KtW.jpg',
         lngLat: [8.520297, 49.540555],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 8: Naturschutz im Wald',
         description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.',
         audioSrc: '../Audio/Test.m4a'
@@ -287,6 +418,7 @@ const locations = [
     {
         imageSrc: '../images/KtW.jpg',
         lngLat: [8.519723, 49.539229],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 9: Der Waldboden',
         description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.',
         audioSrc: '../Audio/Test.m4a'
@@ -294,6 +426,7 @@ const locations = [
     {
         imageSrc: '../images/KtW.jpg',
         lngLat: [8.516869, 49.537704],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 10: Nachhaltige Waldwirtschaft',
         description: 'Wir pflanzen also neue Bäume, um unseren Mannheimer Stadtwald zu erhalten. Warum wird auf der anderen Seite aber auch Holz geerntet?Wir alle nutzen Holz in unterschiedlichster Form. Der Bedarf und die Verwendung von Holz sind seit 1950 in Deutschland kontinuierlich angestiegen. Die jährliche Holzernte in deutschen Wäldern trägt gut ein Viertel zum hiesigen Gesamtaufkommen aller Holzprodukte bei. Viel Holz wird aber importiert, teils aus illegalen Holzeinschlägen. <br /> Im Mannheimer Stadtwald wird durch erforderliche Maßnahmen der Verkehrssicherung, Durchforstung und Kulturpflege Holz geerntet, das nachhaltig produziert wurde. Dabei werden mit Ausnahme der Pflegemaßnahmen nur absterbende Bäume entnommen. Auf diese Weise kann auch Mannheim zur lokalen Rohholzversorgung beitragen, damit wir nicht mehr so viel importieren müssen. Die nachhaltige Holznutzung im Mannheimer Stadtwald bedeutet, dass in der Summe deutlich weniger entnommen wird, als nachwächst. Das ist in der sogenannten Forsteinrichtung so festgelegt, die 2020 vom Gemeinderat verabschiedet wurde. Die Forsteinrichtung ist das bestimmende Bewirtschaftungs- und Planungsinstrument für den Forstbetrieb. Sie erfasst und kontrolliert Daten und passende Planungen zu Holzzuwachs, Totholzanteil und vieles mehr. Auf eine planmäßige Ernte starker und gesunder Bäume verzichten wir in Mannheim ganz bewusst. Aber obwohl wir auf einzelnen Flächen Platz für klimastabile Waldbäume schaffen, erhöht sich der Vorrat an Holz und Bäumen auf der Gesamtfläche des Stadtwaldes Jahr für Jahr – und zwar deutlich.  Nun geht es zurück zum Ausgangspunkt, dem Karlstern. Dazu folgen Sie bitte Weg Nr. 1, weg vom Weiher bis zur Langen Allee und dann rechts weiter bis zum Karlstern.',
         audioSrc: '../Audio/Test.m4a'
@@ -301,6 +434,7 @@ const locations = [
     {
         imageSrc: '../images/KtW.jpg',
         lngLat: [8.514058, 49.536604],
+        gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
         title: 'Station 11: Danke und auf Wiedersehen!',
         description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön, dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht.',
         audioSrc: '../Audio/Test.m4a'
@@ -321,27 +455,37 @@ const locations = [
             }
         };
 
-        map.on('load', function () {
-            map.addLayer({
-                'id': 'route',
-                'type': 'line',
-                'source': {
-                    'type': 'geojson',
-                    'data': geojson
-                },
-                'layout': {
-                    'line-join': 'round',
-                    'line-cap': 'round'
-                },
-                'paint': {
-                    'line-color': 'blue',
-                    'line-width': 4
-                }
-            });
-        });
+        function addRoute() {
+    map.addLayer({
+        'id': 'route',
+        'type': 'line',
+        'source': {
+            'type': 'geojson',
+            'data': geojson
+        },
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        },
+        'paint': {
+            'line-color': 'blue',
+            'line-width': 4
+        }
+    });
+}
+
+map.on('load', function () {
+    addRoute();
+});
+
+map.on('styledata', function () {
+    if (!map.getLayer('route')) {
+        addRoute();
+    }
+});
 
 locations.forEach(location => {
-    createMarkerAndPopup(location.imageSrc, location.lngLat, location.title, location.description, location.audioSrc);
+    createMarkerAndPopup(location.imageSrc, location.lngLat,location.gallery, location.title, location.description, location.audioSrc);
 });
 
                 
