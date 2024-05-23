@@ -1,0 +1,152 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+.popup-content {
+    display:flex;
+    position:relative;
+    flex-direction: column;
+    justify-content: center;
+    background-color: white;
+    align-items: center;
+    text-align: center;
+    border-radius: 10px;
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    width: 250px;
+}
+
+/* deleting default popupinput */
+.maplibregl-popup-content {
+    background: none; 
+    box-shadow: none; 
+    padding: 0; 
+}
+
+.maplibregl-popup-tip {
+    display: none; 
+}
+.popup-image {
+  align-self: flex-start;
+  border-radius: 10px;
+  position: relative;
+  left:0;
+  top: 0;
+  cursor:zoom-in;
+}
+
+.image-description {
+  position:relative;
+  bottom: 40px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  width: 100%;
+  padding: 0;         
+}
+
+.close-button {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+} 
+
+.moreinfo-button {
+    cursor: pointer;
+    position: relative;
+    background-color: #1fbd1f;
+    color: white;
+    border-radius: 10px;
+    width: 60%;
+    margin-bottom: 2px;
+}
+.welcome-text {
+  height: 200px;
+  display:relative;
+  overflow-y: scroll;
+  text-align: left;
+  border: 1px solid #ccc; 
+  padding: 10px; 
+}
+
+.audio-button {
+    cursor: pointer;
+    background-color: grey;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    width: 60%;
+    margin-bottom: 10px;
+}
+
+.marker-image {
+    border-radius: 50%;
+    border: 3.5px solid #98da00;
+    cursor: pointer;
+}
+
+/* layerSwitcherControl */
+.maplibregl-ctrl-basemaps {
+  display: flex;
+  flex-direction: row;
+  pointer-events: auto;
+  bottom: 15px;
+  position: relative;
+}
+.maplibregl-ctrl-basemaps.reverse {
+  flex-direction: row-reverse;
+}
+.maplibregl-ctrl-basemaps.column {
+  flex-direction: column;
+}
+.maplibregl-ctrl-basemaps.column.reverse {
+  flex-direction: column-reverse;
+}
+.maplibregl-ctrl-basemaps .basemap {
+  width: 64px;
+  height: 64px;
+  margin: 2px;
+  border: 2px solid #ccc;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  position: relative;
+}
+.maplibregl-ctrl-basemaps .basemap.active {
+  border-color: orange;
+}
+.maplibregl-ctrl-basemaps .basemap img {
+  width: 100%;
+  height: 100%;
+}
+.maplibregl-ctrl-basemaps .basemap-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: none;
+}
+.maplibregl-ctrl-basemaps .basemap:hover .basemap-label {
+  display: block;
+}
+.maplibregl-ctrl-basemaps.closed .basemap {
+  display: none;
+}
+.maplibregl-ctrl-basemaps.closed .basemap.active {
+  display: block;
+  border: 2px solid #ccc;
+}
