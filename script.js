@@ -249,7 +249,7 @@ function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions, ti
 // locations with coordinates and content are defined
 const locations = [
 {
-imageSrc: '../images/KtW.jpg',
+imageSrc: '/images/KtW.jpg',
 lngLat: [8.513828, 49.536785],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg', '/images/3D_Karte_Uebersicht.PNG'],
 galleryDescriptions: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
@@ -258,7 +258,7 @@ description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald
 audioSrc: '/Audio/Test.m4a'
 },
 {
-imageSrc: '../images/KtW_Station_2.jpg',
+imageSrc: '/images/KtW_Station_2.jpg',
 lngLat: [8.513168, 49.538550],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -267,7 +267,7 @@ description: 'Wie ist unser Stadtwald in Mannheim entstanden, und so geworden wi
 audioSrc: '/Audio/Test.m4a'
 },
 {
-imageSrc: '../images/KtW.jpg',
+imageSrc: '/images/KtW.jpg',
 lngLat: [8.513235, 49.540955],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -276,7 +276,7 @@ description: 'Wir befinden uns nun an der Wegkreuzung Kastanienallee / weg nr. 7
 audioSrc: '/Audio/Test.m4a'
 },
 {
-imageSrc: '../images/KtW.jpg',
+imageSrc: '/images/KtW.jpg',
 lngLat: [8.510525, 49.544585],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -285,7 +285,7 @@ description: 'Wir stehen hier vor einer Pflanzfläche im Käfertaler Wald. Es si
 audioSrc: '/Audio/Test.m4a'
 },
 {
-imageSrc: '../images/KtW.jpg',
+imageSrc: '/images/KtW.jpg',
 lngLat: [8.511115, 49.5440003],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -294,7 +294,7 @@ description: 'Welche Baumarten haben nun eine Zukunft bei uns? Welche kommen mit
 audioSrc: '/Audio/Test.m4a'
 },
 {
-imageSrc: '../images/KtW.jpg',
+imageSrc: '/images/KtW.jpg',
 lngLat: [8.5143958, 49.5427572],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -303,7 +303,7 @@ description: 'Wir bewegen uns jetzt auf Weg Nr. 6 Richtung „Neue Poststraße�
 audioSrc: '/Audio/Test.m4a'
 },
 {
-imageSrc: '../images/KtW.jpg',
+imageSrc: '/images/KtW.jpg',
 lngLat: [8.5170145, 49.5417836],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -312,7 +312,7 @@ description: 'Hier gibt es links und rechts der „Neuen Poststraße“ einige a
 audioSrc: '/Audio/Test.m4a'
 },
 {
-imageSrc: '../images/KtW.jpg',
+imageSrc: '/images/KtW.jpg',
 lngLat: [8.5202727, 49.5405688],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -321,7 +321,7 @@ description: 'Schon bemerkt? Überall im Wald stehen abgestorbene Bäume. Und au
 audioSrc: '/Audio/Test.m4a'
 },
 {
-imageSrc: '../images/KtW.jpg',
+imageSrc: '/images/KtW.jpg',
 lngLat: [8.5197143, 49.5392526],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -330,7 +330,7 @@ description: 'Schon mehrfach haben wir die Standortbedingungen im Wald angesproc
 audioSrc: '/Audio/Test.m4a'
 },
 {
-imageSrc: '../images/KtW.jpg',
+imageSrc: '/images/KtW.jpg',
 lngLat: [8.5168431, 49.5377149],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -339,7 +339,7 @@ description: 'Wir pflanzen also neue Bäume, um unseren Mannheimer Stadtwald zu 
 audioSrc: '/Audio/Test.m4a'
 },
 {
-imageSrc: '../images/KtW.jpg',
+imageSrc: '/images/KtW.jpg',
 lngLat: [8.5140882, 49.5366096],
 gallery: ['/images/KtW.jpg', '/images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
