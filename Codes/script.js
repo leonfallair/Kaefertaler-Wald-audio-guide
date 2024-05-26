@@ -286,7 +286,7 @@ audioSrc: '../Audio/Test.m4a'
 },
 {
 imageSrc: '../images/KtW.jpg',
-lngLat: [8.111184, 49.5440003],
+lngLat: [8.511115, 49.5440003],
 gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
 title: 'Station 5: Zukunftsbaumarten',
