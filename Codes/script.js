@@ -4,7 +4,7 @@ const baseMaps = {
     style: "https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json"
   },
   "Basemap DE Grau": {
-    style: "https://sgx.geodatenzentrum.de/gdz_basemapde_vector/styles/bm_web_gry.json"
+    style: "https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_gry.json"
   },
   "Relief": {
     style: "https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_top.json"
