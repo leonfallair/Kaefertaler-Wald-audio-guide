@@ -251,8 +251,8 @@ const locations = [
 {
 imageSrc: 'images/KtW.jpg',
 lngLat: [8.513828, 49.536785],
-gallery: ['images/KtW.jpg', 'images/KtW_Station_2.jpg', '/images/3D_Karte_Uebersicht.PNG'],
-galleryDescriptions: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+gallery: ['images/KtW.jpg', 'images/KtW_Station_2.jpg', '/images/zusatzbild.jpg'],
+galleryDescriptions: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D ÜBeschreibung für Bild 3'],
 title: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
 description: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht. Eine Übersichtskarte der einzelnen Stationen und auch den Routenverlauf fnden Sie auf unserer Homepage <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. Die Tour ist etwa 3,5 km lang und dauert - mit Verweilzeiten – ca. 2 bis 2,5 Stunden. Und jetzt: wünschen wir Ihnen viel Spaß beim Rundgang Nun bewegen wir uns etwas weg vom Trubel am Karlstern. Bitte folgen Sie der Kastanienallee bis zum Vogelpark. Dort geht es los mit der Station zum Thema Entwicklung des Stadtwaldes.',
 audioSrc: 'Audio/Test.m4a'
@@ -267,7 +267,7 @@ description: 'Wie ist unser Stadtwald in Mannheim entstanden, und so geworden wi
 audioSrc: 'Audio/Test.m4a'
 },
 {
-imageSrc: 'images/KtW.jpg',
+imageSrc: 'images/KtW_Station_3.jpg',
 lngLat: [8.513235, 49.540955],
 gallery: ['images/KtW.jpg', 'images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -276,7 +276,7 @@ description: 'Wir befinden uns nun an der Wegkreuzung Kastanienallee / weg nr. 7
 audioSrc: 'Audio/Test.m4a'
 },
 {
-imageSrc: 'images/KtW.jpg',
+imageSrc: 'images/KtW_Station_4.jpg',
 lngLat: [8.510525, 49.544585],
 gallery: ['images/KtW.jpg', 'images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
@@ -285,7 +285,7 @@ description: 'Wir stehen hier vor einer Pflanzfläche im Käfertaler Wald. Es si
 audioSrc: 'Audio/Test.m4a'
 },
 {
-imageSrc: 'images/KtW.jpg',
+imageSrc: 'images/KtW_Station_5.jpg',
 lngLat: [8.511115, 49.5440003],
 gallery: ['images/KtW.jpg', 'images/KtW_Station_2.jpg'],
 galleryDescriptions: ['Beschreibung für Bild 1', 'Beschreibung für Bild 2'],
