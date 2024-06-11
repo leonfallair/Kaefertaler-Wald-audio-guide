@@ -34,6 +34,17 @@ body {
 .maplibregl-popup-tip {
     display: none; 
 }
+
+.maplibregl-popup-close-button {
+  position: absolute;
+  top: 0px;  /* Adjust as needed */
+  right: -10px;  /* Adjust as needed */
+  background-color: transparent;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
 .popup-image {
   align-self: flex-start;
   border-radius: 10px;
@@ -52,7 +63,7 @@ body {
   padding: 0;         
 }
 
-.close-button {
+.close-button-left {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -60,6 +71,7 @@ body {
   background: none;
   border: none;
   cursor: pointer;
+  font-size: 13px;
   z-index: 10;
 } 
 
