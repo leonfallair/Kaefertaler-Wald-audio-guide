@@ -3,12 +3,26 @@ body {
     padding: 0;
 }
 
+#downloadbutton {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 99999; /* Make sure it's on top of other elements */
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 #map {
     position: absolute;
     top: 0;
     bottom: 0;
     width: 100%;
 }
+
+
 .popup-content {
     display:flex;
     position:relative;
@@ -39,9 +53,9 @@ body {
   position: absolute;
   top: 0px;  /* Adjust as needed */
   right: -10px;  /* Adjust as needed */
-  background-color: transparent;
+  background-color: white;
+  color: black;
   border: none;
-  border-radius: 10px;
   cursor: pointer;
   font-size: 13px;
 }
@@ -60,16 +74,28 @@ body {
   background: rgba(0, 0, 0, 0.5);
   color: white;
   width: 100%;
+  font-size: 13px;
   padding: 0;         
 }
+
+.image-photographer {
+  position:relative;
+  top: -50px;
+  margin-bottom: -40px;
+  color: black;
+  font-size: 9px;        
+}
+
 
 .close-button-left {
   position: absolute;
   top: 0px;
-  left: 0px;
+  right: 0px;
   color: white;
-  background: none;
+  background: white;
+  color: black;
   border: none;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 13px;
   z-index: 10;

@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Display markers and route</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <link href='https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css' rel='stylesheet' />
+    <script src='https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js'></script>
+    <style>
+        body {
+  margin: 0;
+  padding: 0;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+.popup-content {
+  display:flex;
+  position:relative;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+  align-items: center;
+  text-align: center;
+  border-radius: 10px;
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+  width: 300px;
+}
+
+/* deleting default popupinput */
+.maplibregl-popup-content {
+  background: none; 
+  box-shadow: none; 
+  padding: 0; 
+}
+
+.maplibregl-popup-tip {
+  display: none; 
+}
+.popup-image {
+align-self: flex-start;
+border-radius: 10px;
+position: relative;
+left:0;
+top: 0;
+cursor:zoom-in;
+}
+
+.prev-button, .next-button {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #000;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+
+.image-description {
+position:relative;
+bottom: 40px;
+background: rgba(0, 0, 0, 0.5);
+color: white;
+width: 100%;
+padding: 0;         
+}
+
+.close-button {
+position: absolute;
+top: 0px;
+left: 0px;
+color: white;
+background: none;
+border: none;
+cursor: pointer;
+z-index: 10;
+} 
+
+.moreinfo-button {
+  cursor: pointer;
+  position: relative;
+  background-color: #1fbd1f;
+  color: white;
+  border-radius: 10px;
+  width: 60%;
+  margin-bottom: 2px;
+}
+.welcome-text {
+height: 200px;
+display:relative;
+overflow-y: scroll;
+text-align: left;
+border: 1px solid #ccc; 
+padding: 10px; 
+}
+
+.audio-button {
+  cursor: pointer;
+  background-color: grey;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  width: 60%;
+  margin-bottom: 10px;
+}
+
+.marker-image {
+  border-radius: 50%;
+  border: 3.5px solid #98da00;
+  cursor: pointer;
+}
+
+/* layerSwitcherControl */
+.maplibregl-ctrl-basemaps {
+display: flex;
+flex-direction: row;
+pointer-events: auto;
+bottom: 15px;
+position: relative;
+}
+.maplibregl-ctrl-basemaps.reverse {
+flex-direction: row-reverse;
+}
+.maplibregl-ctrl-basemaps.column {
+flex-direction: column;
+}
+.maplibregl-ctrl-basemaps.column.reverse {
+flex-direction: column-reverse;
+}
+.maplibregl-ctrl-basemaps .basemap {
+width: 64px;
+height: 64px;
+margin: 2px;
+border: 2px solid #ccc;
+box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+cursor: pointer;
+position: relative;
+}
+.maplibregl-ctrl-basemaps .basemap.active {
+border-color: orange;
+}
+.maplibregl-ctrl-basemaps .basemap img {
+width: 100%;
+height: 100%;
+}
+.maplibregl-ctrl-basemaps .basemap-label {
+position: absolute;
+bottom: 0;
+left: 0;
+width: 100%;
+text-align: center;
+background: rgba(0, 0, 0, 0.5);
+color: white;
+display: none;
+}
+.maplibregl-ctrl-basemaps .basemap:hover .basemap-label {
+display: block;
+}
+.maplibregl-ctrl-basemaps.closed .basemap {
+display: none;
+}
+.maplibregl-ctrl-basemaps.closed .basemap.active {
+display: block;
+border: 2px solid #ccc;
+}
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        
+// Connection to Basemaps DE
+const baseMaps = {
+    "Basemap DE Farbig": {
+      style: "https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json"
+    },
+    "Basemap DE Grau": {
+      style: "https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_gry.json"
+    },
+    "Relief": {
+      style: "https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_top.json"
+    }
+  };
+  
+  // Basemap Farbig as first basemap
+  const initialStyle = baseMaps["Basemap DE Farbig"].style;
+  
+  // Map setup
+  const map = new maplibregl.Map({
+    container: 'map',
+    style: initialStyle,
+    center: [8.5140882, 49.5366096], // Coordinates of Mannheim/Kaefertaler Wald
+    zoom: 14,
+  });
+
+  
+  // Thumbnail generation
+  function createThumbnail(styleUrl, callback) {
+    const miniMapContainer = document.createElement('div');
+    miniMapContainer.style.width = '200px';
+    miniMapContainer.style.height = '200px';
+    miniMapContainer.style.position = 'absolute';
+    miniMapContainer.style.top = '-9999px';
+    document.body.appendChild(miniMapContainer);
+  
+    const miniMap = new maplibregl.Map({
+      container: miniMapContainer,
+      style: styleUrl,
+      center: [8.5140882, 49.5366096], 
+      zoom: 10,
+      interactive: false,
+    });
+  
+    miniMap.on('load', () => {
+      miniMap.resize();
+      setTimeout(() => {
+        const canvas = miniMap.getCanvas();
+        const dataUrl = canvas.toDataURL('image/png');
+        callback(dataUrl);
+        miniMap.remove();
+        document.body.removeChild(miniMapContainer);
+      }, 500);
+    });
+  }
+  
+  // layerswitchercontol is defined
+  class layerSwitcherControl {
+    constructor(options) {
+      this._options = { ...options };
+      this._container = document.createElement("div");
+      this._container.classList.add(
+        "maplibregl-ctrl",
+        "maplibregl-ctrl-basemaps",
+        "closed"
+      );
+  
+      switch (this._options.expandDirection || "right") {
+        case "top":
+          this._container.classList.add("reverse");
+          break;
+        case "down":
+          this._container.classList.add("column");
+          break;
+        case "left":
+          this._container.classList.add("reverse");
+          break;
+        case "right":
+          this._container.classList.add("row");
+      }
+  
+      this._container.addEventListener("mouseenter", () => {
+        this._container.classList.remove("closed");
+      });
+      this._container.addEventListener("mouseleave", () => {
+        this._container.classList.add("closed");
+      });
+    }
+  
+    onAdd(map) {
+      this._map = map;
+      const basemaps = this._options.basemaps;
+  
+      Object.keys(basemaps).forEach((layerId) => {
+        const base = basemaps[layerId];
+        const basemapContainer = document.createElement("div");
+        basemapContainer.classList.add("basemap");
+        basemapContainer.dataset.id = layerId;
+  
+        createThumbnail(base.style, (dataUrl) => {
+          const basemapImage = document.createElement("img");
+          basemapImage.src = dataUrl;
+          basemapImage.alt = layerId;
+          basemapImage.classList.add("basemap-thumbnail");
+          basemapContainer.appendChild(basemapImage);
+  
+          const basemapLabel = document.createElement("div");
+          basemapLabel.textContent = layerId;
+          basemapLabel.classList.add("basemap-label");
+          basemapContainer.appendChild(basemapLabel);
+        });
+  
+        basemapContainer.addEventListener("click", () => {
+          const activeElement = this._container.querySelector(".active");
+          if (activeElement) {
+            activeElement.classList.remove("active");
+          }
+          basemapContainer.classList.add("active");
+          this._map.setStyle(base.style);
+        });
+  
+        this._container.appendChild(basemapContainer);
+  
+        if (this._options.initialBasemap === layerId) {
+          basemapContainer.classList.add("active");
+        }
+      });
+  
+      return this._container;
+    }
+  
+    onRemove() {
+      this._container.parentNode?.removeChild(this._container);
+      delete this._map;
+    }
+  }
+  
+  map.addControl(
+    new layerSwitcherControl({
+      basemaps: baseMaps,
+      initialBasemap: "Basemap DE Farbig",
+    }),
+    "bottom-left"
+  );
+
+ // Standardsprache auf Deutsch setzen
+let currentLanguage = 'de'; 
+
+  // Funktion zum Aktualisieren des Popup-Inhalts basierend auf der aktuellen Sprache
+function updatePopupContent(popupContent, location) {
+    const titleText = location.title[currentLanguage];
+    const descriptionText = location.description[currentLanguage];
+    const audioSrc = location.audioSrc[currentLanguage];
+    const galleryDescriptions = location.galleryDescriptions[currentLanguage];
+
+    // Titel aktualisieren
+    const stationText = popupContent.querySelector('strong');
+    stationText.textContent = titleText;
+
+    // Beschreibung aktualisieren
+    const welcomeText = popupContent.querySelector('.welcome-text');
+    welcomeText.innerHTML = descriptionText;
+
+    // Audioquelle aktualisieren
+    const audioElement = popupContent.querySelector('audio');
+    audioElement.src = audioSrc;
+
+    // Galerie-Beschreibung aktualisieren
+    const imageDescription = popupContent.querySelector('.image-description');
+    const currentImageIndex = popupContent.getAttribute('data-current-image-index') || 0;
+    imageDescription.textContent = location.galleryDescriptions[currentLanguage][currentImageIndex];
+
+        // Buttons aktualisieren
+        const moreInfoButton = popupContent.querySelector('.moreinfo-button');
+    const playButton = popupContent.querySelector('.audio-button');
+    moreInfoButton.textContent = (currentLanguage === 'de') ? 'Mehr erfahren' : 
+                                'Learn more' ;
+
+
+    playButton.textContent = (currentLanguage === 'de') ? 'Audio abspielen' : 
+                             'Play audio';
+}
+  
+  // popups with respective functions are defined
+  function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions, title, description, audioSrc) {
+      const image = document.createElement('img');
+      image.src = imageSrc;
+      image.className = 'marker-image';
+      image.style.width = '32px';
+      image.style.height = '32px';
+  
+      const popupContent = document.createElement('div');
+      popupContent.className = 'popup-content';
+  
+      let currentImageIndex = 0;
+  
+      const popupImage = document.createElement('img');
+      popupImage.src = gallery[currentImageIndex];
+      popupImage.className = 'popup-image';
+      popupImage.style.width = '32px';
+      popupImage.style.height = '32px';
+      popupContent.appendChild(popupImage);
+      
+  
+      const imageDescription = document.createElement('p');
+      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+      imageDescription.className = 'image-description';
+      imageDescription.style.display = 'none';
+      popupContent.appendChild(imageDescription);
+  
+      const stationText = document.createElement('strong');
+      stationText.textContent = title[currentLanguage];
+      popupContent.appendChild(stationText);
+  
+      const moreInfoButton = document.createElement('p');
+      moreInfoButton.textContent = 'Mehr erfahren';
+      moreInfoButton.className = 'moreinfo-button';
+      popupContent.appendChild(moreInfoButton);
+  
+      const welcomeText = document.createElement('div');
+      welcomeText.innerHTML = description[currentLanguage];
+      welcomeText.style.display = 'none';
+      welcomeText.className = 'welcome-text';
+      popupContent.appendChild(welcomeText);
+  
+      const audioElement = document.createElement('audio');
+      audioElement.src = audioSrc[currentLanguage];
+      audioElement.controls = true;
+      audioElement.style.display = 'none';
+      popupContent.appendChild(audioElement);
+  
+      const audioParagraph = document.createElement('p');
+      popupContent.appendChild(audioParagraph);
+  
+      const playButton = document.createElement('button');
+      playButton.textContent = 'Audio abspielen';
+      playButton.className = 'audio-button';
+      popupContent.appendChild(playButton);
+      
+      const closeButton = document.createElement('button');
+      closeButton.className = 'close-button';
+      closeButton.innerHTML = 'X';
+  
+      closeButton.addEventListener('click', function() {
+          if (popupImage && imageDescription) {
+              popupImage.style.width = '32px';
+              popupImage.style.height = '32px';
+              popupImage.style.cursor = 'zoom-in';
+              imageDescription.style.display = 'none';
+      
+              if (closeButton.parentNode) {
+                  closeButton.parentNode.removeChild(closeButton);
+              }
+              prevButton.style.display = 'none';
+            nextButton.style.display = 'none';
+          }
+      });
+  
+      popupImage.addEventListener('click', function() {
+          if (popupImage.style.width === '32px') {
+              popupImage.style.width = '100%';
+              popupImage.style.height = '300px';
+              popupImage.style.cursor = 'pointer';
+              imageDescription.style.display = 'block';
+  
+              if (!closeButton.parentNode) {
+                  popupImage.parentNode.appendChild(closeButton);
+              }
+              prevButton.style.display = 'block';
+              nextButton.style.display = 'block';
+          } else {
+              currentImageIndex = (currentImageIndex + 1) % gallery.length;
+              popupImage.src = gallery[currentImageIndex];
+              imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+              popupImage.style.width = '100%';
+              popupImage.style.height = '300px';
+          }
+      });
+
+      const prevButton = document.createElement('button');
+    prevButton.className = 'prev-button';
+    prevButton.innerHTML = '&#9664;'; // Left arrow symbol
+    prevButton.style.display = 'none';
+    prevButton.style.position = 'absolute';
+    prevButton.style.left = '10px';
+    prevButton.style.top = '50%';
+    prevButton.style.transform = 'translateY(-50%)';
+    popupContent.appendChild(prevButton);
+
+    const nextButton = document.createElement('button');
+    nextButton.className = 'next-button';
+    nextButton.innerHTML = '&#9654;'; // Right arrow symbol
+    nextButton.style.display = 'none';
+    nextButton.style.position = 'absolute';
+    nextButton.style.right = '10px';
+    nextButton.style.top = '50%';
+    nextButton.style.transform = 'translateY(-50%)';
+    popupContent.appendChild(nextButton);
+
+    prevButton.addEventListener('click', function() {
+        currentImageIndex = (currentImageIndex - 1 + gallery.length) % gallery.length;
+        popupImage.src = gallery[currentImageIndex];
+        imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+    });
+
+    nextButton.addEventListener('click', function() {
+        currentImageIndex = (currentImageIndex + 1) % gallery.length;
+        popupImage.src = gallery[currentImageIndex];
+        imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+    }); 
+  
+      moreInfoButton.addEventListener('click', function() {
+          if (welcomeText.style.display === 'none') {
+              welcomeText.style.display = 'block';
+          } else {
+              welcomeText.style.display = 'none';
+          }
+      });
+  
+      playButton.addEventListener('click', function() {
+          audioElement.play();
+      });
+
+          // Flaggen hinzufügen
+    const languages = ['de', 'en'];
+    const flagContainer = document.createElement('div');
+    flagContainer.className = 'flag-container';
+
+    languages.forEach(lang => {
+        const flag = document.createElement('img');
+        flag.src = `flags/${lang}.png`; // Pfad zu den Flaggen-Bildern
+        flag.className = 'flag';
+        flag.style.width = '20px';
+        flag.style.height = '15px';
+        flag.style.cursor = 'pointer';
+        flag.style.margin = '5px';
+        flag.addEventListener('click', function() {
+            currentLanguage = lang;
+            updatePopupContent(popupContent, {
+                title: title,
+                description: description,
+                audioSrc: audioSrc,
+                galleryDescriptions: galleryDescriptions
+            });
+        });
+        flagContainer.appendChild(flag);
+    });
+
+    popupContent.insertBefore(flagContainer, popupContent.firstChild);
+  
+      new maplibregl.Marker({ element: image })
+          .setLngLat(lngLat)
+          .addTo(map)
+          .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
+  }
+  // locations with coordinates and content are defined
+  const locations = [
+  {
+  imageSrc: '../images/KtW.jpg',
+  lngLat: [8.470528, 49.4927872],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg', '../images/3D_Karte_Uebersicht.PNG'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+
+        }
+  },
+  {
+  imageSrc: '../images/KtW_Station_2.jpg',
+  lngLat: [8.513168, 49.538550],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+
+  }
+},
+{
+  imageSrc: '../images/KtW.jpg',
+  lngLat: [8.513235, 49.540955],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+
+        }
+    },
+{
+  imageSrc: '../images/KtW.jpg',
+  lngLat: [8.510525, 49.544585],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+            fr: '../Audio/Test_fr.m4a',
+            tr: '../Audio/Test_tr.m4a'
+        }
+    },
+  {
+  imageSrc: '../images/KtW.jpg',
+  lngLat: [8.111184, 49.5440003],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+            fr: '../Audio/Test_fr.m4a',
+            tr: '../Audio/Test_tr.m4a'
+        }
+  },
+  {
+  imageSrc: '../images/KtW.jpg',
+  lngLat: [8.5143958, 49.5427572],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+            fr: '../Audio/Test_fr.m4a',
+            tr: '../Audio/Test_tr.m4a'
+        }
+  },
+  {
+  imageSrc: '../images/KtW.jpg',
+  lngLat: [8.5170145, 49.5417836],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+            fr: '../Audio/Test_fr.m4a',
+            tr: '../Audio/Test_tr.m4a'
+        }
+  }, 
+  {
+  imageSrc: '../images/KtW.jpg',
+  lngLat: [8.5202727, 49.5405688],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+            fr: '../Audio/Test_fr.m4a',
+            tr: '../Audio/Test_tr.m4a'
+        }
+    },
+  {
+  imageSrc: '../images/KtW.jpg',
+  lngLat: [8.5197143, 49.5392526],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+            fr: '../Audio/Test_fr.m4a',
+            tr: '../Audio/Test_tr.m4a'
+  }
+},
+  {
+  imageSrc: '../images/KtW.jpg',
+  lngLat: [8.5168431, 49.5377149],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+            fr: '../Audio/Test_fr.m4a',
+            tr: '../Audio/Test_tr.m4a'
+        }
+  },
+  {
+  imageSrc: '../images/KtW.jpg',
+  lngLat: [8.5140882, 49.5366096],
+  gallery: ['../images/KtW.jpg', '../images/KtW_Station_2.jpg'],
+  galleryDescriptions: { 
+de: ['Karlstern Pavillion', 'Beschreibung für Bild 2', '3D Übersichtskarte'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map']
+},
+  title: {
+            de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+            en: 'Station 1: Let\'s go to Käfertaler Wald!',
+
+        },
+        description: {
+            de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind!',
+            en: 'Welcome to our audio guide tour in Käfertaler Wald. Glad you\'re here!',
+
+        },
+        audioSrc: {
+            de: '../Audio/Test_de.m4a',
+            en: '../Audio/Test_en.m4a',
+            fr: '../Audio/Test_fr.m4a',
+            tr: '../Audio/Test_tr.m4a'
+        }
+  },
+  ];
+  
+  // locationcontent is connected with popups
+  locations.forEach(location => {
+  createMarkerAndPopup(location.imageSrc, location.lngLat,location.gallery,location.galleryDescriptions, location.title, location.description, location.audioSrc);
+  });
+  
+  
+  // GeoJSON for route around Kaefertaler Wald
+  const geojson = {
+  "type": "Feature",
+  "properties": {
+      "name": "Route um den Käfertaler Wald"
+  },
+  "geometry": {
+      "type": "LineString",
+      "coordinates": [
+      [ 8.513820617002045, 49.536756216362996 ], [ 8.513846692808364, 49.536840141047072 ], [ 8.513859642617586, 49.53696648515659 ], [ 8.51375789411658, 49.537200420989421 ], [ 8.513645574342741, 49.537456822980303 ], [ 8.513512816774762, 49.537762216862703 ], [ 8.513421991922351, 49.537968708237877 ], [ 8.513293462863505, 49.538261750701707 ], [ 8.513199466629239, 49.538475100059657 ], [ 8.513062480552129, 49.538788319468665 ], [ 8.513016055045609, 49.538897336959543 ], [ 8.5129600272996, 49.539020417242966 ], [ 8.512912104196097, 49.539125032381811 ], [ 8.512838193380214, 49.539285727658843 ], [ 8.512767365852241, 49.539441391772321 ], [ 8.512651258038973, 49.539694123380841 ], [ 8.512569418768468, 49.539869622733598 ], [ 8.512645179557092, 49.539991614420494 ], [ 8.51273626869132, 49.540140645088641 ], [ 8.512835902937754, 49.540302480332009 ], [ 8.512952186938898, 49.540491811451808 ], [ 8.513085649258393, 49.54071018157876 ], [ 8.513236642271995, 49.54095587538739 ], [ 8.513398647028136, 49.54121906021868 ], [ 8.513579327699606, 49.541514369747034 ], [ 8.513776834313671, 49.541835801221808 ], [ 8.513423489519285, 49.541793271551754 ], [ 8.512978791308853, 49.541738794648801 ], [ 8.512639365357034, 49.541697122349404 ], [ 8.512194314770843, 49.541642873994199 ], [ 8.51182396784599, 49.541597543130649 ], [ 8.51174547614522, 49.541778752005392 ], [ 8.511616242334856, 49.542075658721679 ], [ 8.511510617700488, 49.542320373894547 ], [ 8.511372574496097, 49.542638313150526 ], [ 8.511259549970745, 49.542898802293585 ], [ 8.511083890653868, 49.54330282352322 ], [ 8.51093219288874, 49.543652823933655 ], [ 8.510839958533287, 49.543863920470308 ], [ 8.510523701287754, 49.544585403020413 ], [ 8.510775473769019, 49.544011395982395 ], [ 8.510893651789875, 49.543741323966941 ], [ 8.510959722245071, 49.543819291891879 ], [ 8.511116088989031, 49.544001235619845 ], [ 8.512034952832915, 49.543654267258596 ], [ 8.512677598127109, 49.543411273616329 ], [ 8.513383406776475, 49.543144099254221 ], [ 8.514056620667946, 49.542890413730255 ], [ 8.514336407022212, 49.542780890685968 ], [ 8.514396310901589, 49.542757568419361 ], [ 8.514607912546094, 49.542679998937864 ], [ 8.514930160179564, 49.542559843167766 ], [ 8.5154444526028, 49.542368919499992 ], [ 8.516690012824137, 49.541904697493841 ], [ 8.51701314139701, 49.541786254724279 ], [ 8.517416083079761, 49.541637057583735 ], [ 8.518785591475044, 49.54112864061161 ], [ 8.520231741598357, 49.540584661748738 ], [ 8.520274026689684, 49.540568655553457 ], [ 8.520006221111293, 49.539935606325592 ], [ 8.519714806356912, 49.53925304270534 ], [ 8.518934998797727, 49.539150485840054 ], [ 8.518998954998356, 49.538940340777046 ], [ 8.519012345277275, 49.538716932031328 ], [ 8.518976402949651, 49.538549317634434 ], [ 8.518895532712492, 49.538368096783607 ], [ 8.518720930522898, 49.538179900791256 ], [ 8.518495057660067, 49.537979813127237 ], [ 8.518277465627627, 49.537867535004928 ], [ 8.518106915759281, 49.537811281510592 ], [ 8.517949932357739, 49.537776408885065 ], [ 8.517673845948963, 49.537745309342263 ], [ 8.517257513987293, 49.537718211562755 ], [ 8.516842943904427, 49.537716839522894 ], [ 8.516571790756306, 49.53717293701726 ], [ 8.515620111919675, 49.536952435822108 ], [ 8.515002749586335, 49.536767778883402 ], [ 8.514959231179844, 49.536726445361609 ], [ 8.514650814294995, 49.536407267072164 ], [ 8.514352968682974, 49.536514174594544 ], [ 8.513907301439199, 49.536675450152408 ], [ 8.51381964796864, 49.53675325784377 ], [ 8.513820617002045, 49.536756216362996 ] 
+      ]
+  }
+  };
+  
+  function addRoute() {
+  map.addLayer({
+  'id': 'route',
+  'type': 'line',
+  'source': {
+  'type': 'geojson',
+  'data': geojson
+  },
+  'layout': {
+  'line-join': 'round',
+  'line-cap': 'round'
+  },
+  'paint': {
+  'line-color': 'SteelBlue',
+  'line-width': 4
+  }
+  });
+  }
+  
+  map.on('load', function () {
+  addRoute();
+  });
+  
+  map.on('styledata', function () {
+  if (!map.getLayer('route')) {
+  addRoute();
+  }
+  });
+  
+// Hinzufügen der Standortkontrolle
+const geolocateControl = new maplibregl.GeolocateControl({
+  positionOptions: {
+    enableHighAccuracy: true
+  },
+  trackUserLocation: true
+});
+
+map.addControl(geolocateControl);
+
+// Hinzufügen der Zoom-Steuerelemente
+map.addControl(new maplibregl.NavigationControl());
+
+// Marker und Popups erstellen und sie in einem Array speichern
+const markersAndPopups = locations.map(location => createMarkerAndPopup(
+    location.imageSrc,
+    location.lngLat,
+    location.gallery,
+    location.galleryDescriptions,
+    location.title,
+    location.description,
+    location.audioSrc
+));
+
+// Funktion zur Berechnung der Entfernung zwischen zwei geografischen Koordinaten mit der Haversine-Formel
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // Erdradius in Metern
+  const φ1 = lat1 * Math.PI / 180; // Breite im Bogenmaß
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const distance = R * c; // Entfernung in Metern
+  return distance;
+}
+
+function checkNearbyStations(userLocation) {
+  markersAndPopups.forEach(({ marker, popup }) => {
+    const distance = calculateDistance(userLocation.lat, userLocation.lng, marker.getLngLat().lat, marker.getLngLat().lng);
+    if (distance <= 50) { // Wenn der Benutzer weniger als 50 Meter von der Station entfernt ist
+      // Popup-Fenster für diese Station öffnen
+      popup.addTo(map);
+      popupContent = popup; // Update the popupContent variable
+    } else {
+      // Popup-Fenster für diese Station schließen, falls es geöffnet ist
+      popup.remove();
+    }
+  });
+}
+
+// Initialize the popupContent variable with the first location's popup
+popupContent = markersAndPopups[0].popup;
+popupContent.addTo(map);
+
+// Variable, um die Verfolgung des Standorts zu überwachen
+let trackingUserLocation = false;
+
+// Funktion, um die Standortverfolgung zu starten oder zu stoppen
+function toggleUserLocationTracking() {
+  if (trackingUserLocation) {
+    map.off('locationfound', onLocationFound);
+    map.off('locationerror', onLocationError);
+    geolocateControl._deactivate();
+    trackingUserLocation = false;
+  } else {
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+    geolocateControl._activate();
+    trackingUserLocation = true;
+  }
+}
+
+// Funktion, die auf Standortaktualisierungen reagiert
+function onLocationFound(e) {
+  checkNearbyStations(e.latlng);
+}
+
+// Funktion, die auf Standortfehler reagiert
+function onLocationError(e) {
+  console.log(e.message);
+}
+
+// Event-Listener für den Standort-Button
+geolocateControl._geolocateButton.addEventListener('click', toggleUserLocationTracking);
+
+// Starten der Standortverfolgung initial (optional, falls gewünscht)
+// toggleUserLocationTracking();
+
+    </script>
+</body>
+</html>
