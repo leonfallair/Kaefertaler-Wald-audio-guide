@@ -22,7 +22,6 @@ body {
     width: 100%;
 }
 
-
 .popup-content {
     display:flex;
     position:relative;
@@ -51,14 +50,16 @@ body {
 
 .maplibregl-popup-close-button {
   position: absolute;
-  top: 0px;  /* Adjust as needed */
-  right: -10px;  /* Adjust as needed */
-  background-color: white;
+  top: 0px;
+  right: -10px;
+  background: none;
   color: black;
   border: none;
   cursor: pointer;
-  font-size: 13px;
+  padding:2px;
+  font-size: 15px;
 }
+
 .popup-image {
   align-self: flex-start;
   border-radius: 10px;
@@ -91,13 +92,12 @@ body {
   position: absolute;
   top: 0px;
   right: 0px;
-  color: white;
   background: white;
   color: black;
   border: none;
-  border-radius: 10px;
   cursor: pointer;
-  font-size: 13px;
+  padding:5px;
+  font-size: 10px;
   z-index: 10;
 } 
 
