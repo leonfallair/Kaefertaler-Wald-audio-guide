@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Display a style switcher control</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
+    <link href="styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
+            center: [8.5140882, 49.5366096],
+            zoom: 14
+        });
+
+        // Standardsprache auf Deutsch setzen
+let currentLanguage = 'de'; 
+
+// Funktion zum Aktualisieren des Popup-Inhalts basierend auf der aktuellen Sprache
+function updatePopupContent(popupContent, location) {
+  const titleText = location.title[currentLanguage];
+  const descriptionText = location.description[currentLanguage];
+  const audioSrc = location.audioSrc[currentLanguage];
+  const galleryDescriptions = location.galleryDescriptions[currentLanguage];
+
+  // Titel aktualisieren
+  const stationText = popupContent.querySelector('strong');
+  stationText.textContent = titleText;
+
+  // Beschreibung aktualisieren
+  const welcomeText = popupContent.querySelector('.welcome-text');
+  welcomeText.innerHTML = descriptionText;
+
+  // Audioquelle aktualisieren
+  const audioElement = popupContent.querySelector('audio');
+  audioElement.src = audioSrc;
+
+  // Galerie-Beschreibung aktualisieren
+  const imageDescription = popupContent.querySelector('.image-description');
+  const currentImageIndex = popupContent.getAttribute('data-current-image-index') || 0;
+  imageDescription.textContent = location.galleryDescriptions[currentLanguage][currentImageIndex];
+
+      // Buttons aktualisieren
+      const moreInfoButton = popupContent.querySelector('.moreinfo-button');
+  const playButton = popupContent.querySelector('.audio-button');
+  moreInfoButton.textContent = (currentLanguage === 'de') ? 'Mehr erfahren' : 
+                              'Learn more' ;
+}
+
+// popups with respective functions are defined
+function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions,galleryphotographer, title, description, audioSrc) {
+  const image = document.createElement('img');
+  image.src = imageSrc;
+  image.className = 'marker-image';
+  image.style.width = '32px';
+  image.style.height = '32px';
+
+  const popupContent = document.createElement('div');
+  popupContent.className = 'popup-content';
+
+  let currentImageIndex = 0;
+
+  const popupImage = document.createElement('img');
+  popupImage.src = gallery[currentImageIndex];
+  popupImage.className = 'popup-image';
+  popupImage.style.width = '32px';
+  popupImage.style.height = '32px';
+  popupImage.style.zIndex = '5';
+  popupContent.appendChild(popupImage);
+
+  const imageDescription = document.createElement('p');
+      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+      imageDescription.className = 'image-description';
+      imageDescription.style.display = 'none';
+      imageDescription.style.zIndex = '7';
+      imageDescription.style.width = '150%';
+      popupContent.appendChild(imageDescription);
+
+  const imagephotogrpapher = document.createElement('p');
+  imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+  imagephotogrpapher.className = 'image-photographer';
+  imagephotogrpapher.style.display = 'none';
+  popupContent.appendChild(imagephotogrpapher);
+
+  const stationText = document.createElement('strong');
+      stationText.textContent = title[currentLanguage];
+      popupContent.appendChild(stationText);
+  
+      const moreInfoButton = document.createElement('p');
+      moreInfoButton.textContent = 'Mehr erfahren';
+      moreInfoButton.className = 'moreinfo-button';
+      popupContent.appendChild(moreInfoButton);
+  
+      const welcomeText = document.createElement('div');
+      welcomeText.innerHTML = description[currentLanguage];
+      welcomeText.style.display = 'none';
+      welcomeText.className = 'welcome-text';
+      popupContent.appendChild(welcomeText);
+  
+      const container = document.createElement('div');
+container.className = 'audio-container';
+
+const audioElement = document.createElement('audio');
+audioElement.src = audioSrc[currentLanguage];
+audioElement.controls = true;
+audioElement.style.width = '100%';
+audioElement.style.height = '45%';
+audioElement.style.borderRadius = '10px';
+audioElement.style.cursor = 'pointer';
+audioElement.style.position = 'relative';
+audioElement.style.marginTop = '15px';
+audioElement.style.bottom = '3px';
+container.appendChild(audioElement);
+
+popupContent.appendChild(container);
+
+
+  popupImage.addEventListener('click', function () {
+    if (popupImage.style.width === '32px') {
+      popupImage.style.width = '100%';
+      popupImage.style.height = '100%';
+      popupImage.style.cursor = 'pointer';
+      popupImage.style.alignSelf = 'center';
+      imageDescription.style.display = 'block';
+      imagephotogrpapher.style.display = 'block';
+
+      if (!closeButton_left.parentNode) {
+        popupImage.parentNode.appendChild(closeButton_left);
+      }
+      prevButton.style.display = 'block';
+      nextButton.style.display = 'block';
+    } else {
+      currentImageIndex = (currentImageIndex + 1) % gallery.length;
+      popupImage.src = gallery[currentImageIndex];
+      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+      imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+      popupImage.style.width = '100%';
+      popupImage.style.height = '100%';
+    }
+  });
+
+  const closeButton_left = document.createElement('button');
+      closeButton_left.className = 'close-button-left';
+      closeButton_left.innerHTML = 'X';
+      closeButton_left.style.zIndex = '10';
+      closeButton_left.style.right = '-63px';
+      closeButton_left.style.position = 'absolute';
+      closeButton_left.style.top = '0';
+      closeButton_left.style.right = '-63px';
+      closeButton_left.style.fontSize = '10px';
+      closeButton_left.style.background = 'white';
+      closeButton_left.style.color = 'black';
+      closeButton_left.style.cursor = 'pointer';
+      closeButton_left.style.padding = '5px';
+      closeButton_left.style.borderRadius = '5px';
+
+
+  closeButton_left.addEventListener('click', function () {
+    if (popupImage && imageDescription && imagephotogrpapher) {
+      popupImage.style.width = '32px';
+      popupImage.style.height = '32px';
+      popupImage.style.cursor = 'zoom-in';
+      imageDescription.style.display = 'none';
+      imagephotogrpapher.style.display = 'none';
+      popupImage.style.alignSelf = 'flex-start';
+
+      if (closeButton_left.parentNode) {
+        closeButton_left.parentNode.removeChild(closeButton_left);
+      }
+      prevButton.style.display = 'none';
+      nextButton.style.display = 'none';
+    }
+  });
+
+  const prevButton = document.createElement('button');
+  prevButton.className = 'prev-button';
+  prevButton.innerHTML = '&#9664;'; // Left arrow symbol
+  prevButton.style.display = 'none';
+  prevButton.style.position = 'absolute';
+  prevButton.style.left = '-63px';
+  prevButton.style.top = '150px';
+  prevButton.style.zIndex = '9';
+  prevButton.style.transform = 'translateY(-50%)';
+  popupContent.appendChild(prevButton);
+
+  const nextButton = document.createElement('button');
+  nextButton.className = 'next-button';
+  nextButton.innerHTML = '&#9654;'; // Right arrow symbol
+  nextButton.style.display = 'none';
+  nextButton.style.position = 'absolute';
+  nextButton.style.right = '-63px';
+  nextButton.style.top = '150px';
+  nextButton.style.zIndex = '9'
+  nextButton.style.transform = 'translateY(-50%)';
+  popupContent.appendChild(nextButton);
+
+  prevButton.addEventListener('click', function () {
+    currentImageIndex = (currentImageIndex - 1 + gallery.length) % gallery.length;
+    popupImage.src = gallery[currentImageIndex];
+    imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+    imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+  });
+
+  nextButton.addEventListener('click', function () {
+    currentImageIndex = (currentImageIndex + 1) % gallery.length;
+    popupImage.src = gallery[currentImageIndex];
+    imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+    imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+  });
+  moreInfoButton.addEventListener('click', function () {
+    if (welcomeText.style.display === 'none') {
+      welcomeText.style.display = 'block';
+    } else {
+      welcomeText.style.display = 'none';
+    }
+  });
+
+            // Flaggen hinzufügen
+            const languages = ['de', 'en'];
+    const flagContainer = document.createElement('div');
+    flagContainer.className = 'flag-container';
+    flagContainer.style.position = 'absolute';
+    flagContainer.style.top = '2px'
+
+    languages.forEach(lang => {
+        const flag = document.createElement('img');
+        flag.src = `flags/${lang}.png`; // Pfad zu den Flaggen-Bildern
+        flag.className = 'flag';
+        flag.style.width = '20px';
+        flag.style.height = '15px';
+        flag.style.cursor = 'pointer';
+        flag.style.margin = '5px';
+        flag.addEventListener('click', function() {
+            currentLanguage = lang;
+            updatePopupContent(popupContent, {
+                title: title,
+                description: description,
+                audioSrc: audioSrc,
+                galleryDescriptions: galleryDescriptions
+            });
+        });
+        flagContainer.appendChild(flag);
+    });
+    popupContent.insertBefore(flagContainer, popupContent.firstChild);
+
+  new maplibregl.Marker({ element: image })
+    .setLngLat(lngLat)
+    .addTo(map)
+    .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
+}
+// locations with coordinates and content are defined
+const locations = [
+  {
+    imageSrc: 'images/Station_1/IMG_0001_1.JPG',
+    lngLat: [8.5138224, 49.5368398],
+    gallery: ['images/Station_1/IMG_0001_1.JPG', 'images/Station_1/IMG_0002_1.JPG', 'images/Station_1/IMG_0003_1.JPG', 'images/Station_1/Wanderkarte_Ueberblick.PNG'],
+    galleryDescriptions: { 
+      de: ['Karlstern Pavillion', 'Wegweiser', 'Kastanienallee: Blick Richtung Vogelpark', 'Route mit Stationen'],
+      en: ['Karlstern Pavilion', 'Signpost', 'Kastanienallee: View towards Bird Park', 'Route with Stations']
+
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', 'Freunde des Karlstern (bearbeitet v. Christine Müller-Beblavy)'],
+    title: {
+        de: 'Station 1: Auf geht\'s in den Käfertaler Wald!',
+        en: 'Station 1: Let\'s go to the Käfertaler Forest!',
+    },
+    description: {
+        de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht. Eine Übersichtskarte der einzelnen Stationen und auch den Routenverlauf fnden Sie auf unserer Homepage <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. Die Tour ist etwa 3,5 km lang und dauert - mit Verweilzeiten – ca. 2 bis 2,5 Stunden. Und jetzt: wünschen wir Ihnen viel Spaß beim Rundgang Nun bewegen wir uns etwas weg vom Trubel am Karlstern. Bitte folgen Sie der Kastanienallee bis zum Vogelpark. Dort geht es los mit der Station zum Thema Entwicklung des Stadtwaldes.',
+        en: 'Welcome to our audio guide tour of the Käfertaler Forest. We\'re glad you\'re here! At a total of 10 stations, you\'ll learn everything you need to know about our city forest and how it\'s currently doing. You can find an overview map of the individual stations and the route on our homepage <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. The tour is around 3.5 km long and takes around 2 to 2.5 hours, including breaks. And now: we hope you enjoy your tour. Now we\'re moving away from the hustle and bustle of Karlstern. Please follow Kastanienallee to the bird park. The station on the development of the city forest begins there.'
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_01.mp3',
+            en: 'Audio/english/1_en.mp3',
+        },
+  },
+  {
+    imageSrc: 'images/Station_2/IMG_0009_1.JPG',
+    lngLat: [8.513174, 49.5385372],
+    gallery: ['images/Station_2/IMG_0009_1.JPG', 'images/Station_2/IMG_0017_1.JPG', 'images/Station_2/Käfertaler_Wald_pan_02.jpg'],
+      galleryDescriptions: { 
+de: ['Vogelpark', 'Kiefer', 'Blick von oben'],
+en: ['Bird park', 'Pine', 'view from above']
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Dr. Stefan Wilhelm'],
+    title: {
+        de: 'Station 2: Warum sieht der Stadtwald so aus wie heute?',
+        en: 'Station 2: Why does the city forest look the way it does today?',
+    },
+    description: {
+        de: 'Wie ist unser Stadtwald in Mannheim entstanden, und so geworden wie wir ihn heute kennen? Mannheim ist von über 1.800 Hektar Wald umgeben. Der heutige Stadtwald entstand aus Wäldern der eingemeindeten Orte. In vielen unserer Mannheimer Wälder war lange die Kiefer die Baumart der Wahl. Das lag einerseits an den nährstoffarmen und trockenen Böden. Für diese ist die Kiefer gut geeignet. Zum anderen nutzte man die Wälder hauptsächlich zur Brennholzgewinnung. Der Wald wurde auch als Waldweide genutzt und die Streu auf dem Boden für die Einstreu in landwirtschaftlichen Betrieben. Die Tiere im Wald aßen am liebsten die Blätter der Laubbäume. Darum sind nur wenige Laubbäume gewachsen, und stattdessen viele Kiefern. Durch den 2. Weltkrieg inklusive militärischer Nutzung des Waldes und auch aufgrund größerer Waldbrände in den 70er Jahren, verlor der Wald an Größe. Diese Flächen wurden im Anschluss neu bepflanzt. Wieder mit Kiefern, aber auch mit Laubbaumarten. Diese Pflanzungen von damals prägen das Waldbild in vielen Bereichen noch heute:  Der Käfertaler Wald ist ein in vielen Bereichen recht junger Wald mit der Kiefer als seiner Hauptbaumart.  Aktuell besteht der Mannheimer Stadtwald zu 43 % aus Kiefern und zu 57 % aus Laubbäumen. Zu den Laubbäumen zählen vor allem Eichen, Buchen, Ahorn und Robinien. Seit den 50er Jahren des letzten Jahrhunderts breitet sich verstärkt auch die Spätblühende Traubenkirsche aus, eine nicht heimische invasive Art. Mehr Informationen darüber hören Sie an Station 4.  ... und dann ist da noch der globale Klimawandel. Er hinterlässt auch in unserem Stadtwald seine Spuren.  Welche Auswirkungen der Klimawandel auf den Wald hat, erfahren Sie an der nächsten Station. Bitte folgen Sie nun der Kastanienallee bis zur nächsten Station, an der Wegkreuzung Kastanienallee / Weg Nr. 7. Danach geht es weiter auf dem Weg Nr. 7. Wir hören uns gleich wieder.',
+        en: 'How did our city forest in Mannheim come into being and become what we know it to be today? Mannheim is surrounded by over 1,800 hectares of forest. Today\'s city forest was created from forests in the incorporated towns. In many of our Mannheim forests, pine was the tree species of choice for a long time. On the one hand, this was due to the nutrient-poor and dry soils. Pine is well suited to this. On the other hand, the forests were mainly used to produce firewood. The forest was also used as forest pasture and the litter on the ground was used as bedding on farms. The animals in the forest preferred to eat the leaves of deciduous trees. That is why only a few deciduous trees grew, and instead many pines. The forest lost size due to World War II, including military use of the forest, and also due to major forest fires in the 1970s. These areas were subsequently replanted. Again with pines, but also with deciduous tree species. These plantings from back then still characterize the forest in many areas today: The Käfertaler Forest is a relatively young forest in many areas, with pine as its main tree species. Mannheim\'s city forest currently consists of 43% pine and 57% deciduous trees. The deciduous trees mainly include oak, beech, maple and robinia. Since the 1950s, the black cherry, a non-native invasive species, has also been spreading. You can find out more about this at station 4. ... and then there is global climate change. It is also leaving its mark on our city forest. You can find out what effects climate change is having on the forest at the next station. Please follow the Kastanienallee to the next station, at the crossroads of Kastanienallee / path no. 7. Then continue on path no. 7. We\'ll be in touch again soon.',
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_02.mp3',
+            en: 'Audio/english/2_en.mp3',
+        },
+  },
+  {
+    imageSrc: 'images/Station_3/IMG_0021_1.JPG',
+    lngLat: [8.5126713, 49.5399385],
+    gallery: ['images/Station_3/IMG_0021_1.JPG', 'images/Station_3/IMG_0022_1.JPG', 'images/Station_3/IMG_0023_1.JPG', 'images/Station_3/IMG_0024_1.JPG', 'images/Station_3/IMG_0034_1.JPG', 'images/Station_3/IMG_0043_1.JPG', 'images/Station_3/IMG_0044_1.JPG', 'images/Station_3/IMG_0046_1.JPG', 'images/Station_3/IMG_0050_1.JPG', 'images/Station_3/Käfertaler_Wald_pan_03.jpg'],
+      galleryDescriptions: { 
+        de: ['Hier geht\'s weiter: Weg Nr. 7', 'Blick in Weg Nr. 7', 'Kiefer mit befallenen Nadeln (Diplodia)', 'Blick in die Kronen: absterbende Buche', 'Blick in die Kronen: abgestorbene Kiefer und Buche', 'Weiter nach links', 'Hier sind sie richtig!', 'Weiter auf Weg Nr. 6', 'abblätternde Rinde', 'Blick von oben: braun gefärbte Nadeln'],
+        en: ['Continue here: Path No. 7', 'View into Path No. 7', 'Pine with infected needles (Diplodia)', 'View into the crowns: dying beech', 'View into the crowns: dead pine and beech', 'Continue to the left', 'You are right here!', 'Continue on Path No. 6', 'peeling bark', 'View from above: brown-colored needles']
+
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Dr. Stefan Wilhelm'],
+    title: {
+        de: 'Station 3: Auswirkungen des Klimawandels auf den Wald',
+        en: 'Station 3: Impacts of climate change on the forest',
+    },
+    description: {
+        de: 'Wir befinden uns nun an der Wegkreuzung Kastanienallee / weg nr. 7. Die Route geht weiter in Richtung Weg 7 bis zur Kreuzung mit Weg Nr. 6. Diesem folgen Sie bitte nach links.  Beim Laufen durch den Wald sind Ihnen vielleicht einige abgestorbene Bäume aufgefallen? Das sind leider die Auswirkungen des Klimawandels auf unseren Wald. Die Trockenheit und Hitze der letzten Jahre lässt viele Bäume absterben.  Wie entwickelt sich nun das Klima in Mannheim? Und was ist überhaupt so problematisch für den Wald? Mannheim liegt in einer sehr warmen und trockenen Region. Wir können es alle selbst spüren: es wird immer heißer und im Sommer regnet es immer weniger. Klimaexpertinnen und -experten gehen davon aus, dass es in Mannheim künftig noch mehr Tage mit extremer Hitze geben wird. Auch die Niederschläge im Sommer werden wohl weiter zurückgehen. Die Jahre 2017 bis 2021 waren bereits ein Vorgeschmack... Man geht zwar im Allgemeinen davon aus, dass der jährliche Niederschlag weiter ausreicht. Aber dieser fällt nun neuerdings vor allem im Winter. In den Jahren 2017 bis 2021 hat es aber auch im Winter zu wenig geregnet. Die Wasserspeicher im Boden wurden nicht ausreichend aufgefüllt. Eine schlechte Ausgangslage für trockene und heiße Sommer und die Wasserversorgung unserer Bäume.  Die Auswirkungen der höheren Temperaturen und der geringeren Niederschläge auf die Bäume sind gravierend! Unsere Waldbäume müssen mit den neuen klimatischen Bedingungen zurechtkommen. Oder sie sterben über kurz oder lang ab. Generell sind Waldökosysteme schon in der Lage sich an Veränderungen anzupassen. Allerdings benötigt so ein Generationswechsel einen sehr, sehr langen Zeitraum. Wir sprechen hier von 200 Jahren oder sogar noch länger. Bäume wachsen nun mal recht langsam. Deshalb dauert es auch lange bis sich eine neue Waldgeneration eingestellt hat. Die Umweltbedingungen an extremen Standorten wie Mannheim ändern sich jedoch rasant. Unser Wald hat somit kaum eine Chance sich aus eigener Kraft schnell genug anzupassen.  Was passiert also aktuell mit unseren Waldbäumen hier im Käfertaler Wald?  Manche Baumarten leiden mehr unter Trockenheit und Hitze als andere. Bei uns betrifft es besonders die Kiefer und die Buche. Die Bäume sind durch die Trockenheit gestresst und geschwächt. Das macht sie anfälliger für Insekten und Pilzerkrankungen.  Die Kiefer, unsere Hauptbaumart in Mannheim, ist eine Baumart der Extreme. Sie müsste mit der Trockenheit eigentlich sehr gut zurechtkommen. Bis zum Extremwetterjahr 2018 war das auch so. Erst die Kombination von extremer Trockenheit, außergewöhnlich vielen Extremhitzetagen und ausbleibenden Winterniederschlägen schwächte die Kiefer. Und diese Schwächung führt wiederum zu Stress und so zu Anfälligkeit für Folgeerkrankungen. Das sog. „Diplodiatriebsterben“ ist eine solche stressbedingte Folgeerkrankung. Dabei befällt der Diplodiapilz die Nadel der Kiefer. Das können wir ganz einfach erkennen an den braunen abgestorbenen Nadeln. An gestressten Bäumen breitet sich der Pilz besonders schnell aus. Die Nadeln des Baumes sterben ab und damit ist der komplette Baum zum Absterben verurteilt. An einem geschwächten Baum hat auch der Borkenkäfer leichtes Spiel. Er durchbohrt die Rinde und schädigt mit den Fraßgängen die Leitungsbahnen, mit denen die Bäume Wasser aus dem Boden in die Krone transportieren. Das hält dann kein Baum mehr aus. Der Diplodiapilz und der Borkenkäfer sorgen aktuell für ein großflächiges Absterben der Kiefer im Wald. Schauen Sie selbst in die Baumkronen, es ist nicht zu übersehen. Auch die Buchen leiden unter der Trockenheit und Hitze. Experten schätzen den Fortbestand der Buche in der Rheinebene und damit auch im Käfertaler Wald als kritisch ein. Langfristig wird sie in ihrem bisherigen Umfang wohl nicht weiter Teil unserer Waldbestände bleiben. Dafür ist es nun einfach zu trocken und zu warm.  Unter den Baumarten sind es vor allem die mit kleiner Krone, die besonders unter der Trockenheit leiden und ausfallen. Daher ist es wichtiger denn je, die Bäume zu vitalen Exemplaren mit einer großen Krone zu entwickeln, die meist auch ein weiter verzweigtes und größeres Wurzelsystem haben.  An der nächsten Station geht es darum, wie die Stadt Mannheim den Auswirkungen des Klimawandels begegnet. Gehen Sie dazu nun weiter auf dem Weg Nr. 7 bis zur Kreuzung mit Weg Nr. 6. Diesem folgen Sie bitte nach links bis Sie die Pflanzfläche an der Kastanienallee erreichen. Auf dem Weg dorthin schauen Sie doch noch mal nach oben in die Baumkronen, hier bekommen Sie einen guten Eindruck vom Zustand des Waldes.',
+        en: 'We are now at the Kastanienallee / path 7 junction. The route continues in the direction of path 7 until it crosses path 6. Please follow this to the left. While walking through the forest, you may have noticed some dead trees? Unfortunately, these are the effects of climate change on our forest. The dryness and heat of recent years is causing many trees to die. How is the climate in Mannheim developing? And what is so problematic for the forest anyway? Mannheim is located in a very warm and dry region. We can all feel it ourselves: it is getting hotter and it rains less and less in summer. Climate experts assume that there will be more days of extreme heat in Mannheim in the future. Precipitation in summer will also probably continue to decrease. The years 2017 to 2021 were already a foretaste... It is generally assumed that annual precipitation will continue to be sufficient. But recently this has mainly been falling in winter. In the years 2017 to 2021, however, there was too little rain in winter either. The water reservoirs in the soil were not sufficiently replenished. A bad starting point for dry and hot summers and the water supply to our trees. The effects of the higher temperatures and lower rainfall on the trees are serious! Our forest trees have to cope with the new climatic conditions. Or they will die sooner or later. In general, forest ecosystems are already able to adapt to changes. However, such a generational change takes a very, very long time. We are talking about 200 years or even longer. Trees grow quite slowly. That is why it takes a long time for a new forest generation to establish itself. However, the environmental conditions in extreme locations such as Mannheim are changing rapidly. Our forest therefore has little chance of adapting quickly enough on its own. So what is currently happening to our forest trees here in the Käfertal forest? Some tree species suffer more from drought and heat than others. In our case, it particularly affects the pine and the beech. The trees are stressed and weakened by the drought. This makes them more susceptible to insects and fungal diseases. The pine, our main tree species in Mannheim, is a tree species of extremes. It should actually be able to cope very well with the drought. This was the case until the extreme weather year of 2018. It was only the combination of extreme drought, an exceptionally high number of extremely hot days and a lack of winter precipitation that weakened the pine. And this weakening in turn leads to stress and thus to susceptibility to secondary diseases. The so-called "diplodia dieback" is one such stress-related secondary disease. The diplodia fungus attacks the needles of the pine. We can easily recognize this by the brown dead needles. The fungus spreads particularly quickly on stressed trees. The needles of the tree die and the entire tree is doomed to die. The bark beetle also has an easy time on a weakened tree. It pierces the bark and uses its feeding tunnels to damage the channels with which the trees transport water from the ground to the crown. No tree can then withstand this any longer. The diplodia fungus and the bark beetle are currently causing large-scale pine deaths in the forest. Take a look at the treetops yourself; you can\'t miss it. The beeches are also suffering from the drought and heat. Experts believe that the survival of the beech in the Rhine plain and therefore also in the Käfertal forest is critical. In the long term, it will probably not remain part of our forests in its current size. It is now simply too dry and too warm for that. Among the tree species, it is mainly those with small crowns that suffer particularly from the drought and die. It is therefore more important than ever to develop the trees into vital specimens with a large crown, which usually also have a more branched and larger root system. The next stop is about how the city of Mannheim is dealing with the effects of climate change. To do this, continue on path no. 7 to the intersection with path no. 6. Please follow this to the left until you reach the planting area on Kastanienallee. On the way there, take another look up into the treetops; you will get a good impression of the condition of the forest.',
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_03.mp3',
+            en: 'Audio/english/3_en.mp3',
+        },
+  },
+  {
+    imageSrc: 'images/Station_4/IMG_0076_1.JPG',
+    lngLat: [8.5107553, 49.5440812],
+    gallery: ['images/Station_4/IMG_0076_1.JPG', 'images/Station_4/IMG_0061_1.JPG', 'images/Station_4/IMG_0070_1.JPG', 'images/Station_4/IMG_0078_1.JPG', 'images/Station_4/IMG_0079_1.JPG', 'images/Station_4/IMG_0087_1.JPG'],
+      galleryDescriptions: { 
+        de: ['Pflänzliche Kastanienallee', 'Weiter nach links auf die Kastanienallee', 'Blick in Richtung Kastanienallee', 'Pflänzliche Kastanienallee', 'Infofläche an der Pflanzfläche', 'Weiter auf der Kastanienallee bis zur Pflanzfläche'],
+        en: ['Planted Kastanienallee', 'Continue to the left onto Kastanienallee', 'View towards Kastanienallee', 'Planted Kastanienallee', 'Information area at the planting site', 'Continue on Kastanienallee to the planting site']
+
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy'],
+    title: {
+        de: 'Station 4: Warum werden Bäume gepflanzt',
+        en: 'Station 4: Why are trees planted',
+    },
+    description: {
+        de: 'Wir stehen hier vor einer Pflanzfläche im Käfertaler Wald. Es sind viele junge Bäume und verschiedene Baumarten zu sehen und die Fläche ist eingezäunt. Lassen Sie uns die Pflanzfläche über die Kastanienallee mal kurz umrunden, bis wir wieder auf Weg Nr. 6 kommen. Dann haben wir einen besseren Blick. Warum werden hier nun Bäume gepflanzt?  Grundsätzlich wird im Mannheimer Stadtwald das Ziel verfolgt, naturnahe, klimastabile Mischwälder zu entwickeln, die vor allem aus Laubbäumen bestehen sollen. Die Baumarten orientieren sich dabei an der natürlichen Waldgesellschaft, also den Baumarten, die natürlicherweise dort vorkommen würden. Berücksichtigt werden hier die Standorteignung und die klimatische Entwicklung. Deshalb werden dort wo besonders viele Bäume vom Absterben betroffen sind, nun neue Bäume gepflanzt. Das sind Flächen, auf denen die Kiefer größtenteils abstirbt und wo kaum klimastabile Laubbaumarten vorhanden sind. Und außerdem Flächen, auf denen der starke Bewuchs und die Beschattung durch die Spätblühende Traubenkirsche eine natürliche Verjüngung von Laubbaumarten verhindert. Also nur die Stellen im Wald, auf denen die ausgewachsenen Bäume absterben und klimastabile Baumarten sich nicht vermehren können. Neu gepflanzt werden dann klimastabile, standortangepasste und vor allem verschiedene Laubbaumarten, wie z.B. Eichen, Ahorn oder die Kirsche. Diese Mischung macht es sehr unwahrscheinlich, dass eines Tages eine Baumart ausfällt und dann plötzlich kein Wald mehr vorhanden ist. Was im Moment mit der Kiefer und mit unserem gesamten Wald passiert, darf sich nicht wiederholen!!! Dieser Prozess wird in Mannheim jährlich auf einem halben Prozent der Stadtwaldfläche umgesetzt. Also nur auf einem sehr kleinen Teil! Die Pflanzflächen müssen zunächst für die Pflanzung vorbereitet werden. Das heißt als erstes wird die Spätblühende Traubenkirsche entfernt. Dadurch bekommen die lichtbedürftigen Baumarten endlich mehr Sonne ab und haben nun auch einen deutlichen Wuchsvorsprung bevor die Spätblühende Traubenkirsche aus Wurzelstücken oder Kirschkernen erneut austreibt. Da der Boden nun teilweise freiliegt, kann auch die Kiefer wieder keimen. Und auch andere Baumarten verjüngen sich, sobald die Spätblühende Traubenkirsche entfernt ist. Der Zaun um die Pflanzfläche ist für die Wildschweine und Rehe. Sie müssen draußen bleiben, damit sich die jungen Bäume innerhalb des Zauns ungestört entwickeln können. Sie werden nicht von Wildschweinen ausgegraben oder von Rehen verbissen. Und so entwickelt sich ein bunt gemischter klimastabiler Wald.  Die Flächen werden in den Jahren nach der Pflanzung auch weiterhin gepflegt und von der Spätblühenden Traubenkirsche befreit. So behalten auch langsam wachsende Baumarten, wie zum Beispiel die Eiche, ihren Wuchsvorsprung.   Hintergrund und Motivation der forstlichen Arbeit im Mannheimer Stadtwald ist der langfristige und dauerhafte Erhalt des Erholungswaldes und die Förderung der Artenvielfalt.  Es ist die große Herausforderung der nächsten Jahre und Jahrzehnte, den Wald zu erhalten und die Biodiversität zu fördern. Die Herausforderung den Wald fit zu machen für unser neues Klima.  Weiter geht es nun wieder mit Weg 6, zurück dahin wo wir hergekommen sind. Dort erfahren wir etwas über die Baumarten der Zukunft.',
+        en: 'We are standing in front of a planting area in the Käfertal forest. There are many young trees and different tree species to be seen and the area is fenced off. Let\'s walk around the planting area briefly on the Kastanienallee until we get back to path no. 6. Then we\'ll have a better view. Why are trees being planted here? The aim of the Mannheim city forest is basically to develop natural, climate-stable mixed forests that should consist primarily of deciduous trees. The tree species are based on the natural forest community, i.e. the tree species that would naturally occur there. The suitability of the location and the climatic development are taken into account here. That\'s why new trees are now being planted where a particularly high number of trees are affected by death. These are areas where the pine is mostly dying and where there are hardly any climate-stable deciduous tree species. And also areas where the heavy growth and shade from the late-flowering bird cherry prevents the natural rejuvenation of deciduous tree species. So only the places in the forest where the fully grown trees die and climate-stable tree species cannot reproduce. Newly planted are climate-stable, site-adapted and, above all, different deciduous tree species, such as oak, maple or cherry. This mixture makes it very unlikely that one day a tree species will fail and then suddenly there will be no more forest. What is currently happening with the pine and with our entire forest must not be repeated!!! This process is carried out in Mannheim every year on half a percent of the city\'s forest area. So only on a very small part! The planting areas must first be prepared for planting. This means that the late-flowering bird cherry is removed first. This means that the light-loving tree species finally get more sun and now have a significant growth advantage before the late-flowering bird cherry sprouts again from pieces of root or cherry stones. Since the soil is now partially exposed, the pine can also germinate again. And other tree species also rejuvenate as soon as the late-flowering bird cherry is removed. The fence around the planting area is for the wild boars and deer. They must stay outside so that the young trees inside the fence can develop undisturbed. They are not dug up by wild boars or bitten by deer. And so a diverse, climate-stable forest develops. In the years following planting, the areas will continue to be cared for and cleared of the late-flowering bird cherry. This means that even slow-growing tree species, such as the oak, retain their growth advantage. The background and motivation of the forestry work in the Mannheim city forest is the long-term and permanent preservation of the recreational forest and the promotion of biodiversity. The great challenge of the coming years and decades is to preserve the forest and promote biodiversity. The challenge of making the forest fit for our new climate. We now continue with path 6, back to where we came from. There we learn something about the tree species of the future.',
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_04.mp3',
+            en: 'Audio/english/4_en.mp3',
+        },
+  },
+  {
+    imageSrc: 'images/Station_5/IMG_0092_1.JPG',
+    lngLat: [8.5111508, 49.5440134],
+    gallery: ['images/Station_5/IMG_0092_1.JPG', 'images/Station_5/20210508_113850.jpg', 'images/Station_5/20210519_141202_001.jpg', 'images/Station_5/20210612_123444.jpg', 'images/Station_5/IMG_0094_1.JPG', 'images/Station_5/Stadtwald_4_Wilhelm.jpg'],
+      galleryDescriptions: { 
+de: ['Wieder zurück auf Weg Nr. 6', 'Buchensämling', 'Heinbuche', 'Esskastanie', 'Weiter auf Weg Nr. 6', 'Eichennachwuchs'],
+en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'continue on path no. 6', 'Oak offspring']
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Dr. Stefan Wilhelm'],
+    title: {
+        de: 'Station 5: Zukunftsbaumarten',
+        en: 'Future tree species',
+    },
+    description: {
+        de: 'Welche Baumarten haben nun eine Zukunft bei uns? Welche kommen mit den klimatischen Bedingungen zurecht? Wenn wir nun neue Bäume pflanzen ist es wichtig, dass die ausgesuchten Baumarten das uns bevorstehende Klima auch aushalten. Sie müssen zurechtkommen mit trockenen Sommern, wenig Niederschlag und Hitzetagen.  Die Eiche, gemischt mit anderen Laubbaumarten, ist für solche trockenwarmen Wälder gut geeignet. An den meisten Standorten des Mannheimer Stadtwaldes kommt die Eiche auch schon natürlicherweise vor.  Man setzt aber nicht alle Hoffnungen auf nur eine Baumart. Das Risiko muss gestreut werden. So dass wenn eine Baumart ausfallen würde immer noch genügend andere vorhanden sind. Darum werden bei den Pflanzungen verschiedene Baumarten gemischt und generell immer mehr als drei Arten auf die Fläche gesetzt.  Auch die Kiefer als „Baumart der Zukunft“ wird weiterhin dazugehören. Sie ist eine typische Baumart für trockenwarme Standorte und Sandböden so wie wir sie hier in Mannheim haben.  Grundsätzlich wählt und mischt man Baumarten, die unterschiedliche Anpassungen und Reaktionen auf klimatische Veränderungen zeigen können. Auf diese Weise werden mehrere klimatische Szenarien abgedeckt - das Risiko eines kompletten Waldverlustes sinkt. Diese Mischung ist Voraussetzung für die Entwicklung eines gesunden, ökologisch wertvollen und klimastabilen Mischwaldes.  Wir gehen nun weiter auf Weg Nr. 6. Dabei erfahren wir etwas über die Spätblühende Traubenkirsche.',
+        en: 'Which tree species have a future with us? Which ones can cope with the climatic conditions? When we plant new trees, it is important that the tree species we select can withstand the climate we are facing. They must be able to cope with dry summers, little rainfall and hot days. The oak, mixed with other deciduous tree species, is well suited to such dry, warm forests. The oak already occurs naturally in most locations in the Mannheim city forest. However, we cannot place all our hopes on just one tree species. The risk must be spread. So that if one tree species were to fail, there would still be enough others. This is why different tree species are mixed when planting and generally more than three species are planted on the area. The pine, as the "tree species of the future", will also continue to be part of it. It is a typical tree species for dry, warm locations and sandy soils like we have here in Mannheim. Basically, we select and mix tree species that can show different adaptations and reactions to climatic changes. In this way, several climatic scenarios are covered - the risk of complete forest loss is reduced. This mixture is a prerequisite for the development of a healthy, ecologically valuable and climate-stable mixed forest. We now continue on path no. 6. We learn something about the late-flowering black cherry.',
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_05.mp3',
+            en: 'Audio/english/5_en.mp3',
+        },
+  },
+  {
+    imageSrc: ['images/Station_6/IMG_0042_1.JPG'],
+    lngLat: [8.5143952, 49.5427621],
+    gallery: ['images/Station_6/IMG_0042_1.JPG', 'images/Station_6/IMG_0019_1.JPG', 'images/Station_6/IMG_0053_1.JPG', 'images/Station_6/IMG_0057_1.JPG', 'images/Station_6/IMG_0060_1.JPG', 'images/Station_6/IMG_0090_1.JPG', 'images/Station_6/IMG_0092_1.JPG', 'images/Station_6/Stadtwald_Blatt_Nahaufnahme_Wilhelm.jpg'],
+      galleryDescriptions: { 
+        de: ['Früchte der Spätblühenden Traubenkirsche', 'Blätter der Spätblühenden Traubenkirsche', 'Blick auf die Spätblühenden Traubenkirsche', 'Blick links des Weges', 'Blick vom Weg in den Wald', 'Spätblühende Traubenkirsche wächst dicht an dicht', 'Blick auf Weg Nr. 6', 'Blätter der Spätblühenden Traubenkirsche'],
+        en: ['Fruits of the Late-blooming Bird Cherry', 'Leaves of the Late-blooming Bird Cherry', 'View of the Late-blooming Bird Cherry', 'View to the left of the path', 'View from the path into the forest', 'Late-blooming Bird Cherry grows densely', 'View of Path No. 6', 'Leaves of the Late-blooming Bird Cherry']
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Dr. Stefan Wilhelm'],
+    title: {
+        de: 'Station 6: Die Spätblühende Traubenkirsche',
+        en: 'Station 6: The late-flowering bird cherry',
+    },
+    description: {
+        de: 'Wir bewegen uns jetzt auf Weg Nr. 6 Richtung „Neue Poststraße“. Wenn Sie beim Hören der nächsten Station mal nach links und rechts blicken, werden Sie den flächendeckenden Bewuchs der Traubenkirsche sehen.  Wir haben nun schon einiges über die Spätblühende Traubenkirsche gehört. Was ist das denn für eine Pflanze?  Die Spätblühende Traubenkirsche ist ein sogenannter „Neophyt“. Neophyten sind Pflanzen, deren Lebensraum eigentlich ganz woanders ist. Aber nun breiten sie sich in unserem heimischen Lebensraum aus und verdrängen hier andere Pflanzen weil sie besser wachsen. Diese Neophyten wurden in der Neuzeit aus vielen Teilen der Welt zu uns gebracht. Entweder ganz beabsichtigt, um sie in Parkanlagen, Gärten oder im Wald zu pflanzen. Oder aber auch unbeabsichtigt, indem die Samen zum Beispiel über Frachtschiffe nach Deutschland kamen. So sind viele Pflanzen als blinde Passagiere hierher gereist. Problematisch wird es dann, wenn die Neophyten unsere heimischen Pflanzen aus ihrem natürlichen Lebensraum verdrängen. Im Käfertaler Wald kommt die Spätblühende Traubenkirsche mittlerweile flächendeckend vor. Sie wächst rasch und verdunkelt den Boden unter sich. Wir Waldbesuchende nehmen die Spätblühende Traubenkirsche auf den ersten Blick gar nicht als störend war. Sie sorgt dafür, dass unser Wald grün ist und dass uns die absterbenden Bäume in den höheren Etagen nicht so auffallen. Problematisch ist allerdings, dass die Spätblühende Traubenkirsche anderen Baumarten das Licht wegnimmt. Viele Laubbaumarten, z.B. die Eiche, sind sehr lichtbedürftig und konkurrieren mit anderen Pflanzen um das Licht am Waldboden. Zum Heranwachsen braucht die Eiche Licht, sonst können keine neuen Bäume wachsen. Da die Spätblühende Traubenkirsche aber viel schneller wächst als heimische Baumarten ist sie beim Kampf ums Licht klar im Vorteil.  Aber was macht die Spätblühende Traubenkirsche so invasiv? Warum breitet sie sich so stark aus? Die Blätter und Knospen der Spätblühenden Traubenkirsche werden nicht von Rehen gefressen. Sie haben Blausäure eingelagert und schmecken den Tieren deshalb nicht. Die Baumart kommt außerdem gut mit der Trockenheit im Mannheimer Wald zurecht. Sie wächst schnell und verdunkelt den Boden unter sich. Die Spätblühende Traubenkirsche ist der große Gewinner der klimatischen Änderungen im Wald - auf Kosten unserer heimischen Baum- und Straucharten.  Was können wir nun dagegen tun? Effektiv hilft nur das Ausgraben oder Ausreißen mit der Wurzel, denn bei uns im Stadtwald werden keine chemischen Produkte eingesetzt. Um die Biodiversität und unsere heimischen Arten zu fördern, wird die Spätblühende Traubenkirsche auf den Pflanzflächen entfernt. So bekommen die neu gepflanzten Bäume einen deutlichen Wuchsvorsprung und dominieren später einmal die Spätblühende Traubenkirsche. Auf diese Weise entstehen natürliche Waldbereiche mit einer reichen Artenvielfalt.  Zur nächsten Station folgen Sie bitte weiter dem Weg Nr. 6 bis zur Kreuzung mit der „Neuen Poststraße“. Dort erfahren Sie etwas über eine Baumart der Zukunft, die Eiche.',
+        en: 'We are now moving along path no. 6 in the direction of “Neue Poststraße”. If you look left and right when you hear the next stop, you will see the widespread growth of bird cherry. We have already heard a lot about the late-flowering bird cherry. What kind of plant is that? The late-flowering bird cherry is a so-called “neophyte”. Neophytes are plants whose habitat is actually somewhere else entirely. But now they are spreading in our native habitat and displacing other plants here because they grow better. These neophytes were brought to us from many parts of the world in modern times. Either intentionally, to plant them in parks, gardens or in the forest. Or unintentionally, when the seeds came to Germany on cargo ships, for example. This is how many plants travelled here as stowaways. It becomes problematic when the neophytes displace our native plants from their natural habitat. The late-flowering bird cherry is now widespread in the Käfertal forest. It grows quickly and darkens the ground beneath it. At first glance, we forest visitors do not see the late-flowering black cherry as disturbing. It ensures that our forest is green and that we do not notice the dying trees on the higher floors. The problem, however, is that the late-flowering black cherry takes light away from other tree species. Many deciduous tree species, e.g. the oak, need a lot of light and compete with other plants for light on the forest floor. The oak needs light to grow, otherwise no new trees can grow. But since the late-flowering black cherry grows much faster than native tree species, it has a clear advantage in the fight for light. But what makes the late-flowering black cherry so invasive? Why does it spread so much? The leaves and buds of the late-flowering black cherry are not eaten by deer. They have stored hydrogen cyanide and are therefore not tasty for the animals. The tree species also copes well with the dryness in the Mannheim forest. It grows quickly and darkens the ground beneath it. The late-flowering black cherry is the big winner of the climatic changes in the forest - at the expense of our native tree and shrub species. What can we do about it? The only effective way to do this is to dig it up or pull it out by the roots, because we do not use any chemical products in our city forest. In order to promote biodiversity and our native species, the late-flowering black cherry is removed from the planting areas. This gives the newly planted trees a significant growth advantage and will later dominate the late-flowering black cherry. This creates natural forest areas with a rich biodiversity. To get to the next stop, please follow path no. 6 to the intersection with "Neue Poststraße". There you will learn about a tree species of the future, the oak.',
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_06.mp3',
+            en: 'Audio/english/6_en.mp3',
+        },
+  },
+  {
+    imageSrc: ['images/Station_7/Eiche_CMB.JPG'],
+    lngLat: [8.5170112, 49.5417621],
+    gallery: ['images/Station_7/Eiche_CMB.JPG', 'images/Station_7/20210519_143538.JPG', 'images/Station_7/IMG_0121_1.JPG', 'images/Station_7/IMG_0125_1.JPG', 'images/Station_7/IMG_0127_1.JPG', 'images/Station_7/IMG_0129_1.JPG', 'images/Station_7/Stadtwald_4_Wilhelm.jpg'],
+      galleryDescriptions: { 
+        de: ['Blick in die Eichkrone', 'Eichenblätter, Eichel mit Hütchen', 'Große, alte Eichen an der Neuen Poststraße', 'alte Eichen', 'Rinde der Eiche', 'Blick auf Neue Poststraße', 'kleine Eichen'],
+        en: ['View into the oak crown', 'Oak leaves, acorn with cupule', 'Large, old oaks on the Neue Poststraße', 'old oaks', 'oak bark', 'View of Neue Poststraße', 'small oaks']
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Dr. Stefan Wilhelm'],
+    title: {
+        de: 'Station 7: Die Eiche als Zukunftsbaum',
+        en: 'Station 7: The oak as a tree of the future',
+    },
+    description: {
+        de: 'Hier gibt es links und rechts der „Neuen Poststraße“ einige alte Exemplare der Eiche. Was macht die Eichen bei uns im Käfertaler Wald eigentlich so wichtig? Die Eiche ist für die Artenvielfalt eine ganz besondere Baumart. An keiner anderen Baumart siedeln sich so viele verschiedene heimische Arten an. Alte Eichen sind also ein unglaublicher Hotspot für Artenvielfalt. Aus Artenschutzsicht ist es deshalb sinnvoll, ja sogar alternativlos, die Verjüngung und das Wachstum von Eichen zu fördern.  Die Eiche ist gut geeignet den Klimaveränderungen in unserem Wald standzuhalten. Artenschutz und die Entwicklung eines klimastabilen Waldes machen es erforderlich, den Eichenanteil zu erhöhen. Der Weg von einer kleinen Eichel bis zu einer alten dicken Eiche ist allerdings lang. Die Verjüngung von Eichen ist aufwändig und schwierig: Eicheln werden von vielen Tieren gefressen. Zum Keimen und Heranwachsen benötigen die jungen Eichen viel Licht. Die Bäume werden sehr gern von Rehen angeknabbert und Wildschweine graben auf der Suche nach Engerlingen die jungen Pflanzen aus. Die Blätter sind anfällig für den Befall von Pilzen wie Mehltau. Und es gibt eine harte Konkurrenz um das Sonnenlicht durch schneller wachsende Baumarten und krautige Pflanzen.  Um den Eichenanteil im Käfertaler Wald zu erhöhen, ist einiges an Pflegearbeit nötig. Alte klimastabile Eichen als Zukunftsbaumart in Mannheim, müssen auch mal jung gewesen sein. Dafür sind pflegerische Maßnahmen wie Pflanzflächen und Auflichtungen von Waldbeständen notwendig.  Weiter geht es nun auf der Verlängerung von Weg Nr. 6 geradeaus, bis wir auf die Kreuzung mit Weg Nr. 1 treffen. Dort geht es um das Alt- und Totholzkonzept im Käfertaler Wald.',
+        en: 'There are a few old oak trees to the left and right of the “Neue Poststraße”. What makes the oak trees so important in the Käfertal forest? The oak is a very special tree species for biodiversity. No other tree species supports so many different native species. Old oaks are therefore an incredible hotspot for biodiversity. From a species protection perspective, it therefore makes sense, and is the only option, to promote the rejuvenation and growth of oak trees. The oak is well suited to withstanding climate change in our forest. Species protection and the development of a climate-stable forest make it necessary to increase the proportion of oak trees. However, the path from a small acorn to an old, thick oak tree is a long one. The rejuvenation of oak trees is complex and difficult: acorns are eaten by many animals. The young oak trees need a lot of light to germinate and grow. Deer love to nibble on the trees and wild boars dig up the young plants in search of grubs. The leaves are susceptible to attack by fungi such as mildew. And there is tough competition for sunlight from faster-growing tree species and herbaceous plants. A lot of maintenance work is needed to increase the proportion of oak trees in the Käfertal forest. Old, climate-stable oak trees, as a future tree species in Mannheim, must have been young once. This requires maintenance measures such as planting areas and clearing forest stands. We now continue straight ahead on the extension of path no. 6 until we reach the intersection with path no. 1. This is about the old and dead wood concept in the Käfertal forest.',
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_07.mp3',
+            en: 'Audio/english/7_en.mp3',
+        },
+  },
+  {
+    imageSrc: ['images/Station_8/IMG_0036_1.JPG'],
+    lngLat: [8.520297, 49.5405719],
+    gallery: ['images/Station_8/IMG_0036_1.JPG', 'images/Station_8/IMG_0039_1.JPG', 'images/Station_8/IMG_0141_1.JPG', 'images/Station_8/IMG_0143_1.JPG', 'images/Station_8/IMG_0145_1.JPG', 'images/Station_8/IMG_0148_1.JPG', 'images/Station_8/IMG_0149_1.JPG', 'images/Station_8/IMG_0153_1.JPG'],
+      galleryDescriptions: { 
+        de: ['Totholzbaum mit Spechthöhle', 'Pilz am Totholzstamm', 'Blick auf Wegkreuz Nr. 1', 'Hier geht\'s weiter: Weg Nr. 1', 'Weg Nr. 1', 'Blick auf Totholz im Wald', 'Liegendes Totholz', 'belebter Baumstumpf'],
+        en: ['Deadwood tree with woodpecker hole', 'Fungus on deadwood trunk', 'View of Crossroad No. 1', 'Continue here: Path No. 1', 'Path No. 1', 'View of deadwood in the forest', 'Lying deadwood', 'lively tree stump']
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy'],
+    title: {
+        de: 'Station 8: Naturschutz im Wald',
+        en: 'Station 8: Nature conservation in the forest',
+    },
+    description: {
+        de: 'Schon bemerkt? Überall im Wald stehen abgestorbene Bäume. Und auch auf dem Boden liegen einige umgestürzte Bäume. Warum werden die wohl nicht weggeräumt? Diese Bäume im Käfertaler Wald sind Teil des Waldnaturschutzes. Hier sehen wir das Alt- und Totholzkonzept der Stadt Mannheim. Ziel ist es, die charakteristische biologische Vielfalt des Stadtwaldes zu erhalten und weiter zu entwickeln. Artenschutz im Wald beinhaltet eine breite Themenvielfalt: Gefährdete Tier- und Pflanzenarten schützen. Lebensgemeinschaften und die genetische Vielfalt innerhalb der Arten erhalten und fördern. Seltene Waldstandorte bewahren. Die naturnahe Waldentwicklung fördern. Alles in allem eine große Herausforderung. Unser Alt- und Totholzkonzept ist ein wesentlicher Teil des Artenschutzes im Wald. Totholz wird absichtlich im Wald belassen. Bis zur vollständigen Zersetzung bleiben einige abgestorbenen Bäume im Wald stehen. Oder liegen. Viele Pflanzen, Pilze und Tiere brauchen dieses verrottende Holz zum Leben. Sie nutzen es als Unterschlupf, als Brutplatz oder Nahrung. Solche besonderen Orte, die sogenannten Habitatbäume, schaffen wir mit dem Alt- und Totholz. Die Habitatbäume werden mit einer umlaufenden Wellenlinie am Stamm markiert. Unsere Revierleiter prüfen bei der Vorbereitung auf die Holzernte jeden Baum. Dabei werden einzelne Habitatbäume oder auch Gruppen ausgewiesen. Man achtet dabei auf typische Merkmale wie Höhlen von Spechten, Lebensraum für Höhlenbrüter, Fledermäuse oder Wildbienen, sowie Vogelnester in den Kronen.  Die Habitatbäume und -baumgruppen dienen auch zur Vernetzung der Waldlebensräume. Sie sind so etwas wie Trittsteine für viele Arten, um sich auch in andere Waldbereiche auszubreiten. Im Durchschnitt liegt der Anteil an Totholz bei uns im Mannheimer Stadtwald deutlich über 30 Festmeter pro Hektar. Ein Hektar, das entspricht in etwa einem großen Fußballfeld. Auf diesem Feld stellen wir uns nun 7 Litfaßsäulen vor oder 30 große Müllcontainer. Das ist das Volumen des Totholzes pro Hektar. Diese Größenordnung entspricht auch der Empfehlung des Bundesamtes für Naturschutz und liegt über dem bundesweiten Durchschnitt.  Wir wollen im Stadtwald den Anteil an Totholz noch deutlich erhöhen und damit noch mehr wertvollen Lebensraum schaffen. Aktuell passiert dies ganz von selbst durch die vielen absterbenden Bäume. Aber auch gezielt durch die neu ausgewiesenen Waldrefugien, in denen alle landwirtschaftliche Nutzung unterbleibt zugunsten des Artenschutzes. Wir haben uns bewusst dazu entscheiden, den Anteil an Wäldern von natürlicher, ungelenkter Waldentwicklung in Mannheim zu erhöhen. Zur nächsten Station folgen Sie rechts dem Weg Nr. 1. Dort gibt es Informationen zum Boden im Mannheimer Wald.',
+        en: 'Have you noticed? There are dead trees everywhere in the forest. And there are also some fallen trees lying on the ground. Why aren\'t they cleared away? These trees in the Käfertal forest are part of the forest conservation. Here we see the old and dead wood concept of the city of Mannheim. The aim is to preserve and further develop the characteristic biological diversity of the city forest. Species protection in the forest includes a wide variety of topics: Protecting endangered animal and plant species. Maintaining and promoting communities and genetic diversity within species. Preserving rare forest locations. Promoting natural forest development. All in all, a major challenge. Our old and dead wood concept is an essential part of species protection in the forest. Dead wood is deliberately left in the forest. Some dead trees remain standing in the forest until they have completely decomposed. Or lie there. Many plants, fungi and animals need this rotting wood to live. They use it as shelter, as a breeding ground or as food. We create such special places, the so-called habitat trees, with the old and dead wood. The habitat trees are marked with a wavy line around the trunk. Our district managers check each tree in preparation for the wood harvest. Individual habitat trees or groups are identified. Attention is paid to typical features such as woodpecker holes, habitat for cavity nesters, bats or wild bees, as well as bird nests in the crowns. The habitat trees and groups of trees also serve to connect the forest habitats. They are something like stepping stones for many species to spread to other forest areas. On average, the proportion of dead wood in our Mannheim city forest is well over 30 cubic meters per hectare. One hectare is roughly equivalent to a large football field. On this field, we now imagine 7 advertising columns or 30 large garbage containers. That is the volume of dead wood per hectare. This order of magnitude also corresponds to the recommendation of the Federal Agency for Nature Conservation and is above the national average. We want to significantly increase the proportion of dead wood in the city forest and thus create even more valuable habitat. At the moment, this is happening all by itself due to the many trees dying. But it is also happening deliberately due to the newly designated forest refuges, in which all agricultural use is avoided in favor of species protection. We have consciously decided to increase the proportion of forests with natural, uncontrolled forest development in Mannheim. To the next stop, follow path no. 1 on the right. There you will find information about the soil in the Mannheim forest.',
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_08.mp3',
+            en: 'Audio/english/8_en.mp3',
+        },
+  },
+  {
+    imageSrc: ['images/Station_9/IMG_0158_1.JPG'],
+    lngLat: [8.519714, 49.5392434],
+    gallery: ['images/Station_9/IMG_0158_1.JPG', 'images/Station_9/IMG_0155_1.JPG', 'images/Station_9/IMG_0161_1.JPG', 'images/Station_9/IMG_0163_1.JPG', 'images/Station_9/IMG_0167_1.JPG', 'images/Station_9/IMG_0170_1.JPG', 'images/Station_9/IMG_0175_1.JPG'],
+      galleryDescriptions: { 
+        de: ['Blick auf Boden rechts vom Weg', 'Rechts weiter auf Weg Nr. 1', 'Weiter links um den Karlstern Weiher', 'Weiter auf Weg Nr. 1', 'Blick auf unseren sandigen Boden', 'Weiter auf Weg Nr. 1', 'sandiger, trockener Boden'],
+        en: ['View of the ground to the right of the path', 'Continue to the right on Path No. 1', 'Continue to the left around the Karlstern Pond', 'Continue on Path No. 1', 'View of our sandy soil', 'Continue on Path No. 1', 'sandy, dry soil']
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy'],
+    title: {
+        de: 'Station 9: Der Waldboden',
+        en: 'Station 9: The forest floor',
+    },
+    description: {
+        de: 'Schon mehrfach haben wir die Standortbedingungen im Wald angesprochen. Klima und Boden bestimmen, welche Pflanzen und Bäume bei uns im Stadtwald wachsen können. So ein Waldboden ist viel mehr als nur Erde. Er ist durchsetzt mit Wasser, Luft und Lebewesen. Er versorgt die Pflanzen mit Nährstoffen und verankert deren Wurzeln. Die Entstehung der Böden hat Jahrtausende gedauert. Sie beginnt mit dem Abbau von Gestein durch Wasser, Wind und andere Wettereinflüsse. Das Gestein aus dem die Böden in Mannheim entstanden sind, stammt vom Rhein. Der Rhein hat hier nach der letzten Eiszeit vor ca. 12.000 Jahren Kies und Sand abgelagert. Wenn das abgelagerte Gestein verwittert, führt dies zur Bildung von unterschiedlichen Bodenhorizonten, die parallel zur Erdoberfläche verlaufen. Jeder Boden hat also eine klassische Schichtung, gut erkennbar in den Aufschlüssen und Löchern der umgestürzten Bäume am Wegrand. Über diesen Bodenschichten befindet sich eine organische Auflage, der sogenannte Humus. Er besteht aus abgestorbenen und mehr oder weniger stark zersetzten Pflanzenbestandteilen wie Blätter und Nadeln. Die Mannheimer Waldböden haben eine leicht saure Humusauflage mit wenigen Nährstoffen. Unter der Humusauflage befindet sich der Mineralboden mit den angesprochenen unterschiedlichen Schichten. Diese sind auch verschieden gefärbt je nach Bodenentwicklung. Ganz unten befindet sich das Ausgangsgestein. In der Natur, also auch bei den hier zu sehenden Aufschlüssen, lassen sich die verschiedenen Schichten nicht mehr so genau voneinander abgrenzen. Je nach Bodenentwicklung weist man unterschiedliche Bodentypen aus. Was haben wir hier im Käfertaler Wald nun für einen Boden?  Unterschiedliche Bodentypen haben unterschiedliche Eigenschaften, bestimmt vom Ausgangsgestein, dem Klima, der Bodenart wie Sand, Ton oder Lehm und der Vegetation. Im Käfertaler Wald herrscht der Bodentyp „Braunerde“ vor. Diese Böden sind aus Sanden und Kiesen entstanden. Die Sande sind entweder als Flugsand eingeweht oder vom Rhein angeschwemmt worden. Aufgrund des Ausgangsgesteins sind unsere Böden also sehr sandig. Entsprechend sind die hiesigen Braunerden trocken und nährstoffarm und haben eine geringe Kapazität, Wasser zu speichern. Nicht gerade der beste Untergrund für Waldbäume…Nur Bäume, die mit diesen Bedingungen zurechtkommen, haben in unserem Wald eine Zukunft. Zur nächsten Station folgen Sie bitte weiter dem Weg Nr. 1 am Karlstern Weiher entlang. Dort geht es um die nachhaltige Waldwirtschaft in Mannheim.',
+        en: 'We have already discussed the site conditions in the forest several times. Climate and soil determine which plants and trees can grow in our city forest. Forest soil is much more than just soil. It is permeated with water, air and living things. It supplies the plants with nutrients and anchors their roots. The formation of the soil took thousands of years. It begins with the degradation of rock by water, wind and other weather influences. The rock from which the soil in Mannheim was formed comes from the Rhine. The Rhine deposited gravel and sand here after the last ice age around 12,000 years ago. When the deposited rock weathers, this leads to the formation of different soil horizons that run parallel to the earth\'s surface. Every soil has a classic layering, which is clearly visible in the outcrops and holes of fallen trees on the side of the road. Above these soil layers there is an organic layer, known as humus. It consists of dead and more or less strongly decomposed plant components such as leaves and needles. The Mannheim forest soils have a slightly acidic humus layer with few nutrients. Underneath the humus layer is the mineral soil with the different layers mentioned. These are also colored differently depending on the soil development. At the very bottom is the parent rock. In nature, including in the outcrops seen here, the different layers can no longer be clearly distinguished from one another. Depending on the soil development, different soil types can be identified. So what kind of soil do we have here in the Käfertal forest? Different soil types have different properties, determined by the parent rock, the climate, the type of soil such as sand, clay or loam and the vegetation. In the Käfertal forest, the soil type "brown earth" predominates. These soils are formed from sand and gravel. The sands either blew in as drifting sand or were washed up by the Rhine. Due to the parent rock, our soils are therefore very sandy. Accordingly, the local brown earths are dry and poor in nutrients and have a low capacity to store water. Not exactly the best ground for forest trees... Only trees that can cope with these conditions have a future in our forest. To get to the next stop, please follow path no. 1 along the Karlstern Weiher. This is about sustainable forest management in Mannheim.',
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_09.mp3',
+            en: 'Audio/english/9_en.mp3',
+        },
+  },
+  {
+    imageSrc: ['images/Station_10/IMG_0086_1.JPG'],
+    lngLat: [8.5168606, 49.53771968],
+    gallery: ['images/Station_10/IMG_0086_1.JPG', 'images/Station_10/IMG_0181_1.JPG', 'images/Station_10/IMG_0183_1.JPG', 'images/Station_10/IMG_0188_1.JPG', 'images/Station_10/IMG_0191_1.JPG', 'images/Station_10/IMG_0194_1.JPG', 'images/Station_10/IMG_0198_1.JPG'],
+      galleryDescriptions: { 
+        de: ['Nachhaltiger Rohstoff Holz fällt bei Verkehrssicherung an', 'Weiter auf Weg Nr. 1', 'Blick Richtung Weg Nr. 1', 'Blick in die Kieferkronen', 'Auch hier: Spätblühende Traubenkirsche', 'Zurück auf die lange Allee', 'Nachhaltiger Rohstoff Holz'],
+        en: ['Sustainable resource wood arises from traffic safety measures', 'Continue on Path No. 1', 'View towards Path No. 1', 'View into the pine crowns', 'Here too: Late-blooming Bird Cherry', 'Back to the long avenue', 'Sustainable resource wood']
+
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy'],
+    title: {
+        de: 'Station 10: Nachhaltige Waldwirtschaft',
+        en: 'Station 10: Sustainable forest management',
+    },
+    description: {
+        de: 'Wir pflanzen also neue Bäume, um unseren Mannheimer Stadtwald zu erhalten. Warum wird auf der anderen Seite aber auch Holz geerntet?Wir alle nutzen Holz in unterschiedlichster Form. Der Bedarf und die Verwendung von Holz sind seit 1950 in Deutschland kontinuierlich angestiegen. Die jährliche Holzernte in deutschen Wäldern trägt gut ein Viertel zum hiesigen Gesamtaufkommen aller Holzprodukte bei. Viel Holz wird aber importiert, teils aus illegalen Holzeinschlägen.  Im Mannheimer Stadtwald wird durch erforderliche Maßnahmen der Verkehrssicherung, Durchforstung und Kulturpflege Holz geerntet, das nachhaltig produziert wurde. Dabei werden mit Ausnahme der Pflegemaßnahmen nur absterbende Bäume entnommen. Auf diese Weise kann auch Mannheim zur lokalen Rohholzversorgung beitragen, damit wir nicht mehr so viel importieren müssen. Die nachhaltige Holznutzung im Mannheimer Stadtwald bedeutet, dass in der Summe deutlich weniger entnommen wird, als nachwächst. Das ist in der sogenannten Forsteinrichtung so festgelegt, die 2020 vom Gemeinderat verabschiedet wurde. Die Forsteinrichtung ist das bestimmende Bewirtschaftungs- und Planungsinstrument für den Forstbetrieb. Sie erfasst und kontrolliert Daten und passende Planungen zu Holzzuwachs, Totholzanteil und vieles mehr. Auf eine planmäßige Ernte starker und gesunder Bäume verzichten wir in Mannheim ganz bewusst. Aber obwohl wir auf einzelnen Flächen Platz für klimastabile Waldbäume schaffen, erhöht sich der Vorrat an Holz und Bäumen auf der Gesamtfläche des Stadtwaldes Jahr für Jahr – und zwar deutlich.  Nun geht es zurück zum Ausgangspunkt, dem Karlstern. Dazu folgen Sie bitte Weg Nr. 1, weg vom Weiher bis zur Langen Allee und dann rechts weiter bis zum Karlstern.',
+        en: 'So we are planting new trees to preserve our Mannheim city forest. But why is wood also being harvested on the other hand? We all use wood in a variety of forms. The demand and use of wood have increased continuously in Germany since 1950. The annual wood harvest in German forests accounts for a good quarter of the total local output of all wood products. However, a lot of wood is imported, partly from illegal logging. In the Mannheim city forest, wood that has been produced sustainably is harvested through the necessary traffic safety, thinning and cultural maintenance measures. With the exception of maintenance measures, only dying trees are removed. In this way, Mannheim can also contribute to the local raw wood supply so that we no longer have to import so much. The sustainable use of wood in the Mannheim city forest means that, in total, significantly less is removed than grows back. This is stipulated in the so-called forest management, which was passed by the local council in 2020. The forest management is the determining management and planning instrument for forest operations. It records and monitors data and appropriate planning on wood growth, deadwood percentage and much more. We deliberately avoid a planned harvest of strong and healthy trees in Mannheim. But although we create space for climate-stable forest trees in individual areas, the stock of wood and trees in the entire area of ​​the city forest increases year after year - significantly. Now it\'s back to the starting point, the Karlstern. To do this, please follow path no. 1, away from the pond to the Lange Allee and then right to the Karlstern.',
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_10.mp3',
+            en: 'Audio/english/10_en.mp3',
+        },
+  },
+  {
+    imageSrc: ['images/Station_11/IMG_0001_1.JPG'],
+    lngLat: [8.5139563, 49.5366505],
+    gallery: ['images/Station_11/IMG_0001_1.JPG', 'images/Station_11/IMG_0108_1.JPG', 'images/Station_11/Impression_Wald_3_Wilhelm.jpg', 'images/Station_11/Käfertaler_Wald_pan_02.jpg', 'images/Station_11/Käfertaler_wald_pan_03.jpg', 'images/Station_11/Stadtwald_3_Wilhelm.jpg', 'images/Station_11/Stadtwald_4_Wilhelm.jpg'],
+      galleryDescriptions: { 
+de: ['Wieder am Karlstern Pavillion', 'Blick in die Kronen:abgestorbene Kiefer', 'Blick von oben', 'Blick von oben: Käfertaler Wald', 'Blick von oben auf den Käfertaler Wald', 'Die Kiefer stirbt ab', 'Eichen Verjüngung'],
+en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map', '3D Übersichtskarte', '3D Übersichtskarte', '3D Übersichtskarte', '3D Übersichtskarte']
+},
+    galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Dr. Stefan Wilhelm', '@ Dr. Stefan Wilhelm', '@ Dr. Stefan Wilhelm', '@ Dr. Stefan Wilhelm', '@ Dr. Stefan Wilhelm'],
+    title: {
+        de: 'Station 11: Danke und auf Wiedersehen!',
+        en: 'Station 11: Thank you and goodbye!',
+    },
+    description: {
+        de: 'Nun sind wir am Ende unserer Audioguide-Tour angekommen. Vielen Dank für Ihr Interesse und Ihre Teilnahme. Vielleicht dürfen wir Sie ja auch mal bei einem unserer Waldspaziergänge oder Bürgerprojekte begrüßen. Weitere Informationen zu vielen verschiedenen Themen rund um den Stadtwald finden Sie auch auf unserer Webseite: <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. <br /> <br/> Auf Wiedersehen!</p>',
+        en: 'We have now reached the end of our audio guide tour. Thank you for your interest and participation. Perhaps we can welcome you on one of our forest walks or citizen projects. You can also find further information on many different topics relating to the city forest on our website: <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. <br /> <br/> Goodbye!</p>',
+    },
+        audioSrc: {
+            de: 'Audio/german/AG_Käfertaler_Wald_11.mp3',
+            en: 'Audio/english/11_en.mp3',
+        },
+  },
+];
+
+// locationcontent is connected with popups
+locations.forEach(location => {
+  createMarkerAndPopup(location.imageSrc, location.lngLat, location.gallery, location.galleryDescriptions, location.galleryphotographer, location.title, location.description, location.audioSrc);
+});
+
+
+// GeoJSON for route around Kaefertaler Wald
+const geojson = {
+  "type": "Feature",
+  "properties": {
+    "name": "Route um den Käfertaler Wald"
+  },
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [
+    [8.513817698874602, 49.53677165392893 ], [ 8.51382191364012, 49.536841097918717 ], [ 8.513900355109527, 49.536887748421009 ], [ 8.513226547166454, 49.538421696659498 ], [ 8.512598552957085, 49.539880018427347 ], [ 8.512762178536081, 49.540019858604829 ], [ 8.513032980776375, 49.540481452102185 ], [ 8.513163423545643, 49.540698758416063 ], [ 8.513308359955946, 49.540965563707566 ], [ 8.513727912722604, 49.54175557602764 ], [ 8.514196667586448, 49.542529736110644 ], [ 8.514206584288205, 49.542547555507809 ], [ 8.51437440539487, 49.542771782366437 ], [ 8.511149570265683, 49.544013797384132 ], [ 8.510904704014596, 49.543740326627557 ], [ 8.510400859283001, 49.54489310067445 ], [ 8.512035970838154, 49.545078957576457 ], [ 8.511149570265683, 49.544013735513118 ], [ 8.514374405395186, 49.54277175143001 ], [ 8.515505386160154, 49.542336599415201 ], [ 8.516515364093083, 49.54195075684985 ], [ 8.517030651172913, 49.541756720694494 ], [ 8.518309142876532, 49.541302316682987 ], [ 8.518621900393532, 49.541191437502867 ], [ 8.519327130453192, 49.540931315938813 ], [ 8.5202982044023, 49.540573182461813 ], [ 8.5197157888798, 49.539244823415501 ], [ 8.518943048965859, 49.53914804757035 ], [ 8.519007316821487, 49.538657606421303 ], [ 8.518716109060232, 49.538150329411003 ], [ 8.518454460698452, 49.537963703608959 ], [ 8.518148568590364, 49.537837965929349 ], [ 8.517714522182633, 49.537752325513537 ], [ 8.517265219310657, 49.53772163353608 ], [ 8.516860541596595, 49.537720148439895 ], [ 8.516583255358961, 49.537195164115218 ], [ 8.51594019539109, 49.535942332200548 ], [ 8.514658557041722, 49.5364054493498 ], [ 8.514225082751391, 49.536560398308765 ], [ 8.513957713215524, 49.536650991242517 ], [ 8.513819451508315, 49.5367678831063 ], [ 8.513817698874602, 49.53677165392893]
+    ]
+  }
+};
+
+function addRoute() {
+  map.addLayer({
+    'id': 'route',
+    'type': 'line',
+    'source': {
+      'type': 'geojson',
+      'data': geojson
+    },
+    'layout': {
+      'line-join': 'round',
+      'line-cap': 'round'
+    },
+    'paint': {
+      'line-color': 'SteelBlue',
+      'line-width': 4
+    }
+  });
+}
+
+map.on('load', function () {
+  addRoute();
+});
+
+map.on('styledata', function () {
+  if (!map.getLayer('route')) {
+    addRoute();
+  }
+});
+
+// lokation is added
+map.addControl
+  (new maplibregl.GeolocateControl({
+    positionOptions: {
+      enableHighAccuracy: true
+    },
+    trackUserLocation: true
+  }));
+
+// zoom-out-in features are added
+map.addControl(new maplibregl.NavigationControl());
+
+// Function to calculate the distance between two geographical coordinates using the Haversine formula
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // radius of earth in meters
+  const φ1 = lat1 * Math.PI / 180; // Latitude in radiant
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) *
+    Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const distance = R * c; // distance in meters
+  return distance;
+}
+
+// Feature to check if user is near a station and open the popup window
+function checkNearbyStations(userLocation) {
+  locations.forEach(location => {
+    const distance = calculateDistance(userLocation.lat, userLocation.lng, location.lngLat[1], location.lngLat[0]);
+    if (distance <= 20) { // When the user is less than 20 meters from the station
+      // open pupup window for that station
+      location.marker.getPopup().addTo(map);
+    } else {
+      // close popup window for that station, if it's open
+      map.closePopup();
+    }
+  });
+}
+
+// Track user position and check if stations are nearby when user moves
+map.on('locationfound', function (e) {
+  checkNearbyStations(e.latlng);
+});
+
+// update checking of nearby stations as user moves
+map.on('locationerror', function (e) {
+  console.log(e.message);
+});
+
+// start user localization
+map.locate({ watch: true, enableHighAccuracy: true });
+    </script>    
+</body>
+</html>
