@@ -53,11 +53,11 @@ body {
   top: 0px;
   right: -10px;
   background: none;
-  color: black;
-  border: none;
+  color: grey;
+  border-radius: 10px;
   cursor: pointer;
   padding:2px;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .popup-image {
@@ -67,6 +67,7 @@ body {
   left:0;
   top: 0;
   cursor:zoom-in;
+  z-index: 5;
 }
 
 .image-description {
@@ -74,9 +75,10 @@ body {
   bottom: 40px;
   background: rgba(0, 0, 0, 0.5);
   color: white;
-  width: 100%;
+  width: 150%;
   font-size: 13px;
-  padding: 0;         
+  padding: 0;
+  z-index: 7;         
 }
 
 .image-photographer {
@@ -86,20 +88,6 @@ body {
   color: black;
   font-size: 9px;        
 }
-
-
-.close-button-left {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  background: white;
-  color: black;
-  border: none;
-  cursor: pointer;
-  padding:5px;
-  font-size: 10px;
-  z-index: 10;
-} 
 
 .moreinfo-button {
     cursor: pointer;
