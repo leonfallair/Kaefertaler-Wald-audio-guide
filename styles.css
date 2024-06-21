@@ -100,7 +100,7 @@ body {
 }
 .welcome-text {
   height: 200px;
-  display:relative;
+  display: flex;
   overflow-y: scroll;
   text-align: left;
   border: 1px solid #ccc; 

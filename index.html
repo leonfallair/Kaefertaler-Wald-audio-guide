@@ -6,13 +6,21 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
     <link href="styles.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="manifest" href="manifest.json">
     <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
-
 </head>
 <body>
     <div id="map"></div>
     <script>
+
+if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(error) {
+                console.log('ServiceWorker registration failed: ', error);
+            });
+        }
+     
         const map = new maplibregl.Map({
             container: 'map',
             style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
@@ -276,7 +284,7 @@ const locations = [
         en: 'Welcome to our audio guide tour of the Käfertaler Forest. We\'re glad you\'re here! At a total of 10 stations, you\'ll learn everything you need to know about our city forest and how it\'s currently doing. You can find an overview map of the individual stations and the route on our homepage <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. The tour is around 3.5 km long and takes around 2 to 2.5 hours, including breaks. And now: we hope you enjoy your tour. Now we\'re moving away from the hustle and bustle of Karlstern. Please follow Kastanienallee to the bird park. The station on the development of the city forest begins there.'
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_01.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_01.mp3',
             en: 'Audio/english/1_en.mp3',
         },
   },
@@ -298,7 +306,7 @@ en: ['Bird park', 'Pine', 'view from above']
         en: 'How did our city forest in Mannheim come into being and become what we know it to be today? Mannheim is surrounded by over 1,800 hectares of forest. Today\'s city forest was created from forests in the incorporated towns. In many of our Mannheim forests, pine was the tree species of choice for a long time. On the one hand, this was due to the nutrient-poor and dry soils. Pine is well suited to this. On the other hand, the forests were mainly used to produce firewood. The forest was also used as forest pasture and the litter on the ground was used as bedding on farms. The animals in the forest preferred to eat the leaves of deciduous trees. That is why only a few deciduous trees grew, and instead many pines. The forest lost size due to World War II, including military use of the forest, and also due to major forest fires in the 1970s. These areas were subsequently replanted. Again with pines, but also with deciduous tree species. These plantings from back then still characterize the forest in many areas today: The Käfertaler Forest is a relatively young forest in many areas, with pine as its main tree species. Mannheim\'s city forest currently consists of 43% pine and 57% deciduous trees. The deciduous trees mainly include oak, beech, maple and robinia. Since the 1950s, the black cherry, a non-native invasive species, has also been spreading. You can find out more about this at station 4. ... and then there is global climate change. It is also leaving its mark on our city forest. You can find out what effects climate change is having on the forest at the next station. Please follow the Kastanienallee to the next station, at the crossroads of Kastanienallee / path no. 7. Then continue on path no. 7. We\'ll be in touch again soon.',
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_02.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_02.mp3',
             en: 'Audio/english/2_en.mp3',
         },
   },
@@ -321,7 +329,7 @@ en: ['Bird park', 'Pine', 'view from above']
         en: 'We are now at the Kastanienallee / path 7 junction. The route continues in the direction of path 7 until it crosses path 6. Please follow this to the left. While walking through the forest, you may have noticed some dead trees? Unfortunately, these are the effects of climate change on our forest. The dryness and heat of recent years is causing many trees to die. How is the climate in Mannheim developing? And what is so problematic for the forest anyway? Mannheim is located in a very warm and dry region. We can all feel it ourselves: it is getting hotter and it rains less and less in summer. Climate experts assume that there will be more days of extreme heat in Mannheim in the future. Precipitation in summer will also probably continue to decrease. The years 2017 to 2021 were already a foretaste... It is generally assumed that annual precipitation will continue to be sufficient. But recently this has mainly been falling in winter. In the years 2017 to 2021, however, there was too little rain in winter either. The water reservoirs in the soil were not sufficiently replenished. A bad starting point for dry and hot summers and the water supply to our trees. The effects of the higher temperatures and lower rainfall on the trees are serious! Our forest trees have to cope with the new climatic conditions. Or they will die sooner or later. In general, forest ecosystems are already able to adapt to changes. However, such a generational change takes a very, very long time. We are talking about 200 years or even longer. Trees grow quite slowly. That is why it takes a long time for a new forest generation to establish itself. However, the environmental conditions in extreme locations such as Mannheim are changing rapidly. Our forest therefore has little chance of adapting quickly enough on its own. So what is currently happening to our forest trees here in the Käfertal forest? Some tree species suffer more from drought and heat than others. In our case, it particularly affects the pine and the beech. The trees are stressed and weakened by the drought. This makes them more susceptible to insects and fungal diseases. The pine, our main tree species in Mannheim, is a tree species of extremes. It should actually be able to cope very well with the drought. This was the case until the extreme weather year of 2018. It was only the combination of extreme drought, an exceptionally high number of extremely hot days and a lack of winter precipitation that weakened the pine. And this weakening in turn leads to stress and thus to susceptibility to secondary diseases. The so-called "diplodia dieback" is one such stress-related secondary disease. The diplodia fungus attacks the needles of the pine. We can easily recognize this by the brown dead needles. The fungus spreads particularly quickly on stressed trees. The needles of the tree die and the entire tree is doomed to die. The bark beetle also has an easy time on a weakened tree. It pierces the bark and uses its feeding tunnels to damage the channels with which the trees transport water from the ground to the crown. No tree can then withstand this any longer. The diplodia fungus and the bark beetle are currently causing large-scale pine deaths in the forest. Take a look at the treetops yourself; you can\'t miss it. The beeches are also suffering from the drought and heat. Experts believe that the survival of the beech in the Rhine plain and therefore also in the Käfertal forest is critical. In the long term, it will probably not remain part of our forests in its current size. It is now simply too dry and too warm for that. Among the tree species, it is mainly those with small crowns that suffer particularly from the drought and die. It is therefore more important than ever to develop the trees into vital specimens with a large crown, which usually also have a more branched and larger root system. The next stop is about how the city of Mannheim is dealing with the effects of climate change. To do this, continue on path no. 7 to the intersection with path no. 6. Please follow this to the left until you reach the planting area on Kastanienallee. On the way there, take another look up into the treetops; you will get a good impression of the condition of the forest.',
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_03.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_03.mp3',
             en: 'Audio/english/3_en.mp3',
         },
   },
@@ -344,7 +352,7 @@ en: ['Bird park', 'Pine', 'view from above']
         en: 'We are standing in front of a planting area in the Käfertal forest. There are many young trees and different tree species to be seen and the area is fenced off. Let\'s walk around the planting area briefly on the Kastanienallee until we get back to path no. 6. Then we\'ll have a better view. Why are trees being planted here? The aim of the Mannheim city forest is basically to develop natural, climate-stable mixed forests that should consist primarily of deciduous trees. The tree species are based on the natural forest community, i.e. the tree species that would naturally occur there. The suitability of the location and the climatic development are taken into account here. That\'s why new trees are now being planted where a particularly high number of trees are affected by death. These are areas where the pine is mostly dying and where there are hardly any climate-stable deciduous tree species. And also areas where the heavy growth and shade from the late-flowering bird cherry prevents the natural rejuvenation of deciduous tree species. So only the places in the forest where the fully grown trees die and climate-stable tree species cannot reproduce. Newly planted are climate-stable, site-adapted and, above all, different deciduous tree species, such as oak, maple or cherry. This mixture makes it very unlikely that one day a tree species will fail and then suddenly there will be no more forest. What is currently happening with the pine and with our entire forest must not be repeated!!! This process is carried out in Mannheim every year on half a percent of the city\'s forest area. So only on a very small part! The planting areas must first be prepared for planting. This means that the late-flowering bird cherry is removed first. This means that the light-loving tree species finally get more sun and now have a significant growth advantage before the late-flowering bird cherry sprouts again from pieces of root or cherry stones. Since the soil is now partially exposed, the pine can also germinate again. And other tree species also rejuvenate as soon as the late-flowering bird cherry is removed. The fence around the planting area is for the wild boars and deer. They must stay outside so that the young trees inside the fence can develop undisturbed. They are not dug up by wild boars or bitten by deer. And so a diverse, climate-stable forest develops. In the years following planting, the areas will continue to be cared for and cleared of the late-flowering bird cherry. This means that even slow-growing tree species, such as the oak, retain their growth advantage. The background and motivation of the forestry work in the Mannheim city forest is the long-term and permanent preservation of the recreational forest and the promotion of biodiversity. The great challenge of the coming years and decades is to preserve the forest and promote biodiversity. The challenge of making the forest fit for our new climate. We now continue with path 6, back to where we came from. There we learn something about the tree species of the future.',
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_04.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_04.mp3',
             en: 'Audio/english/4_en.mp3',
         },
   },
@@ -366,7 +374,7 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
         en: 'Which tree species have a future with us? Which ones can cope with the climatic conditions? When we plant new trees, it is important that the tree species we select can withstand the climate we are facing. They must be able to cope with dry summers, little rainfall and hot days. The oak, mixed with other deciduous tree species, is well suited to such dry, warm forests. The oak already occurs naturally in most locations in the Mannheim city forest. However, we cannot place all our hopes on just one tree species. The risk must be spread. So that if one tree species were to fail, there would still be enough others. This is why different tree species are mixed when planting and generally more than three species are planted on the area. The pine, as the "tree species of the future", will also continue to be part of it. It is a typical tree species for dry, warm locations and sandy soils like we have here in Mannheim. Basically, we select and mix tree species that can show different adaptations and reactions to climatic changes. In this way, several climatic scenarios are covered - the risk of complete forest loss is reduced. This mixture is a prerequisite for the development of a healthy, ecologically valuable and climate-stable mixed forest. We now continue on path no. 6. We learn something about the late-flowering black cherry.',
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_05.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_05.mp3',
             en: 'Audio/english/5_en.mp3',
         },
   },
@@ -388,7 +396,7 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
         en: 'We are now moving along path no. 6 in the direction of “Neue Poststraße”. If you look left and right when you hear the next stop, you will see the widespread growth of bird cherry. We have already heard a lot about the late-flowering bird cherry. What kind of plant is that? The late-flowering bird cherry is a so-called “neophyte”. Neophytes are plants whose habitat is actually somewhere else entirely. But now they are spreading in our native habitat and displacing other plants here because they grow better. These neophytes were brought to us from many parts of the world in modern times. Either intentionally, to plant them in parks, gardens or in the forest. Or unintentionally, when the seeds came to Germany on cargo ships, for example. This is how many plants travelled here as stowaways. It becomes problematic when the neophytes displace our native plants from their natural habitat. The late-flowering bird cherry is now widespread in the Käfertal forest. It grows quickly and darkens the ground beneath it. At first glance, we forest visitors do not see the late-flowering black cherry as disturbing. It ensures that our forest is green and that we do not notice the dying trees on the higher floors. The problem, however, is that the late-flowering black cherry takes light away from other tree species. Many deciduous tree species, e.g. the oak, need a lot of light and compete with other plants for light on the forest floor. The oak needs light to grow, otherwise no new trees can grow. But since the late-flowering black cherry grows much faster than native tree species, it has a clear advantage in the fight for light. But what makes the late-flowering black cherry so invasive? Why does it spread so much? The leaves and buds of the late-flowering black cherry are not eaten by deer. They have stored hydrogen cyanide and are therefore not tasty for the animals. The tree species also copes well with the dryness in the Mannheim forest. It grows quickly and darkens the ground beneath it. The late-flowering black cherry is the big winner of the climatic changes in the forest - at the expense of our native tree and shrub species. What can we do about it? The only effective way to do this is to dig it up or pull it out by the roots, because we do not use any chemical products in our city forest. In order to promote biodiversity and our native species, the late-flowering black cherry is removed from the planting areas. This gives the newly planted trees a significant growth advantage and will later dominate the late-flowering black cherry. This creates natural forest areas with a rich biodiversity. To get to the next stop, please follow path no. 6 to the intersection with "Neue Poststraße". There you will learn about a tree species of the future, the oak.',
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_06.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_06.mp3',
             en: 'Audio/english/6_en.mp3',
         },
   },
@@ -410,7 +418,7 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
         en: 'There are a few old oak trees to the left and right of the “Neue Poststraße”. What makes the oak trees so important in the Käfertal forest? The oak is a very special tree species for biodiversity. No other tree species supports so many different native species. Old oaks are therefore an incredible hotspot for biodiversity. From a species protection perspective, it therefore makes sense, and is the only option, to promote the rejuvenation and growth of oak trees. The oak is well suited to withstanding climate change in our forest. Species protection and the development of a climate-stable forest make it necessary to increase the proportion of oak trees. However, the path from a small acorn to an old, thick oak tree is a long one. The rejuvenation of oak trees is complex and difficult: acorns are eaten by many animals. The young oak trees need a lot of light to germinate and grow. Deer love to nibble on the trees and wild boars dig up the young plants in search of grubs. The leaves are susceptible to attack by fungi such as mildew. And there is tough competition for sunlight from faster-growing tree species and herbaceous plants. A lot of maintenance work is needed to increase the proportion of oak trees in the Käfertal forest. Old, climate-stable oak trees, as a future tree species in Mannheim, must have been young once. This requires maintenance measures such as planting areas and clearing forest stands. We now continue straight ahead on the extension of path no. 6 until we reach the intersection with path no. 1. This is about the old and dead wood concept in the Käfertal forest.',
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_07.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_07.mp3',
             en: 'Audio/english/7_en.mp3',
         },
   },
@@ -432,7 +440,7 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
         en: 'Have you noticed? There are dead trees everywhere in the forest. And there are also some fallen trees lying on the ground. Why aren\'t they cleared away? These trees in the Käfertal forest are part of the forest conservation. Here we see the old and dead wood concept of the city of Mannheim. The aim is to preserve and further develop the characteristic biological diversity of the city forest. Species protection in the forest includes a wide variety of topics: Protecting endangered animal and plant species. Maintaining and promoting communities and genetic diversity within species. Preserving rare forest locations. Promoting natural forest development. All in all, a major challenge. Our old and dead wood concept is an essential part of species protection in the forest. Dead wood is deliberately left in the forest. Some dead trees remain standing in the forest until they have completely decomposed. Or lie there. Many plants, fungi and animals need this rotting wood to live. They use it as shelter, as a breeding ground or as food. We create such special places, the so-called habitat trees, with the old and dead wood. The habitat trees are marked with a wavy line around the trunk. Our district managers check each tree in preparation for the wood harvest. Individual habitat trees or groups are identified. Attention is paid to typical features such as woodpecker holes, habitat for cavity nesters, bats or wild bees, as well as bird nests in the crowns. The habitat trees and groups of trees also serve to connect the forest habitats. They are something like stepping stones for many species to spread to other forest areas. On average, the proportion of dead wood in our Mannheim city forest is well over 30 cubic meters per hectare. One hectare is roughly equivalent to a large football field. On this field, we now imagine 7 advertising columns or 30 large garbage containers. That is the volume of dead wood per hectare. This order of magnitude also corresponds to the recommendation of the Federal Agency for Nature Conservation and is above the national average. We want to significantly increase the proportion of dead wood in the city forest and thus create even more valuable habitat. At the moment, this is happening all by itself due to the many trees dying. But it is also happening deliberately due to the newly designated forest refuges, in which all agricultural use is avoided in favor of species protection. We have consciously decided to increase the proportion of forests with natural, uncontrolled forest development in Mannheim. To the next stop, follow path no. 1 on the right. There you will find information about the soil in the Mannheim forest.',
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_08.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_08.mp3',
             en: 'Audio/english/8_en.mp3',
         },
   },
@@ -454,7 +462,7 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
         en: 'We have already discussed the site conditions in the forest several times. Climate and soil determine which plants and trees can grow in our city forest. Forest soil is much more than just soil. It is permeated with water, air and living things. It supplies the plants with nutrients and anchors their roots. The formation of the soil took thousands of years. It begins with the degradation of rock by water, wind and other weather influences. The rock from which the soil in Mannheim was formed comes from the Rhine. The Rhine deposited gravel and sand here after the last ice age around 12,000 years ago. When the deposited rock weathers, this leads to the formation of different soil horizons that run parallel to the earth\'s surface. Every soil has a classic layering, which is clearly visible in the outcrops and holes of fallen trees on the side of the road. Above these soil layers there is an organic layer, known as humus. It consists of dead and more or less strongly decomposed plant components such as leaves and needles. The Mannheim forest soils have a slightly acidic humus layer with few nutrients. Underneath the humus layer is the mineral soil with the different layers mentioned. These are also colored differently depending on the soil development. At the very bottom is the parent rock. In nature, including in the outcrops seen here, the different layers can no longer be clearly distinguished from one another. Depending on the soil development, different soil types can be identified. So what kind of soil do we have here in the Käfertal forest? Different soil types have different properties, determined by the parent rock, the climate, the type of soil such as sand, clay or loam and the vegetation. In the Käfertal forest, the soil type "brown earth" predominates. These soils are formed from sand and gravel. The sands either blew in as drifting sand or were washed up by the Rhine. Due to the parent rock, our soils are therefore very sandy. Accordingly, the local brown earths are dry and poor in nutrients and have a low capacity to store water. Not exactly the best ground for forest trees... Only trees that can cope with these conditions have a future in our forest. To get to the next stop, please follow path no. 1 along the Karlstern Weiher. This is about sustainable forest management in Mannheim.',
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_09.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_09.mp3',
             en: 'Audio/english/9_en.mp3',
         },
   },
@@ -477,7 +485,7 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
         en: 'So we are planting new trees to preserve our Mannheim city forest. But why is wood also being harvested on the other hand? We all use wood in a variety of forms. The demand and use of wood have increased continuously in Germany since 1950. The annual wood harvest in German forests accounts for a good quarter of the total local output of all wood products. However, a lot of wood is imported, partly from illegal logging. In the Mannheim city forest, wood that has been produced sustainably is harvested through the necessary traffic safety, thinning and cultural maintenance measures. With the exception of maintenance measures, only dying trees are removed. In this way, Mannheim can also contribute to the local raw wood supply so that we no longer have to import so much. The sustainable use of wood in the Mannheim city forest means that, in total, significantly less is removed than grows back. This is stipulated in the so-called forest management, which was passed by the local council in 2020. The forest management is the determining management and planning instrument for forest operations. It records and monitors data and appropriate planning on wood growth, deadwood percentage and much more. We deliberately avoid a planned harvest of strong and healthy trees in Mannheim. But although we create space for climate-stable forest trees in individual areas, the stock of wood and trees in the entire area of ​​the city forest increases year after year - significantly. Now it\'s back to the starting point, the Karlstern. To do this, please follow path no. 1, away from the pond to the Lange Allee and then right to the Karlstern.',
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_10.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_10.mp3',
             en: 'Audio/english/10_en.mp3',
         },
   },
@@ -499,7 +507,7 @@ en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map', '3D Üb
         en: 'We have now reached the end of our audio guide tour. Thank you for your interest and participation. Perhaps we can welcome you on one of our forest walks or citizen projects. You can also find further information on many different topics relating to the city forest on our website: <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. <br /> <br/> Goodbye!</p>',
     },
         audioSrc: {
-            de: 'Audio/german/AG_Käfertaler_Wald_11.mp3',
+            de: 'Audio/german/AG_Kaefertaler_Wald_11.mp3',
             en: 'Audio/english/11_en.mp3',
         },
   },
@@ -548,23 +556,38 @@ map.on('load', function () {
   addRoute();
 });
 
-map.on('styledata', function () {
-  if (!map.getLayer('route')) {
-    addRoute();
-  }
+
+
+// Hinzufügen der Standortkontrolle
+const geolocateControl = new maplibregl.GeolocateControl({
+  positionOptions: {
+    enableHighAccuracy: true
+  },
+  trackUserLocation: true
 });
 
-// lokation is added
-map.addControl
-  (new maplibregl.GeolocateControl({
-    positionOptions: {
-      enableHighAccuracy: true
-    },
-    trackUserLocation: true
-  }));
+map.addControl(geolocateControl);
 
-// zoom-out-in features are added
+// Hinzufügen der Zoom-Steuerelemente
 map.addControl(new maplibregl.NavigationControl());
+
+// Variable, um die Verfolgung des Standorts zu überwachen
+let trackingUserLocation = false;
+
+// Funktion, um die Standortverfolgung zu starten oder zu stoppen
+function toggleUserLocationTracking() {
+  if (trackingUserLocation) {
+    map.off('locationfound', onLocationFound);
+    map.off('locationerror', onLocationError);
+    geolocateControl._deactivate();
+    trackingUserLocation = false;
+  } else {
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+    geolocateControl._activate();
+    trackingUserLocation = true;
+  }
+}
 
 // Function to calculate the distance between two geographical coordinates using the Haversine formula
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -607,8 +630,7 @@ map.on('locationerror', function (e) {
   console.log(e.message);
 });
 
-// start user localization
-map.locate({ watch: true, enableHighAccuracy: true });
+
     </script>    
 </body>
 </html>
