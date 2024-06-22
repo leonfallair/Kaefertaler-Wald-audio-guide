@@ -2,7 +2,7 @@
     "name": "Meine Web-Karte",
     "short_name": "WebKarte",
     "description": "Eine interaktive Web-Karte mit Offline-Unterstützung",
-    "start_url": "/index.html",
+    "start_url": "/Kaefertaler-Wald-audio-guide/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#4285f4",
