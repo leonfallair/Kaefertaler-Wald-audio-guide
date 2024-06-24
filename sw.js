@@ -5,6 +5,10 @@ const urlsToCache = [
   'styles.css',
   'https://unpkg.com/maplibre-gl/dist/maplibre-gl.css',
   'https://unpkg.com/maplibre-gl/dist/maplibre-gl.js',
+  'audio/english/*.mp3',
+  'audio/german/*.mp3',
+  'images/*/*.jpg',
+  'images/*/*.JPG',
 
   // Füge hier alle Ressourcen hinzu, die offline verfügbar sein sollen
 ];
@@ -14,6 +18,18 @@ self.addEventListener('install', function(event) {
     caches.open(CACHE_NAME).then(function(cache) {
       console.log('Opened cache');
       return cache.addAll(urlsToCache)
+        .then(function() {
+          // Set Cache-Control header to expire after 6 hours
+          cache.keys().then(function(keys) {
+            keys.forEach(function(key) {
+              cache.update(key, {
+                headers: {
+                  'Cache-Control': 'max-age=21600' // 21600 seconds = 6 hours
+                }
+              });
+            });
+          });
+        })
         .catch(function(error) {
           console.error('Failed to add resources to cache:', error);
         });

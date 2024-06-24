@@ -88,7 +88,7 @@ function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions,gal
       imageDescription.className = 'image-description';
       imageDescription.style.display = 'none';
       imageDescription.style.zIndex = '7';
-      imageDescription.style.width = '150%';
+      imageDescription.style.width = '120%';
       popupContent.appendChild(imageDescription);
 
   const imagephotogrpapher = document.createElement('p');
@@ -129,46 +129,51 @@ container.appendChild(audioElement);
 
 popupContent.appendChild(container);
 
-
-  popupImage.addEventListener('click', function () {
-    if (popupImage.style.width === '32px') {
-      popupImage.style.width = '150%';
-      popupImage.style.height = '150%';
-      popupImage.style.cursor = 'pointer';
-      popupImage.style.alignSelf = 'center';
-      imageDescription.style.display = 'block';
-      imagephotogrpapher.style.display = 'block';
-
-      if (!closeButton_left.parentNode) {
-        popupImage.parentNode.appendChild(closeButton_left);
-      }
-      prevButton.style.display = 'block';
-      nextButton.style.display = 'block';
-    } else {
-      currentImageIndex = (currentImageIndex + 1) % gallery.length;
-      popupImage.src = gallery[currentImageIndex];
-      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
-      imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
-      popupImage.style.width = '150%';
-      popupImage.style.height = '150%';
-    }
-  });
-
-  const closeButton_left = document.createElement('button');
+const closeButton_left = document.createElement('button');
       closeButton_left.className = 'close-button-left';
       closeButton_left.innerHTML = 'X';
-      closeButton_left.style.zIndex = '10';
-      closeButton_left.style.right = '-63px';
+      closeButton_left.style.zIndex = '30';
+      closeButton_left.style.right = '-25px';
       closeButton_left.style.position = 'absolute';
       closeButton_left.style.top = '0';
-      closeButton_left.style.right = '-63px';
       closeButton_left.style.fontSize = '10px';
       closeButton_left.style.background = 'white';
       closeButton_left.style.color = 'black';
       closeButton_left.style.cursor = 'pointer';
       closeButton_left.style.padding = '5px';
       closeButton_left.style.borderRadius = '5px';
+      closeButton_left.style.display = 'none';
+      popupContent.appendChild(closeButton_left);
 
+
+  popupImage.addEventListener('click', function () {
+    if (popupImage.style.width === '32px') {
+      popupImage.style.width = '120%';
+      popupImage.style.height = 'auto';
+      popupImage.style.cursor = 'pointer';
+      popupImage.style.alignSelf = 'center';
+      imageDescription.style.display = 'block';
+      imagephotogrpapher.style.display = 'block';
+      welcomeText.style.display = 'none';
+      closeButton_left.style.display = 'block'
+      prevButton.style.display = 'block';
+      nextButton.style.display = 'block';
+
+      if (!closeButton_left.parentNode) {
+        popupImage.parentNode.appendChild(closeButton_left);
+      }
+
+      popupContent.classList.add('enlarged');
+
+    } else {
+      currentImageIndex = (currentImageIndex + 1) % gallery.length;
+      popupImage.src = gallery[currentImageIndex];
+      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+      imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+      popupImage.style.width = '120%';
+      popupImage.style.height = 'auto';
+    }
+  });
 
   closeButton_left.addEventListener('click', function () {
     if (popupImage && imageDescription && imagephotogrpapher) {
@@ -178,12 +183,14 @@ popupContent.appendChild(container);
       imageDescription.style.display = 'none';
       imagephotogrpapher.style.display = 'none';
       popupImage.style.alignSelf = 'flex-start';
+      prevButton.style.display = 'none';
+      nextButton.style.display = 'none';
 
       if (closeButton_left.parentNode) {
         closeButton_left.parentNode.removeChild(closeButton_left);
       }
-      prevButton.style.display = 'none';
-      nextButton.style.display = 'none';
+
+      popupContent.classList.remove('enlarged');
     }
   });
 
@@ -192,8 +199,8 @@ popupContent.appendChild(container);
   prevButton.innerHTML = '&#9664;'; // Left arrow symbol
   prevButton.style.display = 'none';
   prevButton.style.position = 'absolute';
-  prevButton.style.left = '-63px';
-  prevButton.style.top = '150px';
+  prevButton.style.left = '-25px';
+  prevButton.style.top = '50%';
   prevButton.style.zIndex = '9';
   prevButton.style.transform = 'translateY(-50%)';
   popupContent.appendChild(prevButton);
@@ -203,8 +210,8 @@ popupContent.appendChild(container);
   nextButton.innerHTML = '&#9654;'; // Right arrow symbol
   nextButton.style.display = 'none';
   nextButton.style.position = 'absolute';
-  nextButton.style.right = '-63px';
-  nextButton.style.top = '150px';
+  nextButton.style.right = '-25px';
+  nextButton.style.top = '50%';
   nextButton.style.zIndex = '9'
   nextButton.style.transform = 'translateY(-50%)';
   popupContent.appendChild(nextButton);
@@ -267,7 +274,7 @@ popupContent.appendChild(container);
 const locations = [
   {
     imageSrc: 'images/Station_1/IMG_0001_1.JPG',
-    lngLat: [8.5138224, 49.5368398],
+    lngLat: [8.687232, 49.382542],
     gallery: ['images/Station_1/IMG_0001_1.JPG', 'images/Station_1/IMG_0002_1.JPG', 'images/Station_1/IMG_0003_1.JPG', 'images/Station_1/Wanderkarte_Ueberblick.PNG'],
     galleryDescriptions: { 
       de: ['Karlstern Pavillion', 'Wegweiser', 'Kastanienallee: Blick Richtung Vogelpark', 'Route mit Stationen'],
@@ -280,7 +287,7 @@ const locations = [
         en: 'Station 1: Let\'s go to the Käfertaler Forest!',
     },
     description: {
-        de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht. Eine Übersichtskarte der einzelnen Stationen und auch den Routenverlauf fnden Sie auf unserer Homepage <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. Die Tour ist etwa 3,5 km lang und dauert - mit Verweilzeiten – ca. 2 bis 2,5 Stunden. Und jetzt: wünschen wir Ihnen viel Spaß beim Rundgang Nun bewegen wir uns etwas weg vom Trubel am Karlstern. Bitte folgen Sie der Kastanienallee bis zum Vogelpark. Dort geht es los mit der Station zum Thema Entwicklung des Stadtwaldes.',
+        de: 'Herzlich Willkommen bei unserer Audioguidetour im Käfertaler Wald. Schön dass Sie hier sind! An insgesamt 10 Stationen erfahren Sie alles Wissenswerte zu unserem Stadtwald und wie es ihm aktuell geht. Eine Übersichtskarte der einzelnen Stationen und auch den Routenverlauf finden Sie auf unserer Homepage <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. Die Tour ist etwa 3,5 km lang und dauert - mit Verweilzeiten – ca. 2 bis 2,5 Stunden. Und jetzt: wünschen wir Ihnen viel Spaß beim Rundgang. Nun bewegen wir uns etwas weg vom Trubel am Karlstern. Bitte folgen Sie der Kastanienallee bis zum Vogelpark. Dort geht es los mit der Station zum Thema Entwicklung des Stadtwaldes.',
         en: 'Welcome to our audio guide tour of the Käfertaler Forest. We\'re glad you\'re here! At a total of 10 stations, you\'ll learn everything you need to know about our city forest and how it\'s currently doing. You can find an overview map of the individual stations and the route on our homepage <a href="https://www.mannheim.de/de/service-bieten/gruene-stadt/wald" target="_blank">mannheim.de/wald</a>. The tour is around 3.5 km long and takes around 2 to 2.5 hours, including breaks. And now: we hope you enjoy your tour. Now we\'re moving away from the hustle and bustle of Karlstern. Please follow Kastanienallee to the bird park. The station on the development of the city forest begins there.'
     },
         audioSrc: {
@@ -471,8 +478,8 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
     lngLat: [8.5168606, 49.53771968],
     gallery: ['images/Station_10/IMG_0086_1.JPG', 'images/Station_10/IMG_0181_1.JPG', 'images/Station_10/IMG_0183_1.JPG', 'images/Station_10/IMG_0188_1.JPG', 'images/Station_10/IMG_0191_1.JPG', 'images/Station_10/IMG_0194_1.JPG', 'images/Station_10/IMG_0198_1.JPG'],
       galleryDescriptions: { 
-        de: ['Nachhaltiger Rohstoff Holz fällt bei Verkehrssicherung an', 'Weiter auf Weg Nr. 1', 'Blick Richtung Weg Nr. 1', 'Blick in die Kieferkronen', 'Auch hier: Spätblühende Traubenkirsche', 'Zurück auf die lange Allee', 'Nachhaltiger Rohstoff Holz'],
-        en: ['Sustainable resource wood arises from traffic safety measures', 'Continue on Path No. 1', 'View towards Path No. 1', 'View into the pine crowns', 'Here too: Late-blooming Bird Cherry', 'Back to the long avenue', 'Sustainable resource wood']
+        de: ['Nachhaltiger Rohstoff Holz', 'Weiter auf Weg Nr. 1', 'Blick Richtung Weg Nr. 1', 'Blick in die Kieferkronen', 'Auch hier: Spätblühende Traubenkirsche', 'Zurück auf die lange Allee', 'Nachhaltiger Rohstoff Holz'],
+        en: ['Sustainable resource wood', 'Continue on Path No. 1', 'View towards Path No. 1', 'View into the pine crowns', 'Here too: Late-blooming Bird Cherry', 'Back to the long avenue', 'Sustainable resource wood']
 
 },
     galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy'],
@@ -571,20 +578,23 @@ map.addControl(geolocateControl);
 // Hinzufügen der Zoom-Steuerelemente
 map.addControl(new maplibregl.NavigationControl());
 
-// Initialize the geolocate control.
-let geolocate = new GeolocateControl({
-  positionOptions: {
-      enableHighAccuracy: true
-  },
-  trackUserLocation: true
-});
-// Add the control to the map.
-map.addControl(geolocate);
-// Set an event listener that fires
-// when a trackuserlocationstart event occurs.
-geolocate.on('trackuserlocationstart', () => {
-  console.log('A trackuserlocationstart event has occurred.')
-});
+// Variable, um die Verfolgung des Standorts zu überwachen
+let trackingUserLocation = false;
+
+// Funktion, um die Standortverfolgung zu starten oder zu stoppen
+function toggleUserLocationTracking() {
+  if (trackingUserLocation) {
+    map.off('locationfound', onLocationFound);
+    map.off('locationerror', onLocationError);
+    geolocateControl._deactivate();
+    trackingUserLocation = false;
+  } else {
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+    geolocateControl._activate();
+    trackingUserLocation = true;
+  }
+}
 
 // Function to calculate the distance between two geographical coordinates using the Haversine formula
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -605,28 +615,28 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 // Feature to check if user is near a station and open the popup window
 function checkNearbyStations(userLocation) {
+  let popupOpened = false;
   locations.forEach(location => {
     const distance = calculateDistance(userLocation.lat, userLocation.lng, location.lngLat[1], location.lngLat[0]);
     if (distance <= 20) { // When the user is less than 20 meters from the station
-      // open pupup window for that station
-      location.marker.getPopup().addTo(map);
-    } else {
-      // close popup window for that station, if it's open
-      map.closePopup();
+      location.marker.getPopup().addTo(map).openPopup(); // Open the popup window for that station
+      popupOpened = true;
     }
   });
+  if (!popupOpened) {
+    map.closePopup(); // Close any open popups if no station is within 20 meters
+  }
 }
 
 // Track user position and check if stations are nearby when user moves
 map.on('locationfound', function (e) {
-  checkNearbyStations(e.latlng);
+  checkNearbyStations(e.coords);
 });
 
-// update checking of nearby stations as user moves
-map.on('locationerror', function (e) {
-  console.log(e.message);
+// Initialisieren des Geolocate-Control Event Listeners
+geolocateControl.on('geolocate', function (position) {
+  checkNearbyStations(position.coords);
 });
-
     </script>    
 </body>
 </html>

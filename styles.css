@@ -1,178 +1,171 @@
 body {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 #downloadbutton {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 99999; /* Make sure it's on top of other elements */
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+position: absolute;
+top: 10px;
+left: 10px;
+z-index: 99999; /* Make sure it's on top of other elements */
+padding: 10px 20px;
+background-color: #007bff;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
 }
 #map {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
 }
 
 .popup-content {
-    display:flex;
-    position:relative;
-    flex-direction: column;
-    justify-content: center;
-    background-color: white;
-    align-items: center;
-    text-align: center;
-    border-radius: 10px;
-    margin:0;
-    padding:0;
-    box-sizing: border-box;
-    width: 250px;
+  display:flex;
+  position:relative;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+  align-items: center;
+  text-align: center;
+  border-radius: 10px;
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+  width: 250px;
+}
+
+.enlarged > *:not(.popup-image) {
+  display: none;
 }
 
 /* deleting default popupinput */
 .maplibregl-popup-content {
-    background: none; 
-    box-shadow: none; 
-    padding: 0; 
+  background: none; 
+  box-shadow: none; 
+  padding: 0; 
 }
 
 .maplibregl-popup-tip {
-    display: none; 
+  display: none; 
 }
 
 .maplibregl-popup-close-button {
-  position: absolute;
-  top: 0px;
-  right: -10px;
-  background: none;
-  color: grey;
-  border-radius: 10px;
-  cursor: pointer;
-  padding:2px;
-  font-size: 14px;
+position: fixed;
+top: 0px;
+right: -10px;
+background: none;
+color: grey;
+border-radius: 10px;
+cursor: pointer;
+padding:2px;
+font-size: 14px;
 }
 
 .popup-image {
-  align-self: flex-start;
-  border-radius: 10px;
-  position: relative;
-  left:0;
-  top: 0;
-  cursor:zoom-in;
-  z-index: 5;
+align-self: flex-start;
+border-radius: 10px;
+position: relative;
+left:0;
+top: 0;
+cursor:zoom-in;
+z-index: 5;
 }
 
 .image-description {
-  position:relative;
-  bottom: 40px;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  width: 150%;
-  font-size: 13px;
-  padding: 0;
-  z-index: 7;         
+position:relative;
+bottom: 40px;
+background: rgba(0, 0, 0, 0.5);
+color: white;
+font-size: 14px;
+padding: 0;
+z-index: 7;         
 }
 
 .image-photographer {
-  position:relative;
-  top: -50px;
-  margin-bottom: -40px;
-  color: black;
-  font-size: 9px;        
+position:relative;
+top: -50px;
+margin-bottom: -40px;
+color: black;
+font-size: 9px;        
 }
 
 .moreinfo-button {
-    cursor: pointer;
-    position: relative;
-    background-color: #1fbd1f;
-    color: white;
-    border-radius: 10px;
-    width: 60%;
-    margin-bottom: 2px;
+  cursor: pointer;
+  position: relative;
+  background-color: #1fbd1f;
+  color: white;
+  border-radius: 10px;
+  width: 60%;
+  margin-bottom: 2px;
 }
 .welcome-text {
-  height: 200px;
-  display: flex;
-  overflow-y: scroll;
-  text-align: left;
-  border: 1px solid #ccc; 
-  padding: 10px; 
-}
-
-.audio-button {
-    cursor: pointer;
-    background-color: grey;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    width: 60%;
-    margin-bottom: 10px;
+height: 200px;
+display: flex;
+overflow-y: scroll;
+text-align: left;
+border: 1px solid #ccc; 
+padding: 10px; 
 }
 
 .marker-image {
-    border-radius: 50%;
-    border: 3.5px solid #98da00;
-    cursor: pointer;
+  border-radius: 50%;
+  border: 3.5px solid #98da00;
+  cursor: pointer;
 }
 
 /* layerSwitcherControl */
 .maplibregl-ctrl-basemaps {
-  display: flex;
-  flex-direction: row;
-  pointer-events: auto;
-  bottom: 15px;
-  position: relative;
+display: flex;
+flex-direction: row;
+pointer-events: auto;
+bottom: 15px;
+position: relative;
 }
 .maplibregl-ctrl-basemaps.reverse {
-  flex-direction: row-reverse;
+flex-direction: row-reverse;
 }
 .maplibregl-ctrl-basemaps.column {
-  flex-direction: column;
+flex-direction: column;
 }
 .maplibregl-ctrl-basemaps.column.reverse {
-  flex-direction: column-reverse;
+flex-direction: column-reverse;
 }
 .maplibregl-ctrl-basemaps .basemap {
-  width: 64px;
-  height: 64px;
-  margin: 2px;
-  border: 2px solid #ccc;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
-  cursor: pointer;
-  position: relative;
+width: 64px;
+height: 64px;
+margin: 2px;
+border: 2px solid #ccc;
+box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+cursor: pointer;
+position: relative;
 }
 .maplibregl-ctrl-basemaps .basemap.active {
-  border-color: orange;
+border-color: orange;
 }
 .maplibregl-ctrl-basemaps .basemap img {
-  width: 100%;
-  height: 100%;
+width: 100%;
+height: 100%;
 }
 .maplibregl-ctrl-basemaps .basemap-label {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  display: none;
+position: absolute;
+bottom: 0;
+left: 0;
+width: 100%;
+text-align: center;
+background: rgba(0, 0, 0, 0.5);
+color: white;
+display: none;
 }
 .maplibregl-ctrl-basemaps .basemap:hover .basemap-label {
-  display: block;
+display: block;
 }
 .maplibregl-ctrl-basemaps.closed .basemap {
-  display: none;
+display: none;
 }
 .maplibregl-ctrl-basemaps.closed .basemap.active {
-  display: block;
-  border: 2px solid #ccc;
+display: block;
+border: 2px solid #ccc;
 }

@@ -88,7 +88,7 @@ function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions,gal
       imageDescription.className = 'image-description';
       imageDescription.style.display = 'none';
       imageDescription.style.zIndex = '7';
-      imageDescription.style.width = '150%';
+      imageDescription.style.width = '120%';
       popupContent.appendChild(imageDescription);
 
   const imagephotogrpapher = document.createElement('p');
@@ -129,46 +129,51 @@ container.appendChild(audioElement);
 
 popupContent.appendChild(container);
 
-
-  popupImage.addEventListener('click', function () {
-    if (popupImage.style.width === '32px') {
-      popupImage.style.width = '150%';
-      popupImage.style.height = '150%';
-      popupImage.style.cursor = 'pointer';
-      popupImage.style.alignSelf = 'center';
-      imageDescription.style.display = 'block';
-      imagephotogrpapher.style.display = 'block';
-
-      if (!closeButton_left.parentNode) {
-        popupImage.parentNode.appendChild(closeButton_left);
-      }
-      prevButton.style.display = 'block';
-      nextButton.style.display = 'block';
-    } else {
-      currentImageIndex = (currentImageIndex + 1) % gallery.length;
-      popupImage.src = gallery[currentImageIndex];
-      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
-      imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
-      popupImage.style.width = '150%';
-      popupImage.style.height = '150%';
-    }
-  });
-
-  const closeButton_left = document.createElement('button');
+const closeButton_left = document.createElement('button');
       closeButton_left.className = 'close-button-left';
       closeButton_left.innerHTML = 'X';
-      closeButton_left.style.zIndex = '10';
-      closeButton_left.style.right = '-63px';
+      closeButton_left.style.zIndex = '30';
+      closeButton_left.style.right = '-25px';
       closeButton_left.style.position = 'absolute';
       closeButton_left.style.top = '0';
-      closeButton_left.style.right = '-63px';
       closeButton_left.style.fontSize = '10px';
       closeButton_left.style.background = 'white';
       closeButton_left.style.color = 'black';
       closeButton_left.style.cursor = 'pointer';
       closeButton_left.style.padding = '5px';
       closeButton_left.style.borderRadius = '5px';
+      closeButton_left.style.display = 'none';
+      popupContent.appendChild(closeButton_left);
 
+
+  popupImage.addEventListener('click', function () {
+    if (popupImage.style.width === '32px') {
+      popupImage.style.width = '120%';
+      popupImage.style.height = 'auto';
+      popupImage.style.cursor = 'pointer';
+      popupImage.style.alignSelf = 'center';
+      imageDescription.style.display = 'block';
+      imagephotogrpapher.style.display = 'block';
+      welcomeText.style.display = 'none';
+      closeButton_left.style.display = 'block'
+      prevButton.style.display = 'block';
+      nextButton.style.display = 'block';
+
+      if (!closeButton_left.parentNode) {
+        popupImage.parentNode.appendChild(closeButton_left);
+      }
+
+      popupContent.classList.add('enlarged');
+
+    } else {
+      currentImageIndex = (currentImageIndex + 1) % gallery.length;
+      popupImage.src = gallery[currentImageIndex];
+      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+      imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+      popupImage.style.width = '120%';
+      popupImage.style.height = 'auto';
+    }
+  });
 
   closeButton_left.addEventListener('click', function () {
     if (popupImage && imageDescription && imagephotogrpapher) {
@@ -178,12 +183,14 @@ popupContent.appendChild(container);
       imageDescription.style.display = 'none';
       imagephotogrpapher.style.display = 'none';
       popupImage.style.alignSelf = 'flex-start';
+      prevButton.style.display = 'none';
+      nextButton.style.display = 'none';
 
       if (closeButton_left.parentNode) {
         closeButton_left.parentNode.removeChild(closeButton_left);
       }
-      prevButton.style.display = 'none';
-      nextButton.style.display = 'none';
+
+      popupContent.classList.remove('enlarged');
     }
   });
 
@@ -192,8 +199,8 @@ popupContent.appendChild(container);
   prevButton.innerHTML = '&#9664;'; // Left arrow symbol
   prevButton.style.display = 'none';
   prevButton.style.position = 'absolute';
-  prevButton.style.left = '-63px';
-  prevButton.style.top = '150px';
+  prevButton.style.left = '-25px';
+  prevButton.style.top = '50%';
   prevButton.style.zIndex = '9';
   prevButton.style.transform = 'translateY(-50%)';
   popupContent.appendChild(prevButton);
@@ -203,8 +210,8 @@ popupContent.appendChild(container);
   nextButton.innerHTML = '&#9654;'; // Right arrow symbol
   nextButton.style.display = 'none';
   nextButton.style.position = 'absolute';
-  nextButton.style.right = '-63px';
-  nextButton.style.top = '150px';
+  nextButton.style.right = '-25px';
+  nextButton.style.top = '50%';
   nextButton.style.zIndex = '9'
   nextButton.style.transform = 'translateY(-50%)';
   popupContent.appendChild(nextButton);
@@ -471,8 +478,8 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
     lngLat: [8.5168606, 49.53771968],
     gallery: ['images/Station_10/IMG_0086_1.JPG', 'images/Station_10/IMG_0181_1.JPG', 'images/Station_10/IMG_0183_1.JPG', 'images/Station_10/IMG_0188_1.JPG', 'images/Station_10/IMG_0191_1.JPG', 'images/Station_10/IMG_0194_1.JPG', 'images/Station_10/IMG_0198_1.JPG'],
       galleryDescriptions: { 
-        de: ['Nachhaltiger Rohstoff Holz fällt bei Verkehrssicherung an', 'Weiter auf Weg Nr. 1', 'Blick Richtung Weg Nr. 1', 'Blick in die Kieferkronen', 'Auch hier: Spätblühende Traubenkirsche', 'Zurück auf die lange Allee', 'Nachhaltiger Rohstoff Holz'],
-        en: ['Sustainable resource wood arises from traffic safety measures', 'Continue on Path No. 1', 'View towards Path No. 1', 'View into the pine crowns', 'Here too: Late-blooming Bird Cherry', 'Back to the long avenue', 'Sustainable resource wood']
+        de: ['Nachhaltiger Rohstoff Holz', 'Weiter auf Weg Nr. 1', 'Blick Richtung Weg Nr. 1', 'Blick in die Kieferkronen', 'Auch hier: Spätblühende Traubenkirsche', 'Zurück auf die lange Allee', 'Nachhaltiger Rohstoff Holz'],
+        en: ['Sustainable resource wood', 'Continue on Path No. 1', 'View towards Path No. 1', 'View into the pine crowns', 'Here too: Late-blooming Bird Cherry', 'Back to the long avenue', 'Sustainable resource wood']
 
 },
     galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy'],
