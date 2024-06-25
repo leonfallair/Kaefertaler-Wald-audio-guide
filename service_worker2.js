@@ -70,25 +70,46 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      if (response) {
-        return response; // Ressource aus dem Cache laden
-      }
-
-      return fetch(event.request).then(function(response) {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
+    event.respondWith(
+      caches.match(event.request).then(function(response) {
+        if (response) {
           return response;
         }
-
-        // Neue Ressource zwischenspeichern
-        var responseToCache = response.clone();
-        caches.open(CACHE_NAME).then(function(cache) {
-          cache.put(event.request, responseToCache);
+  
+        return fetch(event.request).then(function(response) {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+  
+          var responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(event.request, responseToCache);
+          });
+  
+          return response;
+        }).catch(function() {
+          return new Promise(function(resolve, reject) {
+            const openRequest = indexedDB.open(dbName, dbVersion);
+            openRequest.onsuccess = function(event) {
+              db = event.target.result;
+              const transaction = db.transaction(['files'], 'readonly');
+              const objectStore = transaction.objectStore('files');
+              const request = objectStore.get(event.request.url);
+              request.onsuccess = function(event) {
+                if (request.result) {
+                  const response = new Response(request.result.blob);
+                  resolve(response);
+                } else {
+                  reject('Datei nicht gefunden in IndexedDB');
+                }
+              };
+              request.onerror = function(event) {
+                reject('Fehler beim Abrufen der Datei aus IndexedDB');
+              };
+            };
+          });
         });
-
-        return response;
-      });
-    })
-  );
-});
+      })
+    );
+  });
+  

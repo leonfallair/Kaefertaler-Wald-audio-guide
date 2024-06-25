@@ -3,12 +3,12 @@ body {
   padding: 0;
 }
 
-#downloadbutton {
+#download-button {
 position: absolute;
 top: 10px;
 left: 10px;
-z-index: 99999; /* Make sure it's on top of other elements */
-padding: 10px 20px;
+z-index: 99; /* Make sure it's on top of other elements */
+padding: 20px;
 background-color: #007bff;
 color: white;
 border: none;
@@ -34,9 +34,12 @@ cursor: pointer;
   margin:0;
   padding:0;
   box-sizing: border-box;
-  width: 250px;
+  width: 100%;
 }
 
+.popup-content.expanded {
+  width:120%;
+}
 .enlarged > *:not(.popup-image) {
   display: none;
 }
@@ -53,9 +56,21 @@ cursor: pointer;
 }
 
 .maplibregl-popup-close-button {
-position: fixed;
+position: absolute;
 top: 0px;
-right: -10px;
+right: 0px;
+background: none;
+color: grey;
+border-radius: 10px;
+cursor: pointer;
+padding:2px;
+font-size: 14px;
+}
+
+.closeButtonElement.expanded {
+  position: absolute;
+top: 0px;
+right: -40px;
 background: none;
 color: grey;
 border-radius: 10px;
@@ -103,6 +118,7 @@ font-size: 9px;
 }
 .welcome-text {
 height: 200px;
+width: auto;
 display: flex;
 overflow-y: scroll;
 text-align: left;

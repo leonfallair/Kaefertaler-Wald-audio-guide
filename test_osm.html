@@ -11,6 +11,7 @@
 </head>
 <body>
     <div id="map"></div>
+    <button id="download-button">Download</button>
     <script>
 
 if ('serviceWorker' in navigator) {
@@ -229,13 +230,16 @@ const closeButton_left = document.createElement('button');
     imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
     imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
   });
-  moreInfoButton.addEventListener('click', function () {
-    if (welcomeText.style.display === 'none') {
-      welcomeText.style.display = 'block';
-    } else {
-      welcomeText.style.display = 'none';
-    }
-  });
+
+moreInfoButton.addEventListener('click', function () {
+  if (welcomeText.style.display === 'none') {
+    welcomeText.style.display = 'block';
+    popupContent.classList.add('expanded');
+  } else {
+    welcomeText.style.display = 'none';
+    popupContent.classList.remove('expanded');
+  }
+});
 
             // Flaggen hinzufügen
             const languages = ['de', 'en'];

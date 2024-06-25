@@ -10,16 +10,21 @@
     <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
 </head>
 <body>
-    <div id="map"></div>
+  <div id="map"></div>
+  <button id="download-button">Download</button>
     <script>
 
-if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(function(registration) {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, function(error) {
-                console.log('ServiceWorker registration failed: ', error);
-            });
-        }
+const downloadButton = document.getElementById('download-button');
+
+downloadButton.addEventListener('click', function() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('sw.js').then(function(registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, function(error) {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+                }
+        });
      
         const map = new maplibregl.Map({
             container: 'map',
@@ -28,39 +33,7 @@ if ('serviceWorker' in navigator) {
             zoom: 14
         });
 
-        // Standardsprache auf Deutsch setzen
-let currentLanguage = 'de'; 
 
-// Funktion zum Aktualisieren des Popup-Inhalts basierend auf der aktuellen Sprache
-function updatePopupContent(popupContent, location) {
-  const titleText = location.title[currentLanguage];
-  const descriptionText = location.description[currentLanguage];
-  const audioSrc = location.audioSrc[currentLanguage];
-  const galleryDescriptions = location.galleryDescriptions[currentLanguage];
-
-  // Titel aktualisieren
-  const stationText = popupContent.querySelector('strong');
-  stationText.textContent = titleText;
-
-  // Beschreibung aktualisieren
-  const welcomeText = popupContent.querySelector('.welcome-text');
-  welcomeText.innerHTML = descriptionText;
-
-  // Audioquelle aktualisieren
-  const audioElement = popupContent.querySelector('audio');
-  audioElement.src = audioSrc;
-
-  // Galerie-Beschreibung aktualisieren
-  const imageDescription = popupContent.querySelector('.image-description');
-  const currentImageIndex = popupContent.getAttribute('data-current-image-index') || 0;
-  imageDescription.textContent = location.galleryDescriptions[currentLanguage][currentImageIndex];
-
-      // Buttons aktualisieren
-      const moreInfoButton = popupContent.querySelector('.moreinfo-button');
-  const playButton = popupContent.querySelector('.audio-button');
-  moreInfoButton.textContent = (currentLanguage === 'de') ? 'Mehr erfahren' : 
-                              'Learn more' ;
-}
 
 // popups with respective functions are defined
 function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions,galleryphotographer, title, description, audioSrc) {
@@ -269,6 +242,40 @@ const closeButton_left = document.createElement('button');
     .setLngLat(lngLat)
     .addTo(map)
     .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
+}
+
+        // Standardsprache auf Deutsch setzen
+        let currentLanguage = 'de'; 
+
+// Funktion zum Aktualisieren des Popup-Inhalts basierend auf der aktuellen Sprache
+function updatePopupContent(popupContent, location) {
+  const titleText = location.title[currentLanguage];
+  const descriptionText = location.description[currentLanguage];
+  const audioSrc = location.audioSrc[currentLanguage];
+  const galleryDescriptions = location.galleryDescriptions[currentLanguage];
+
+  // Titel aktualisieren
+  const stationText = popupContent.querySelector('strong');
+  stationText.textContent = titleText;
+
+  // Beschreibung aktualisieren
+  const welcomeText = popupContent.querySelector('.welcome-text');
+  welcomeText.innerHTML = descriptionText;
+
+  // Audioquelle aktualisieren
+  const audioElement = popupContent.querySelector('audio');
+  audioElement.src = audioSrc;
+
+  // Galerie-Beschreibung aktualisieren
+  const imageDescription = popupContent.querySelector('.image-description');
+  const currentImageIndex = popupContent.getAttribute('data-current-image-index') || 0;
+  imageDescription.textContent = location.galleryDescriptions[currentLanguage][currentImageIndex];
+
+      // Buttons aktualisieren
+      const moreInfoButton = popupContent.querySelector('.moreinfo-button');
+  const playButton = popupContent.querySelector('.audio-button');
+  moreInfoButton.textContent = (currentLanguage === 'de') ? 'Mehr erfahren' : 
+                              'Learn more' ;
 }
 // locations with coordinates and content are defined
 const locations = [
