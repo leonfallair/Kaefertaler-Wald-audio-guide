@@ -1,32 +1,11 @@
 const CACHE_NAME = 'offline-map-cache-v1'; // Ändere die Versionsnummer bei Änderungen
 const urlsToCache = [
   '/',
-  'index.html',
   'styles.css',
-  'Audio/english/1_en.mp3',
-  'Audio/english/2_en.mp3',
-  'Audio/english/3_en.mp3',
-  'Audio/english/4_en.mp3',
-  'Audio/english/5_en.mp3',
-  'Audio/english/6_en.mp3',
-  'Audio/english/7_en.mp3',
-  'Audio/english/8_en.mp3',
-  'Audio/english/9_en.mp3',
-  'Audio/english/10_en.mp3',
-  'Audio/english/11_en.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_01.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_02.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_03.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_04.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_05.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_06.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_07.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_08.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_09.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_10.mp3',
-  'Audio/german/AG_Kaefertaler_Wald_11.mp3',
-  'images/*/*.jpg',
-  'images/*/*.JPG',
+  'https://unpkg.com/maplibre-gl/dist/maplibre-gl.css',
+  'https://unpkg.com/maplibre-gl/dist/maplibre-gl.js',
+
+
 
   // Füge hier alle Ressourcen hinzu, die offline verfügbar sein sollen
 ];
@@ -70,46 +49,25 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-    event.respondWith(
-      caches.match(event.request).then(function(response) {
-        if (response) {
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      if (response) {
+        return response; // Ressource aus dem Cache laden
+      }
+
+      return fetch(event.request).then(function(response) {
+        if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
-  
-        return fetch(event.request).then(function(response) {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-  
-          var responseToCache = response.clone();
-          caches.open(CACHE_NAME).then(function(cache) {
-            cache.put(event.request, responseToCache);
-          });
-  
-          return response;
-        }).catch(function() {
-          return new Promise(function(resolve, reject) {
-            const openRequest = indexedDB.open(dbName, dbVersion);
-            openRequest.onsuccess = function(event) {
-              db = event.target.result;
-              const transaction = db.transaction(['files'], 'readonly');
-              const objectStore = transaction.objectStore('files');
-              const request = objectStore.get(event.request.url);
-              request.onsuccess = function(event) {
-                if (request.result) {
-                  const response = new Response(request.result.blob);
-                  resolve(response);
-                } else {
-                  reject('Datei nicht gefunden in IndexedDB');
-                }
-              };
-              request.onerror = function(event) {
-                reject('Fehler beim Abrufen der Datei aus IndexedDB');
-              };
-            };
-          });
+
+        // Neue Ressource zwischenspeichern
+        var responseToCache = response.clone();
+        caches.open(CACHE_NAME).then(function(cache) {
+          cache.put(event.request, responseToCache);
         });
-      })
-    );
-  });
-  
+
+        return response;
+      });
+    })
+  );
+});

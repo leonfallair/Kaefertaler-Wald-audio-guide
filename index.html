@@ -14,24 +14,93 @@
   <button id="download-button">Download</button>
     <script>
 
-const downloadButton = document.getElementById('download-button');
+document.addEventListener('DOMContentLoaded', function () {
+    const downloadButton = document.getElementById('download-button');
 
-downloadButton.addEventListener('click', function() {
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('sw.js').then(function(registration) {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    }, function(error) {
-                        console.log('ServiceWorker registration failed: ', error);
-                    });
-                }
+    downloadButton.addEventListener('click', function() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service_worker2.js').then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(error) {
+                console.log('ServiceWorker registration failed: ', error);
+            });
+        }
+        cacheFilesInIndexedDB(urlsToCacheForIndexedDB, function() {
+            alert('Download completed!');
         });
-     
-        const map = new maplibregl.Map({
-            container: 'map',
-            style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
-            center: [8.5140882, 49.5366096],
-            zoom: 14
+    });
+
+    const map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
+        center: [8.5140882, 49.5366096],
+        zoom: 14
+    });
+
+    const dbName = 'audio-guide-db';
+    const dbVersion = 1;
+    let db;
+
+    const openRequest = indexedDB.open(dbName, dbVersion);
+
+    openRequest.onupgradeneeded = event => {
+        db = event.target.result;
+        if (!db.objectStoreNames.contains('files')) {
+            db.createObjectStore('files', { keyPath: 'url' });
+        }
+    };
+
+    openRequest.onsuccess = event => {
+        db = event.target.result;
+    };
+
+    function cacheFilesInIndexedDB(urls, callback) {
+        let completed = 0;
+        urls.forEach(url => {
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const transaction = db.transaction(['files'], 'readwrite');
+                    const objectStore = transaction.objectStore('files');
+                    objectStore.put({ url, blob });
+                    completed++;
+                    if (completed === urls.length) {
+                        callback();
+                    }
+                });
         });
+    }
+
+    const urlsToCacheForIndexedDB = [
+        'Audio/english/1_en.mp3',
+        'Audio/english/2_en.mp3',
+        'Audio/english/3_en.mp3',
+        'Audio/english/4_en.mp3',
+        'Audio/english/5_en.mp3',
+        'Audio/english/6_en.mp3',
+        'Audio/english/7_en.mp3',
+        'Audio/english/8_en.mp3',
+        'Audio/english/9_en.mp3',
+        'Audio/english/10_en.mp3',
+        'Audio/english/11_en.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_01.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_02.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_03.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_04.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_05.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_06.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_07.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_08.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_09.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_10.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_11.mp3',
+        'images/Station_1/IMG_0001_1.JPG',
+        'images/Station_1/IMG_0002_1.JPG',
+        'images/Station_1/IMG_0003_1.JPG',
+        'images/Station_1/Wanderkarte_Ueberblick.PNG'
+    ];
+});
+
 
 
 

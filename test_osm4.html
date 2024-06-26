@@ -10,57 +10,99 @@
     <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
 </head>
 <body>
-    <div id="map"></div>
+  <div id="map"></div>
+  <button id="download-button">Download</button>
     <script>
 
-if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(function(registration) {
+document.addEventListener('DOMContentLoaded', function () {
+    const downloadButton = document.getElementById('download-button');
+
+    downloadButton.addEventListener('click', function() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service_worker2.js').then(function(registration) {
                 console.log('ServiceWorker registration successful with scope: ', registration.scope);
             }, function(error) {
                 console.log('ServiceWorker registration failed: ', error);
             });
         }
-     
-        const map = new maplibregl.Map({
-            container: 'map',
-            style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
-            center: [8.5140882, 49.5366096],
-            zoom: 14
+        cacheFilesInIndexedDB(urlsToCacheForIndexedDB, function() {
+            alert('Download completed!');
         });
+    });
 
-        // Standardsprache auf Deutsch setzen
-let currentLanguage = 'de'; 
+    const map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
+        center: [8.5140882, 49.5366096],
+        zoom: 14
+    });
 
-// Funktion zum Aktualisieren des Popup-Inhalts basierend auf der aktuellen Sprache
-function updatePopupContent(popupContent, location) {
-  const titleText = location.title[currentLanguage];
-  const descriptionText = location.description[currentLanguage];
-  const audioSrc = location.audioSrc[currentLanguage];
-  const galleryDescriptions = location.galleryDescriptions[currentLanguage];
+    const dbName = 'audio-guide-db';
+    const dbVersion = 1;
+    let db;
 
-  // Titel aktualisieren
-  const stationText = popupContent.querySelector('strong');
-  stationText.textContent = titleText;
+    const openRequest = indexedDB.open(dbName, dbVersion);
 
-  // Beschreibung aktualisieren
-  const welcomeText = popupContent.querySelector('.welcome-text');
-  welcomeText.innerHTML = descriptionText;
+    openRequest.onupgradeneeded = event => {
+        db = event.target.result;
+        if (!db.objectStoreNames.contains('files')) {
+            db.createObjectStore('files', { keyPath: 'url' });
+        }
+    };
 
-  // Audioquelle aktualisieren
-  const audioElement = popupContent.querySelector('audio');
-  audioElement.src = audioSrc;
+    openRequest.onsuccess = event => {
+        db = event.target.result;
+    };
 
-  // Galerie-Beschreibung aktualisieren
-  const imageDescription = popupContent.querySelector('.image-description');
-  const currentImageIndex = popupContent.getAttribute('data-current-image-index') || 0;
-  imageDescription.textContent = location.galleryDescriptions[currentLanguage][currentImageIndex];
+    function cacheFilesInIndexedDB(urls, callback) {
+        let completed = 0;
+        urls.forEach(url => {
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const transaction = db.transaction(['files'], 'readwrite');
+                    const objectStore = transaction.objectStore('files');
+                    objectStore.put({ url, blob });
+                    completed++;
+                    if (completed === urls.length) {
+                        callback();
+                    }
+                });
+        });
+    }
 
-      // Buttons aktualisieren
-      const moreInfoButton = popupContent.querySelector('.moreinfo-button');
-  const playButton = popupContent.querySelector('.audio-button');
-  moreInfoButton.textContent = (currentLanguage === 'de') ? 'Mehr erfahren' : 
-                              'Learn more' ;
-}
+    const urlsToCacheForIndexedDB = [
+        'Audio/english/1_en.mp3',
+        'Audio/english/2_en.mp3',
+        'Audio/english/3_en.mp3',
+        'Audio/english/4_en.mp3',
+        'Audio/english/5_en.mp3',
+        'Audio/english/6_en.mp3',
+        'Audio/english/7_en.mp3',
+        'Audio/english/8_en.mp3',
+        'Audio/english/9_en.mp3',
+        'Audio/english/10_en.mp3',
+        'Audio/english/11_en.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_01.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_02.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_03.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_04.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_05.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_06.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_07.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_08.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_09.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_10.mp3',
+        'Audio/german/AG_Kaefertaler_Wald_11.mp3',
+        'images/Station_1/IMG_0001_1.JPG',
+        'images/Station_1/IMG_0002_1.JPG',
+        'images/Station_1/IMG_0003_1.JPG',
+        'images/Station_1/Wanderkarte_Ueberblick.PNG'
+    ];
+});
+
+
+
 
 // popups with respective functions are defined
 function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions,galleryphotographer, title, description, audioSrc) {
@@ -270,6 +312,40 @@ const closeButton_left = document.createElement('button');
     .addTo(map)
     .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
 }
+
+        // Standardsprache auf Deutsch setzen
+        let currentLanguage = 'de'; 
+
+// Funktion zum Aktualisieren des Popup-Inhalts basierend auf der aktuellen Sprache
+function updatePopupContent(popupContent, location) {
+  const titleText = location.title[currentLanguage];
+  const descriptionText = location.description[currentLanguage];
+  const audioSrc = location.audioSrc[currentLanguage];
+  const galleryDescriptions = location.galleryDescriptions[currentLanguage];
+
+  // Titel aktualisieren
+  const stationText = popupContent.querySelector('strong');
+  stationText.textContent = titleText;
+
+  // Beschreibung aktualisieren
+  const welcomeText = popupContent.querySelector('.welcome-text');
+  welcomeText.innerHTML = descriptionText;
+
+  // Audioquelle aktualisieren
+  const audioElement = popupContent.querySelector('audio');
+  audioElement.src = audioSrc;
+
+  // Galerie-Beschreibung aktualisieren
+  const imageDescription = popupContent.querySelector('.image-description');
+  const currentImageIndex = popupContent.getAttribute('data-current-image-index') || 0;
+  imageDescription.textContent = location.galleryDescriptions[currentLanguage][currentImageIndex];
+
+      // Buttons aktualisieren
+      const moreInfoButton = popupContent.querySelector('.moreinfo-button');
+  const playButton = popupContent.querySelector('.audio-button');
+  moreInfoButton.textContent = (currentLanguage === 'de') ? 'Mehr erfahren' : 
+                              'Learn more' ;
+}
 // locations with coordinates and content are defined
 const locations = [
   {
@@ -478,8 +554,8 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
     lngLat: [8.5168606, 49.53771968],
     gallery: ['images/Station_10/IMG_0086_1.JPG', 'images/Station_10/IMG_0181_1.JPG', 'images/Station_10/IMG_0183_1.JPG', 'images/Station_10/IMG_0188_1.JPG', 'images/Station_10/IMG_0191_1.JPG', 'images/Station_10/IMG_0194_1.JPG', 'images/Station_10/IMG_0198_1.JPG'],
       galleryDescriptions: { 
-        de: ['Nachhaltiger Rohstoff Holz fällt bei Verkehrssicherung an', 'Weiter auf Weg Nr. 1', 'Blick Richtung Weg Nr. 1', 'Blick in die Kieferkronen', 'Auch hier: Spätblühende Traubenkirsche', 'Zurück auf die lange Allee', 'Nachhaltiger Rohstoff Holz'],
-        en: ['Sustainable resource wood arises from traffic safety measures', 'Continue on Path No. 1', 'View towards Path No. 1', 'View into the pine crowns', 'Here too: Late-blooming Bird Cherry', 'Back to the long avenue', 'Sustainable resource wood']
+        de: ['Nachhaltiger Rohstoff Holz', 'Weiter auf Weg Nr. 1', 'Blick Richtung Weg Nr. 1', 'Blick in die Kieferkronen', 'Auch hier: Spätblühende Traubenkirsche', 'Zurück auf die lange Allee', 'Nachhaltiger Rohstoff Holz'],
+        en: ['Sustainable resource wood', 'Continue on Path No. 1', 'View towards Path No. 1', 'View into the pine crowns', 'Here too: Late-blooming Bird Cherry', 'Back to the long avenue', 'Sustainable resource wood']
 
 },
     galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy'],

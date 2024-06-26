@@ -19,6 +19,6 @@
       }
     ],
     "offline_enabled": true,
-    "service_worker": "sw.js"
+    "service_worker": "service_worker2.js"
   }
   
