@@ -6,55 +6,32 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
     <link href="styles.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
     <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
-    <div id="map"></div>
-    <button id="download-button">Download</button>
-    <script>
+  <div id="map"></div>
+  <button id="download-button">Download</button>
+  <script>
+
+if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(error) {
+                console.log('ServiceWorker registration failed: ', error);
+            });
+        }
+
+    const map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
+        center: [8.5140882, 49.5366096],
+        zoom: 14
+    });
 
 
-
-        const map = new maplibregl.Map({
-            container: 'map',
-            style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
-            center: [8.5140882, 49.5366096],
-            zoom: 14
-        });
-
-        // Standardsprache auf Deutsch setzen
-let currentLanguage = 'de'; 
-
-// Funktion zum Aktualisieren des Popup-Inhalts basierend auf der aktuellen Sprache
-function updatePopupContent(popupContent, location) {
-  const titleText = location.title[currentLanguage];
-  const descriptionText = location.description[currentLanguage];
-  const audioSrc = location.audioSrc[currentLanguage];
-  const galleryDescriptions = location.galleryDescriptions[currentLanguage];
-
-  // Titel aktualisieren
-  const stationText = popupContent.querySelector('strong');
-  stationText.textContent = titleText;
-
-  // Beschreibung aktualisieren
-  const welcomeText = popupContent.querySelector('.welcome-text');
-  welcomeText.innerHTML = descriptionText;
-
-  // Audioquelle aktualisieren
-  const audioElement = popupContent.querySelector('audio');
-  audioElement.src = audioSrc;
-
-  // Galerie-Beschreibung aktualisieren
-  const imageDescription = popupContent.querySelector('.image-description');
-  const currentImageIndex = popupContent.getAttribute('data-current-image-index') || 0;
-  imageDescription.textContent = location.galleryDescriptions[currentLanguage][currentImageIndex];
-
-      // Buttons aktualisieren
-      const moreInfoButton = popupContent.querySelector('.moreinfo-button');
-  const playButton = popupContent.querySelector('.audio-button');
-  moreInfoButton.textContent = (currentLanguage === 'de') ? 'Mehr erfahren' : 
-                              'Learn more' ;
-}
 
 // popups with respective functions are defined
 function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions,galleryphotographer, title, description, audioSrc) {
@@ -264,6 +241,40 @@ const closeButton_left = document.createElement('button');
     .addTo(map)
     .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
 }
+
+        // Standardsprache auf Deutsch setzen
+        let currentLanguage = 'de'; 
+
+// Funktion zum Aktualisieren des Popup-Inhalts basierend auf der aktuellen Sprache
+function updatePopupContent(popupContent, location) {
+  const titleText = location.title[currentLanguage];
+  const descriptionText = location.description[currentLanguage];
+  const audioSrc = location.audioSrc[currentLanguage];
+  const galleryDescriptions = location.galleryDescriptions[currentLanguage];
+
+  // Titel aktualisieren
+  const stationText = popupContent.querySelector('strong');
+  stationText.textContent = titleText;
+
+  // Beschreibung aktualisieren
+  const welcomeText = popupContent.querySelector('.welcome-text');
+  welcomeText.innerHTML = descriptionText;
+
+  // Audioquelle aktualisieren
+  const audioElement = popupContent.querySelector('audio');
+  audioElement.src = audioSrc;
+
+  // Galerie-Beschreibung aktualisieren
+  const imageDescription = popupContent.querySelector('.image-description');
+  const currentImageIndex = popupContent.getAttribute('data-current-image-index') || 0;
+  imageDescription.textContent = location.galleryDescriptions[currentLanguage][currentImageIndex];
+
+      // Buttons aktualisieren
+      const moreInfoButton = popupContent.querySelector('.moreinfo-button');
+  const playButton = popupContent.querySelector('.audio-button');
+  moreInfoButton.textContent = (currentLanguage === 'de') ? 'Mehr erfahren' : 
+                              'Learn more' ;
+}
 // locations with coordinates and content are defined
 const locations = [
   {
@@ -404,7 +415,7 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
   {
     imageSrc: ['images/Station_7/Eiche_CMB.JPG'],
     lngLat: [8.5170112, 49.5417621],
-    gallery: ['images/Station_7/Eiche_CMB.JPG', 'images/Station_7/20210519_143538.JPG', 'images/Station_7/IMG_0121_1.JPG', 'images/Station_7/IMG_0125_1.JPG', 'images/Station_7/IMG_0127_1.JPG', 'images/Station_7/IMG_0129_1.JPG', 'images/Station_7/Stadtwald_4_Wilhelm.jpg'],
+    gallery: ['images/Station_7/Eiche_CMB.JPG', 'images/Station_7/20210519_143538.jpg', 'images/Station_7/IMG_0121_1.JPG', 'images/Station_7/IMG_0125_1.JPG', 'images/Station_7/IMG_0127_1.JPG', 'images/Station_7/IMG_0129_1.JPG', 'images/Station_7/Stadtwald_4_Wilhelm.jpg'],
       galleryDescriptions: { 
         de: ['Blick in die Eichkrone', 'Eichenblätter, Eichel mit Hütchen', 'Große, alte Eichen an der Neuen Poststraße', 'alte Eichen', 'Rinde der Eiche', 'Blick auf Neue Poststraße', 'kleine Eichen'],
         en: ['View into the oak crown', 'Oak leaves, acorn with cupule', 'Large, old oaks on the Neue Poststraße', 'old oaks', 'oak bark', 'View of Neue Poststraße', 'small oaks']
@@ -519,76 +530,28 @@ locations.forEach(location => {
   createMarkerAndPopup(location.imageSrc, location.lngLat, location.gallery, location.galleryDescriptions, location.galleryphotographer, location.title, location.description, location.audioSrc);
 });
 
-// Konstanten für IndexedDB
-const dbName = 'audio_guide_db';
-const objectStoreName = 'files';
 
-// Funktion zum Hinzufügen einer Datei zur IndexedDB
-function addFileToDB(fileUrl) {
-  fetch(fileUrl)
-    .then(response => response.blob())
-    .then(blob => {
-      const transaction = db.transaction([objectStoreName], 'readwrite');
-      const store = transaction.objectStore(objectStoreName);
-      store.add({ file: blob, url: fileUrl });
-    })
-    .catch(error => {
-      console.error('Fehler beim Hinzufügen der Datei zur IndexedDB:', error);
-    });
-}
+function downloadContent() {
+            const zip = new JSZip();
 
-// Eventlistener für den Download-Button
-document.getElementById('download-button').addEventListener('click', function() {
-  // Liste der Dateien zum Herunterladen
-  const filesToDownload = [];
+            locations.forEach(location => {
+                location.gallery.forEach((imgSrc, index) => {
+                    const imgName = imgSrc.split('/').pop();
+                    zip.file(`images/${imgName}`, fetch(imgSrc).then(res => res.blob()));
+                });
 
-  // Iteriere über jede Location in der locations-Konstante
-  locations.forEach(location => {
-    // Füge Bilder aus der gallery hinzu
-    location.gallery.forEach(imageUrl => {
-      filesToDownload.push(imageUrl);
-    });
+                Object.values(location.audioSrc).forEach(audioSrc => {
+                    const audioName = audioSrc.split('/').pop();
+                    zip.file(`audio/${audioName}`, fetch(audioSrc).then(res => res.blob()));
+                });
+            });
 
-    // Füge Audio-Dateien aus audioSrc hinzu
-    Object.values(location.audioSrc).forEach(audioUrl => {
-      filesToDownload.push(audioUrl);
-    });
-  });
-
-  // IndexedDB initialisieren
-  let db;
-
-  const request = indexedDB.open(dbName, 1);
-
-  request.onerror = function(event) {
-    console.error('Fehler beim Öffnen der IndexedDB:', event.target.errorCode);
-  };
-
-  request.onupgradeneeded = function(event) {
-    db = event.target.result;
-    db.createObjectStore(objectStoreName, { keyPath: 'id', autoIncrement: true });
-  };
-
-  request.onsuccess = function(event) {
-    db = event.target.result;
-
-    // Dateien nacheinander zur IndexedDB hinzufügen
-    filesToDownload.forEach(fileUrl => {
-      addFileToDB(fileUrl);
-    });
-
-    // Benachrichtigung anzeigen
-    if ('Notification' in window) {
-      Notification.requestPermission().then(function(permission) {
-        if (permission === 'granted') {
-          new Notification('Dateien heruntergeladen!', {
-            body: 'Die Dateien stehen nun offline zur Verfügung.'
-          });
+            zip.generateAsync({ type: "blob" }).then(function(content) {
+                saveAs(content, "kaefertaler_wald_offline_content.zip");
+                alert('Download fertig!');
+            });
         }
-      });
-    }
-  };
-});
+        document.getElementById('download-button').addEventListener('click', downloadContent);
 
 
 // GeoJSON for route around Kaefertaler Wald
