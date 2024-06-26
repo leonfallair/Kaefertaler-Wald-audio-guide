@@ -8,46 +8,13 @@
     <link href="styles.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
   <div id="map"></div>
   <button id="download-button">Download</button>
   <script>
-    const downloadButton = document.getElementById('download-button');
-
-    function showNotification(title, body) {
-        if (Notification.permission === 'granted') {
-            new Notification(title, { body });
-        }
-    }
-
-    function registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(function(registration) {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-
-                // Trigger cache update
-                if (navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({ action: 'cache-resources' });
-                }
-
-            }, function(error) {
-                console.log('ServiceWorker registration failed: ', error);
-            });
-        }
-    }
-
-    downloadButton.addEventListener('click', function() {
-        if (Notification.permission === 'default') {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    registerServiceWorker();
-                }
-            });
-        } else {
-            registerServiceWorker();
-        }
-    });
 
     const map = new maplibregl.Map({
         container: 'map',
@@ -56,13 +23,6 @@
         zoom: 14
     });
 
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.addEventListener('message', function(event) {
-            if (event.data === 'cache-complete') {
-                showNotification('Download Complete', 'All resources have been cached for offline use.');
-            }
-        });
-    }
 
 
 // popups with respective functions are defined
@@ -561,6 +521,29 @@ en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map', '3D Üb
 locations.forEach(location => {
   createMarkerAndPopup(location.imageSrc, location.lngLat, location.gallery, location.galleryDescriptions, location.galleryphotographer, location.title, location.description, location.audioSrc);
 });
+
+
+function downloadContent() {
+            const zip = new JSZip();
+
+            locations.forEach(location => {
+                location.gallery.forEach((imgSrc, index) => {
+                    const imgName = imgSrc.split('/').pop();
+                    zip.file(`images/${imgName}`, fetch(imgSrc).then(res => res.blob()));
+                });
+
+                Object.values(location.audioSrc).forEach(audioSrc => {
+                    const audioName = audioSrc.split('/').pop();
+                    zip.file(`audio/${audioName}`, fetch(audioSrc).then(res => res.blob()));
+                });
+            });
+
+            zip.generateAsync({ type: "blob" }).then(function(content) {
+                saveAs(content, "kaefertaler_wald_offline_content.zip");
+                alert('Download fertig!');
+            });
+        }
+        document.getElementById('download-button').addEventListener('click', downloadContent);
 
 
 // GeoJSON for route around Kaefertaler Wald

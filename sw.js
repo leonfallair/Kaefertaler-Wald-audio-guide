@@ -1,5 +1,7 @@
 const CACHE_NAME = 'offline-map-cache-v1';
 const urlsToCache = [
+  '/',
+  'index.html',
   'styles.css',
   'Audio/english/1_en.mp3',
   'Audio/english/2_en.mp3',
