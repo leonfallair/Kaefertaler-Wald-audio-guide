@@ -12,22 +12,41 @@
 <body>
   <div id="map"></div>
   <button id="download-button">Download</button>
-    <script>
-
-document.addEventListener('DOMContentLoaded', function () {
+  <script>
     const downloadButton = document.getElementById('download-button');
 
-    downloadButton.addEventListener('click', function() {
+    function showNotification(title, body) {
+        if (Notification.permission === 'granted') {
+            new Notification(title, { body });
+        }
+    }
+
+    function registerServiceWorker() {
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service_worker2.js').then(function(registration) {
+            navigator.serviceWorker.register('sw.js').then(function(registration) {
                 console.log('ServiceWorker registration successful with scope: ', registration.scope);
+
+                // Trigger cache update
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ action: 'cache-resources' });
+                }
+
             }, function(error) {
                 console.log('ServiceWorker registration failed: ', error);
             });
         }
-        cacheFilesInIndexedDB(urlsToCacheForIndexedDB, function() {
-            alert('Download completed!');
-        });
+    }
+
+    downloadButton.addEventListener('click', function() {
+        if (Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    registerServiceWorker();
+                }
+            });
+        } else {
+            registerServiceWorker();
+        }
     });
 
     const map = new maplibregl.Map({
@@ -37,71 +56,13 @@ document.addEventListener('DOMContentLoaded', function () {
         zoom: 14
     });
 
-    const dbName = 'audio-guide-db';
-    const dbVersion = 1;
-    let db;
-
-    const openRequest = indexedDB.open(dbName, dbVersion);
-
-    openRequest.onupgradeneeded = event => {
-        db = event.target.result;
-        if (!db.objectStoreNames.contains('files')) {
-            db.createObjectStore('files', { keyPath: 'url' });
-        }
-    };
-
-    openRequest.onsuccess = event => {
-        db = event.target.result;
-    };
-
-    function cacheFilesInIndexedDB(urls, callback) {
-        let completed = 0;
-        urls.forEach(url => {
-            fetch(url)
-                .then(response => response.blob())
-                .then(blob => {
-                    const transaction = db.transaction(['files'], 'readwrite');
-                    const objectStore = transaction.objectStore('files');
-                    objectStore.put({ url, blob });
-                    completed++;
-                    if (completed === urls.length) {
-                        callback();
-                    }
-                });
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('message', function(event) {
+            if (event.data === 'cache-complete') {
+                showNotification('Download Complete', 'All resources have been cached for offline use.');
+            }
         });
     }
-
-    const urlsToCacheForIndexedDB = [
-        'Audio/english/1_en.mp3',
-        'Audio/english/2_en.mp3',
-        'Audio/english/3_en.mp3',
-        'Audio/english/4_en.mp3',
-        'Audio/english/5_en.mp3',
-        'Audio/english/6_en.mp3',
-        'Audio/english/7_en.mp3',
-        'Audio/english/8_en.mp3',
-        'Audio/english/9_en.mp3',
-        'Audio/english/10_en.mp3',
-        'Audio/english/11_en.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_01.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_02.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_03.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_04.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_05.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_06.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_07.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_08.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_09.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_10.mp3',
-        'Audio/german/AG_Kaefertaler_Wald_11.mp3',
-        'images/Station_1/IMG_0001_1.JPG',
-        'images/Station_1/IMG_0002_1.JPG',
-        'images/Station_1/IMG_0003_1.JPG',
-        'images/Station_1/Wanderkarte_Ueberblick.PNG'
-    ];
-});
-
-
 
 
 // popups with respective functions are defined

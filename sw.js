@@ -1,7 +1,5 @@
-const CACHE_NAME = 'offline-map-cache-v1'; // Ändere die Versionsnummer bei Änderungen
+const CACHE_NAME = 'offline-map-cache-v1';
 const urlsToCache = [
-  '/',
-  'index.html',
   'styles.css',
   'Audio/english/1_en.mp3',
   'Audio/english/2_en.mp3',
@@ -25,32 +23,10 @@ const urlsToCache = [
   'Audio/german/AG_Kaefertaler_Wald_09.mp3',
   'Audio/german/AG_Kaefertaler_Wald_10.mp3',
   'Audio/german/AG_Kaefertaler_Wald_11.mp3',
-
-  // Füge hier alle Ressourcen hinzu, die offline verfügbar sein sollen
 ];
 
 self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      console.log('Opened cache');
-      return cache.addAll(urlsToCache)
-        .then(function() {
-          // Set Cache-Control header to expire after 6 hours
-          cache.keys().then(function(keys) {
-            keys.forEach(function(key) {
-              cache.update(key, {
-                headers: {
-                  'Cache-Control': 'max-age=86400' // 86400 seconds = 24 hours
-                }
-              });
-            });
-          });
-        })
-        .catch(function(error) {
-          console.error('Failed to add resources to cache:', error);
-        });
-    })
-  );
+  self.skipWaiting(); // Ensure the new service worker is activated immediately
 });
 
 self.addEventListener('activate', function(event) {
@@ -63,6 +39,8 @@ self.addEventListener('activate', function(event) {
           return caches.delete(cacheName);
         })
       );
+    }).then(function() {
+      return self.clients.claim();
     })
   );
 });
@@ -71,7 +49,7 @@ self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request).then(function(response) {
       if (response) {
-        return response; // Ressource aus dem Cache laden
+        return response; // Return resource from cache
       }
 
       return fetch(event.request).then(function(response) {
@@ -79,7 +57,7 @@ self.addEventListener('fetch', function(event) {
           return response;
         }
 
-        // Neue Ressource zwischenspeichern
+        // Cache the new resource
         var responseToCache = response.clone();
         caches.open(CACHE_NAME).then(function(cache) {
           cache.put(event.request, responseToCache);
@@ -89,4 +67,20 @@ self.addEventListener('fetch', function(event) {
       });
     })
   );
+});
+
+self.addEventListener('message', function(event) {
+  if (event.data.action === 'cache-resources') {
+    caches.open(CACHE_NAME).then(function(cache) {
+      cache.addAll(urlsToCache).then(function() {
+        self.clients.matchAll().then(function(clients) {
+          clients.forEach(function(client) {
+            client.postMessage('cache-complete');
+          });
+        });
+      }).catch(function(error) {
+        console.error('Failed to add resources to cache:', error);
+      });
+    });
+  }
 });
