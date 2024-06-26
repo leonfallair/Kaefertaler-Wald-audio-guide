@@ -16,6 +16,14 @@
   <button id="download-button">Download</button>
   <script>
 
+if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(error) {
+                console.log('ServiceWorker registration failed: ', error);
+            });
+        }
+
     const map = new maplibregl.Map({
         container: 'map',
         style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
