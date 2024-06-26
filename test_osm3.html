@@ -22,76 +22,7 @@ if ('serviceWorker' in navigator) {
             });
         }
 
-// Konstanten für IndexedDB
-const dbName = 'audio_guide_db';
-const objectStoreName = 'files';
 
-// Funktion zum Hinzufügen einer Datei zur IndexedDB
-function addFileToDB(fileUrl) {
-  fetch(fileUrl)
-    .then(response => response.blob())
-    .then(blob => {
-      const transaction = db.transaction([objectStoreName], 'readwrite');
-      const store = transaction.objectStore(objectStoreName);
-      store.add({ file: blob, url: fileUrl });
-    })
-    .catch(error => {
-      console.error('Fehler beim Hinzufügen der Datei zur IndexedDB:', error);
-    });
-}
-
-// Eventlistener für den Download-Button
-document.getElementById('download-button').addEventListener('click', function() {
-  // Liste der Dateien zum Herunterladen
-  const filesToDownload = [];
-
-  // Iteriere über jede Location in der locations-Konstante
-  locations.forEach(location => {
-    // Füge Bilder aus der gallery hinzu
-    location.gallery.forEach(imageUrl => {
-      filesToDownload.push(imageUrl);
-    });
-
-    // Füge Audio-Dateien aus audioSrc hinzu
-    Object.values(location.audioSrc).forEach(audioUrl => {
-      filesToDownload.push(audioUrl);
-    });
-  });
-
-  // IndexedDB initialisieren
-  let db;
-
-  const request = indexedDB.open(dbName, 1);
-
-  request.onerror = function(event) {
-    console.error('Fehler beim Öffnen der IndexedDB:', event.target.errorCode);
-  };
-
-  request.onupgradeneeded = function(event) {
-    db = event.target.result;
-    db.createObjectStore(objectStoreName, { keyPath: 'id', autoIncrement: true });
-  };
-
-  request.onsuccess = function(event) {
-    db = event.target.result;
-
-    // Dateien nacheinander zur IndexedDB hinzufügen
-    filesToDownload.forEach(fileUrl => {
-      addFileToDB(fileUrl);
-    });
-
-    // Benachrichtigung anzeigen
-    if ('Notification' in window) {
-      Notification.requestPermission().then(function(permission) {
-        if (permission === 'granted') {
-          new Notification('Dateien heruntergeladen!', {
-            body: 'Die Dateien stehen nun offline zur Verfügung.'
-          });
-        }
-      });
-    }
-  };
-});
 
         const map = new maplibregl.Map({
             container: 'map',
@@ -595,6 +526,77 @@ en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map', '3D Üb
 // locationcontent is connected with popups
 locations.forEach(location => {
   createMarkerAndPopup(location.imageSrc, location.lngLat, location.gallery, location.galleryDescriptions, location.galleryphotographer, location.title, location.description, location.audioSrc);
+});
+
+// Konstanten für IndexedDB
+const dbName = 'audio_guide_db';
+const objectStoreName = 'files';
+
+// Funktion zum Hinzufügen einer Datei zur IndexedDB
+function addFileToDB(fileUrl) {
+  fetch(fileUrl)
+    .then(response => response.blob())
+    .then(blob => {
+      const transaction = db.transaction([objectStoreName], 'readwrite');
+      const store = transaction.objectStore(objectStoreName);
+      store.add({ file: blob, url: fileUrl });
+    })
+    .catch(error => {
+      console.error('Fehler beim Hinzufügen der Datei zur IndexedDB:', error);
+    });
+}
+
+// Eventlistener für den Download-Button
+document.getElementById('download-button').addEventListener('click', function() {
+  // Liste der Dateien zum Herunterladen
+  const filesToDownload = [];
+
+  // Iteriere über jede Location in der locations-Konstante
+  locations.forEach(location => {
+    // Füge Bilder aus der gallery hinzu
+    location.gallery.forEach(imageUrl => {
+      filesToDownload.push(imageUrl);
+    });
+
+    // Füge Audio-Dateien aus audioSrc hinzu
+    Object.values(location.audioSrc).forEach(audioUrl => {
+      filesToDownload.push(audioUrl);
+    });
+  });
+
+  // IndexedDB initialisieren
+  let db;
+
+  const request = indexedDB.open(dbName, 1);
+
+  request.onerror = function(event) {
+    console.error('Fehler beim Öffnen der IndexedDB:', event.target.errorCode);
+  };
+
+  request.onupgradeneeded = function(event) {
+    db = event.target.result;
+    db.createObjectStore(objectStoreName, { keyPath: 'id', autoIncrement: true });
+  };
+
+  request.onsuccess = function(event) {
+    db = event.target.result;
+
+    // Dateien nacheinander zur IndexedDB hinzufügen
+    filesToDownload.forEach(fileUrl => {
+      addFileToDB(fileUrl);
+    });
+
+    // Benachrichtigung anzeigen
+    if ('Notification' in window) {
+      Notification.requestPermission().then(function(permission) {
+        if (permission === 'granted') {
+          new Notification('Dateien heruntergeladen!', {
+            body: 'Die Dateien stehen nun offline zur Verfügung.'
+          });
+        }
+      });
+    }
+  };
 });
 
 
