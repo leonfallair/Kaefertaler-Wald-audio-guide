@@ -25,8 +25,6 @@ const urlsToCache = [
   'Audio/german/AG_Kaefertaler_Wald_09.mp3',
   'Audio/german/AG_Kaefertaler_Wald_10.mp3',
   'Audio/german/AG_Kaefertaler_Wald_11.mp3',
-  'images/*/*.jpg',
-  'images/*/*.JPG',
 
   // Füge hier alle Ressourcen hinzu, die offline verfügbar sein sollen
 ];
