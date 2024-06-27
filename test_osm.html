@@ -616,7 +616,7 @@ async function fetchWithProgress(url, onProgress) {
                 await fetchAndAddToZip(imgSrc, `images/${imgName}`);
             }
 
-            for (const audioSrc of Object.Values(location.audioSrc)) {
+            for (const audioSrc of Object.values(location.audioSrc)) {
                 const audioName = audioSrc.split('/').pop();
                 await fetchAndAddToZip(audioSrc, `audio/${audioName}`);
             }
