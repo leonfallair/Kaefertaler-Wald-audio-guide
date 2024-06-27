@@ -23,6 +23,10 @@
       Der Ordner kann ohne Probleme mit einem Klick nachträglich wieder gelöscht werden. Viel Spaß!
     </p>
     <button id="download-button">Download</button>
+    <div id="progress-container">
+      <progress id="download-progress" value="0" max="100"></progress>
+      <span id="progress-percentage">0%</span>
+    </div>
   </div>
 
   <script>
@@ -541,32 +545,93 @@ locations.forEach(location => {
   createMarkerAndPopup(location.imageSrc, location.lngLat, location.gallery, location.galleryDescriptions, location.galleryphotographer, location.title, location.description, location.audioSrc);
 });
 
+async function fetchWithProgress(url, onProgress) {
+        const response = await fetch(url);
+        const reader = response.body.getReader();
+        const contentLength = +response.headers.get('Content-Length');
 
-function downloadContent() {
-            const zip = new JSZip();
+        let receivedLength = 0; // received that many bytes at the moment
+        let chunks = []; // array of received binary chunks (comprises the body)
+        while(true) {
+            const {done, value} = await reader.read();
 
-            locations.forEach(location => {
-                location.gallery.forEach((imgSrc, index) => {
-                    const imgName = imgSrc.split('/').pop();
-                    zip.file(`images/${imgName}`, fetch(imgSrc).then(res => res.blob()));
-                });
+            if (done) {
+                break;
+            }
 
-                Object.values(location.audioSrc).forEach(audioSrc => {
-                    const audioName = audioSrc.split('/').pop();
-                    zip.file(`audio/${audioName}`, fetch(audioSrc).then(res => res.blob()));
-                });
-            });
+            chunks.push(value);
+            receivedLength += value.length;
 
-            zip.generateAsync({ type: "blob" }).then(function(content) {
-                saveAs(content, "kaefertaler_wald_offline_content.zip");
-                alert('Download fertig!');
-            });
+            if (onProgress) {
+                onProgress(receivedLength, contentLength);
+            }
         }
+
+        const chunksAll = new Uint8Array(receivedLength); // (4.1)
+        let position = 0;
+        for(let chunk of chunks) {
+            chunksAll.set(chunk, position); // (4.2)
+            position += chunk.length;
+        }
+
+        return new Blob([chunksAll]);
+    }
+
+    async function downloadContent() {
+        const zip = new JSZip();
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('download-progress');
+        const progressPercentage = document.getElementById('progress-percentage');
+        progressContainer.style.display = 'block';
+
+        let totalFiles = 0;
+        let loadedFiles = 0;
+        let totalBytes = 0;
+        let loadedBytes = 0;
+
+        const updateProgress = () => {
+            const percentage = Math.round((loadedBytes / totalBytes) * 100);
+            progressBar.value = percentage;
+            progressPercentage.textContent = `${percentage}%`;
+        };
+
+        const fetchAndAddToZip = async (url, path) => {
+            const blob = await fetchWithProgress(url, (loaded, total) => {
+                loadedBytes += loaded;
+                totalBytes += total;
+                updateProgress();
+            });
+            zip.file(path, blob);
+            loadedFiles++;
+            updateProgress();
+        };
+
+        locations.forEach(location => {
+            totalFiles += location.gallery.length + location.audioSrc.length;
+        });
+
+        for (const location of locations) {
+            for (const imgSrc of location.gallery) {
+                const imgName = imgSrc.split('/').pop();
+                await fetchAndAddToZip(imgSrc, `images/${imgName}`);
+            }
+
+            for (const audioSrc of location.audioSrc) {
+                const audioName = audioSrc.split('/').pop();
+                await fetchAndAddToZip(audioSrc, `audio/${audioName}`);
+            }
+        }
+
+        zip.generateAsync({ type: "blob" }).then(function(content) {
+            saveAs(content, "kaefertaler_wald_offline_content.zip");
+            alert('Download fertig!');
+        });
+    }
+
     document.getElementById('download-button').addEventListener('click', downloadContent);
     document.getElementById('close-popup').addEventListener('click', function() {
         document.getElementById('popup').style.display = 'none';
     });
-
 
 // GeoJSON for route around Kaefertaler Wald
 const geojson = {

@@ -24,6 +24,11 @@ body {
   cursor: pointer;
 }
 
+#progress-container {
+  display: none;
+  margin-top: 10px;
+}
+
 #download-button {
 position: relative;
 bottom: 0px;
