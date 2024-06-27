@@ -12,6 +12,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', function(event) {
+  self.skipWaiting(); // Ensure the new service worker is activated immediately
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
       console.log('Opened cache');
@@ -45,6 +46,8 @@ self.addEventListener('activate', function(event) {
           return caches.delete(cacheName);
         })
       );
+    }).then(function() {
+      return self.clients.claim();
     })
   );
 });
@@ -71,4 +74,19 @@ self.addEventListener('fetch', function(event) {
       });
     })
   );
+});
+self.addEventListener('message', function(event) {
+  if (event.data.action === 'cache-resources') {
+    caches.open(CACHE_NAME).then(function(cache) {
+      cache.addAll(urlsToCache).then(function() {
+        self.clients.matchAll().then(function(clients) {
+          clients.forEach(function(client) {
+            client.postMessage('cache-complete');
+          });
+        });
+      }).catch(function(error) {
+        console.error('Failed to add resources to cache:', error);
+      });
+    });
+  }
 });
