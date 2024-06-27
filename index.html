@@ -249,7 +249,7 @@ const closeButton_left = document.createElement('button');
     });
     popupContent.insertBefore(flagContainer, popupContent.firstChild);
 
-  new maplibregl.Marker({ element: image })
+  const marker = new maplibregl.Marker({ element: image })
     .setLngLat(lngLat)
     .addTo(map)
     .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
@@ -657,13 +657,14 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return distance;
 }
 
+
 // Feature to check if user is near a station and open the popup window
 function checkNearbyStations(userLocation) {
   let popupOpened = false;
   locations.forEach(location => {
     const distance = calculateDistance(userLocation.lat, userLocation.lng, location.lngLat[1], location.lngLat[0]);
     if (distance <= 20) { // When the user is less than 20 meters from the station
-      location.marker.getPopup().addTo(map).openPopup(); // Open the popup window for that station
+      marker.getPopup().addTo(map).openPopup(); // Open the popup window for that station
       popupOpened = true;
     }
   });
