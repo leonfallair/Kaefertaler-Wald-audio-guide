@@ -603,6 +603,8 @@
       };
 
       const fetchAndAddToZip = async (url, path) => {
+        loadedBytes = 0; // Reset loadedBytes to 0
+        totalBytes = 0; // Reset totalBytes to 0
         const blob = await fetchWithProgress(url, (loaded, total) => {
           loadedBytes += loaded;
           totalBytes += total;
@@ -612,7 +614,6 @@
         loadedFiles++;
         updateProgress();
       };
-
       locations.forEach(location => {
         totalFiles += (location.gallery ? location.gallery.length : 0) + (location.audioSrc ? Object.values(location.audioSrc).length : 0);
       });
