@@ -543,29 +543,108 @@ locations.forEach(location => {
 
 
 function downloadContent() {
-            const zip = new JSZip();
+  const zip = new JSZip();
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  let totalFiles = 0;
+  let completedFiles = 0;
 
-            locations.forEach(location => {
-                location.gallery.forEach((imgSrc, index) => {
-                    const imgName = imgSrc.split('/').pop();
-                    zip.file(`images/${imgName}`, fetch(imgSrc).then(res => res.blob()));
-                });
+  locations.forEach(location => {
+    location.gallery.forEach((imgSrc, index) => {
+      totalFiles++;
+      const imgName = imgSrc.split('/').pop();
+      fetch(imgSrc)
+       .then(res => {
+          const reader = res.body.getReader();
+          let receivedLength = 0;
+          let contentLength = res.headers.get('Content-Length');
 
-                Object.values(location.audioSrc).forEach(audioSrc => {
-                    const audioName = audioSrc.split('/').pop();
-                    zip.file(`audio/${audioName}`, fetch(audioSrc).then(res => res.blob()));
-                });
-            });
+          reader.read().then(function processResult(result) {
+            if (result.done) return;
 
-            zip.generateAsync({ type: "blob" }).then(function(content) {
-                saveAs(content, "kaefertaler_wald_offline_content.zip");
-                alert('Download fertig!');
-            });
-        }
-    document.getElementById('download-button').addEventListener('click', downloadContent);
-    document.getElementById('close-popup-download').addEventListener('click', function() {
-        document.getElementById('popup-download').style.display = 'none';
+            receivedLength += result.value.length;
+            const progress = Math.round((receivedLength / contentLength) * 100);
+            updateProgressBar(progress);
+
+            return reader.read().then(processResult);
+          });
+
+          return reader;
+        })
+       .then(blob => {
+          zip.file(`images/${imgName}`, blob);
+          completedFiles++;
+          updateProgressBar((completedFiles / totalFiles) * 100);
+        });
     });
+
+    Object.values(location.audioSrc).forEach(audioSrc => {
+      totalFiles++;
+      const audioName = audioSrc.split('/').pop();
+      fetch(audioSrc)
+       .then(res => {
+          const reader = res.body.getReader();
+          let receivedLength = 0;
+          let contentLength = res.headers.get('Content-Length');
+
+          reader.read().then(function processResult(result) {
+            if (result.done) return;
+
+            receivedLength += result.value.length;
+            const progress = Math.round((receivedLength / contentLength) * 100);
+            updateProgressBar(progress);
+
+            return reader.read().then(processResult);
+          });
+
+          return reader;
+        })
+       .then(blob => {
+          zip.file(`audio/${audioName}`, blob);
+          completedFiles++;
+          updateProgressBar((completedFiles / totalFiles) * 100);
+        });
+    });
+  });
+
+  zip.generateAsync({ type: "blob" }).then(function(content) {
+    saveAs(content, "kaefertaler_wald_offline_content.zip");
+    alert('Download fertig!');
+    progressBar.style.width = '100%';
+    progressText.textContent = '100%';
+  });
+}
+
+function updateProgressBar(progress) {
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  progressBar.style.width = `${progress}%`;
+  progressText.textContent = `${progress}%`;
+}
+
+// Add the progress bar HTML elements
+const progressBarContainer = document.createElement('div');
+progressBarContainer.style.width = '100%';
+progressBarContainer.style.height = '20px';
+progressBarContainer.style.border = '1px solid #ccc';
+progressBarContainer.style.borderRadius = '10px';
+progressBarContainer.style.overflow = 'hidden';
+
+const progressBar = document.createElement('div');
+progressBar.id = 'progress-bar';
+progressBar.style.width = '0%';
+progressBar.style.height = '100%';
+progressBar.style.background = '#4CAF50';
+progressBar.style.transition = 'width 0.2s ease';
+
+const progressText = document.createElement('span');
+progressText.id = 'progress-text';
+progressText.textContent = '0%';
+
+progressBarContainer.appendChild(progressBar);
+progressBarContainer.appendChild(progressText);
+
+document.getElementById('popup-download').appendChild(progressBarContainer);
 
 
 // GeoJSON for route around Kaefertaler Wald
