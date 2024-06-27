@@ -607,7 +607,7 @@ async function fetchWithProgress(url, onProgress) {
         };
 
         locations.forEach(location => {
-            totalFiles += location.gallery.length + location.audioSrc.length;
+            totalFiles += (location.gallery ? location.gallery.length : 0) + (location.audioSrc ? Object.values(location.audioSrc).length : 0);
         });
 
         for (const location of locations) {
@@ -616,7 +616,7 @@ async function fetchWithProgress(url, onProgress) {
                 await fetchAndAddToZip(imgSrc, `images/${imgName}`);
             }
 
-            for (const audioSrc of location.audioSrc) {
+            for (const audioSrc of Object.Values(location.audioSrc)) {
                 const audioName = audioSrc.split('/').pop();
                 await fetchAndAddToZip(audioSrc, `audio/${audioName}`);
             }
