@@ -645,6 +645,10 @@ progressBarContainer.appendChild(progressBar);
 progressBarContainer.appendChild(progressText);
 
 document.getElementById('popup-download').appendChild(progressBarContainer);
+document.getElementById('download-button').addEventListener('click', downloadContent);
+    document.getElementById('close-popup-download').addEventListener('click', function() {
+        document.getElementById('popup-download').style.display = 'none';
+    });
 
 
 // GeoJSON for route around Kaefertaler Wald
