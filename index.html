@@ -596,23 +596,20 @@
       let totalBytes = 0;
       let loadedBytes = 0;
 
-      const updateProgress = () => {
-        const percentage = Math.round((loadedBytes / totalBytes) * 100);
-        progressBar.value = percentage;
-        progressPercentage.textContent = `${percentage}%`;
-      };
-
       const fetchAndAddToZip = async (url, path) => {
-        loadedBytes = 0; // Reset loadedBytes to 0
-        totalBytes = 0; // Reset totalBytes to 0
         const blob = await fetchWithProgress(url, (loaded, total) => {
           loadedBytes += loaded;
           totalBytes += total;
           updateProgress();
         });
         zip.file(path, blob);
-        loadedFiles++;
-        updateProgress();
+      };
+
+      const updateProgress = () => {
+        const percentage = Math.round((loadedBytes / totalBytes) * 100);
+        progressBar.value = percentage;
+        progressPercentage.textContent = `${percentage}%`;
+        loadedFiles++; // Update loadedFiles here
       };
       locations.forEach(location => {
         totalFiles += (location.gallery ? location.gallery.length : 0) + (location.audioSrc ? Object.values(location.audioSrc).length : 0);
