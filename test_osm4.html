@@ -14,8 +14,8 @@
 <body>
   <div id="map"></div>
 
-  <div id="popup">
-    <span id="close-popup">✖</span>
+  <div id="popup-download">
+    <span id="close-popup-download">✖</span>
     <h2>Willkommen zum Audioguide!</h2>
     <p>
       Um den Audioguide im Wald richtig nutzen zu können, 
@@ -563,8 +563,8 @@ function downloadContent() {
             });
         }
     document.getElementById('download-button').addEventListener('click', downloadContent);
-    document.getElementById('close-popup').addEventListener('click', function() {
-        document.getElementById('popup').style.display = 'none';
+    document.getElementById('close-popup-download').addEventListener('click', function() {
+        document.getElementById('popup-download').style.display = 'none';
     });
 
 
