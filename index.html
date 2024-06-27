@@ -13,7 +13,22 @@
 </head>
 <body>
   <div id="map"></div>
-  <button id="download-button">Download</button>
+
+  <div id="popup">
+    <span id="close-popup">✖</span>
+    <h2>Willkommen zum Audioguide!</h2>
+    <p>
+      Um den Audioguide im Wald richtig nutzen zu können, 
+      müssen Bilder und Audios (140 MB) im Voraus als Ordner heruntergeladen werden (es kommt eine Benachrichtigung, wenn der Download fertig ist).
+      Der Ordner kann ohne Probleme mit einem Klick nachträglich wieder gelöscht werden. Viel Spaß!
+    </p>
+    <button id="download-button">Download</button>
+    <div id="progress-container">
+      <progress id="download-progress" value="0" max="100"></progress>
+      <span id="progress-percentage">0%</span>
+    </div>
+  </div>
+
   <script>
 
 if ('serviceWorker' in navigator) {
@@ -77,7 +92,7 @@ function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions,gal
       moreInfoButton.className = 'moreinfo-button';
       popupContent.appendChild(moreInfoButton);
   
-      const welcomeText = document.createElement('div');
+      const welcomeText = document.createElement('p');
       welcomeText.innerHTML = description[currentLanguage];
       welcomeText.style.display = 'none';
       welcomeText.className = 'welcome-text';
@@ -531,27 +546,51 @@ locations.forEach(location => {
 });
 
 
-function downloadContent() {
-            const zip = new JSZip();
+async function downloadContent() {
+        const zip = new JSZip();
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('download-progress');
+        const progressPercentage = document.getElementById('progress-percentage');
+        progressContainer.style.display = 'block';
 
-            locations.forEach(location => {
-                location.gallery.forEach((imgSrc, index) => {
-                    const imgName = imgSrc.split('/').pop();
-                    zip.file(`images/${imgName}`, fetch(imgSrc).then(res => res.blob()));
-                });
+        let totalFiles = 0;
+        let loadedFiles = 0;
 
-                Object.values(location.audioSrc).forEach(audioSrc => {
-                    const audioName = audioSrc.split('/').pop();
-                    zip.file(`audio/${audioName}`, fetch(audioSrc).then(res => res.blob()));
-                });
-            });
+        const updateProgress = () => {
+            const percentage = Math.round((loadedFiles / totalFiles) * 100);
+            progressBar.value = percentage;
+            progressPercentage.textContent = `${percentage}%`;
+        };
 
-            zip.generateAsync({ type: "blob" }).then(function(content) {
-                saveAs(content, "kaefertaler_wald_offline_content.zip");
-                alert('Download fertig!');
-            });
+        const fetchAndAddToZip = async (url, path) => {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            zip.file(path, blob);
+            loadedFiles++;
+            updateProgress();
+        };
+        for (const location of locations) {
+            for (const imgSrc of location.gallery) {
+                const imgName = imgSrc.split('/').pop();
+                await fetchAndAddToZip(imgSrc, `images/${imgName}`);
+            }
+
+            for (const audioSrc of location.audioSrc) {
+                const audioName = audioSrc.split('/').pop();
+                await fetchAndAddToZip(audioSrc, `audio/${audioName}`);
+            }
         }
-        document.getElementById('download-button').addEventListener('click', downloadContent);
+
+        zip.generateAsync({ type: "blob" }).then(function(content) {
+            saveAs(content, "kaefertaler_wald_offline_content.zip");
+            alert('Download fertig!');
+        });
+    }
+
+    document.getElementById('download-button').addEventListener('click', downloadContent);
+    document.getElementById('close-popup').addEventListener('click', function() {
+        document.getElementById('popup').style.display = 'none';
+    });
 
 
 // GeoJSON for route around Kaefertaler Wald

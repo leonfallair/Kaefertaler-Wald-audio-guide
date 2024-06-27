@@ -8,30 +8,28 @@
     <link href="styles.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
   <div id="map"></div>
   <button id="download-button">Download</button>
-    <script>
+  <script>
 
-const downloadButton = document.getElementById('download-button');
+if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(error) {
+                console.log('ServiceWorker registration failed: ', error);
+            });
+        }
 
-downloadButton.addEventListener('click', function() {
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('sw.js').then(function(registration) {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    }, function(error) {
-                        console.log('ServiceWorker registration failed: ', error);
-                    });
-                }
-        });
-     
-        const map = new maplibregl.Map({
-            container: 'map',
-            style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
-            center: [8.5140882, 49.5366096],
-            zoom: 14
-        });
+    const map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K',
+        center: [8.5140882, 49.5366096],
+        zoom: 14
+    });
 
 
 
@@ -417,7 +415,7 @@ en: ['Back on path no. 6', 'Beech seedling', 'Hornbeam', 'sweet chestut', 'conti
   {
     imageSrc: ['images/Station_7/Eiche_CMB.JPG'],
     lngLat: [8.5170112, 49.5417621],
-    gallery: ['images/Station_7/Eiche_CMB.JPG', 'images/Station_7/20210519_143538.JPG', 'images/Station_7/IMG_0121_1.JPG', 'images/Station_7/IMG_0125_1.JPG', 'images/Station_7/IMG_0127_1.JPG', 'images/Station_7/IMG_0129_1.JPG', 'images/Station_7/Stadtwald_4_Wilhelm.jpg'],
+    gallery: ['images/Station_7/Eiche_CMB.JPG', 'images/Station_7/20210519_143538.jpg', 'images/Station_7/IMG_0121_1.JPG', 'images/Station_7/IMG_0125_1.JPG', 'images/Station_7/IMG_0127_1.JPG', 'images/Station_7/IMG_0129_1.JPG', 'images/Station_7/Stadtwald_4_Wilhelm.jpg'],
       galleryDescriptions: { 
         de: ['Blick in die Eichkrone', 'Eichenblätter, Eichel mit Hütchen', 'Große, alte Eichen an der Neuen Poststraße', 'alte Eichen', 'Rinde der Eiche', 'Blick auf Neue Poststraße', 'kleine Eichen'],
         en: ['View into the oak crown', 'Oak leaves, acorn with cupule', 'Large, old oaks on the Neue Poststraße', 'old oaks', 'oak bark', 'View of Neue Poststraße', 'small oaks']
@@ -531,6 +529,29 @@ en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map', '3D Üb
 locations.forEach(location => {
   createMarkerAndPopup(location.imageSrc, location.lngLat, location.gallery, location.galleryDescriptions, location.galleryphotographer, location.title, location.description, location.audioSrc);
 });
+
+
+function downloadContent() {
+            const zip = new JSZip();
+
+            locations.forEach(location => {
+                location.gallery.forEach((imgSrc, index) => {
+                    const imgName = imgSrc.split('/').pop();
+                    zip.file(`images/${imgName}`, fetch(imgSrc).then(res => res.blob()));
+                });
+
+                Object.values(location.audioSrc).forEach(audioSrc => {
+                    const audioName = audioSrc.split('/').pop();
+                    zip.file(`audio/${audioName}`, fetch(audioSrc).then(res => res.blob()));
+                });
+            });
+
+            zip.generateAsync({ type: "blob" }).then(function(content) {
+                saveAs(content, "kaefertaler_wald_offline_content.zip");
+                alert('Download fertig!');
+            });
+        }
+        document.getElementById('download-button').addEventListener('click', downloadContent);
 
 
 // GeoJSON for route around Kaefertaler Wald

@@ -2,7 +2,7 @@
 const locations = [
     {
       imageSrc: 'images/Station_1/IMG_0001_1.JPG',
-      lngLat: [8.687232, 49.382542],
+      lngLat: [8.470528, 49.4927872],
       gallery: ['images/Station_1/IMG_0001_1.JPG', 'images/Station_1/IMG_0002_1.JPG', 'images/Station_1/IMG_0003_1.JPG', 'images/Station_1/Wanderkarte_Ueberblick.PNG'],
       galleryDescriptions: { 
         de: ['Karlstern Pavillion', 'Wegweiser', 'Kastanienallee: Blick Richtung Vogelpark', 'Route mit Stationen'],
@@ -25,7 +25,7 @@ const locations = [
     },
     {
       imageSrc: 'images/Station_2/IMG_0009_1.JPG',
-      lngLat: [8.513174, 49.5385372],
+      lngLat: [8.513168, 49.538550],
       gallery: ['images/Station_2/IMG_0009_1.JPG', 'images/Station_2/IMG_0017_1.JPG', 'images/Station_2/Käfertaler_Wald_pan_02.jpg'],
         galleryDescriptions: { 
   de: ['Vogelpark', 'Kiefer', 'Blick von oben'],
@@ -47,7 +47,7 @@ const locations = [
     },
     {
       imageSrc: 'images/Station_3/IMG_0021_1.JPG',
-      lngLat: [8.5126713, 49.5399385],
+      lngLat: [8.513235, 49.540955],
       gallery: ['images/Station_3/IMG_0021_1.JPG', 'images/Station_3/IMG_0022_1.JPG', 'images/Station_3/IMG_0023_1.JPG', 'images/Station_3/IMG_0024_1.JPG', 'images/Station_3/IMG_0034_1.JPG', 'images/Station_3/IMG_0043_1.JPG', 'images/Station_3/IMG_0044_1.JPG', 'images/Station_3/IMG_0046_1.JPG', 'images/Station_3/IMG_0050_1.JPG', 'images/Station_3/Käfertaler_Wald_pan_03.jpg'],
         galleryDescriptions: { 
           de: ['Hier geht\'s weiter: Weg Nr. 7', 'Blick in Weg Nr. 7', 'Kiefer mit befallenen Nadeln (Diplodia)', 'Blick in die Kronen: absterbende Buche', 'Blick in die Kronen: abgestorbene Kiefer und Buche', 'Weiter nach links', 'Hier sind sie richtig!', 'Weiter auf Weg Nr. 6', 'abblätternde Rinde', 'Blick von oben: braun gefärbte Nadeln'],
@@ -70,7 +70,7 @@ const locations = [
     },
     {
       imageSrc: 'images/Station_4/IMG_0076_1.JPG',
-      lngLat: [8.5107553, 49.5440812],
+      lngLat: [8.510525, 49.544585],
       gallery: ['images/Station_4/IMG_0076_1.JPG', 'images/Station_4/IMG_0061_1.JPG', 'images/Station_4/IMG_0070_1.JPG', 'images/Station_4/IMG_0078_1.JPG', 'images/Station_4/IMG_0079_1.JPG', 'images/Station_4/IMG_0087_1.JPG'],
         galleryDescriptions: { 
           de: ['Pflänzliche Kastanienallee', 'Weiter nach links auf die Kastanienallee', 'Blick in Richtung Kastanienallee', 'Pflänzliche Kastanienallee', 'Infofläche an der Pflanzfläche', 'Weiter auf der Kastanienallee bis zur Pflanzfläche'],
@@ -93,7 +93,7 @@ const locations = [
     },
     {
       imageSrc: 'images/Station_5/IMG_0092_1.JPG',
-      lngLat: [8.5111508, 49.5440134],
+      lngLat: [8.111184, 49.5440003],
       gallery: ['images/Station_5/IMG_0092_1.JPG', 'images/Station_5/20210508_113850.jpg', 'images/Station_5/20210519_141202_001.jpg', 'images/Station_5/20210612_123444.jpg', 'images/Station_5/IMG_0094_1.JPG', 'images/Station_5/Stadtwald_4_Wilhelm.jpg'],
         galleryDescriptions: { 
   de: ['Wieder zurück auf Weg Nr. 6', 'Buchensämling', 'Heinbuche', 'Esskastanie', 'Weiter auf Weg Nr. 6', 'Eichennachwuchs'],
@@ -115,7 +115,7 @@ const locations = [
     },
     {
       imageSrc: ['images/Station_6/IMG_0042_1.JPG'],
-      lngLat: [8.5143952, 49.5427621],
+      lngLat: [8.5143958, 49.5427572],
       gallery: ['images/Station_6/IMG_0042_1.JPG', 'images/Station_6/IMG_0019_1.JPG', 'images/Station_6/IMG_0053_1.JPG', 'images/Station_6/IMG_0057_1.JPG', 'images/Station_6/IMG_0060_1.JPG', 'images/Station_6/IMG_0090_1.JPG', 'images/Station_6/IMG_0092_1.JPG', 'images/Station_6/Stadtwald_Blatt_Nahaufnahme_Wilhelm.jpg'],
         galleryDescriptions: { 
           de: ['Früchte der Spätblühenden Traubenkirsche', 'Blätter der Spätblühenden Traubenkirsche', 'Blick auf die Spätblühenden Traubenkirsche', 'Blick links des Weges', 'Blick vom Weg in den Wald', 'Spätblühende Traubenkirsche wächst dicht an dicht', 'Blick auf Weg Nr. 6', 'Blätter der Spätblühenden Traubenkirsche'],
@@ -137,7 +137,7 @@ const locations = [
     },
     {
       imageSrc: ['images/Station_7/Eiche_CMB.JPG'],
-      lngLat: [8.5170112, 49.5417621],
+      lngLat: [8.5170145, 49.5417836],
       gallery: ['images/Station_7/Eiche_CMB.JPG', 'images/Station_7/20210519_143538.JPG', 'images/Station_7/IMG_0121_1.JPG', 'images/Station_7/IMG_0125_1.JPG', 'images/Station_7/IMG_0127_1.JPG', 'images/Station_7/IMG_0129_1.JPG', 'images/Station_7/Stadtwald_4_Wilhelm.jpg'],
         galleryDescriptions: { 
           de: ['Blick in die Eichkrone', 'Eichenblätter, Eichel mit Hütchen', 'Große, alte Eichen an der Neuen Poststraße', 'alte Eichen', 'Rinde der Eiche', 'Blick auf Neue Poststraße', 'kleine Eichen'],
@@ -159,7 +159,7 @@ const locations = [
     },
     {
       imageSrc: ['images/Station_8/IMG_0036_1.JPG'],
-      lngLat: [8.520297, 49.5405719],
+      lngLat: [8.5202727, 49.5405688],
       gallery: ['images/Station_8/IMG_0036_1.JPG', 'images/Station_8/IMG_0039_1.JPG', 'images/Station_8/IMG_0141_1.JPG', 'images/Station_8/IMG_0143_1.JPG', 'images/Station_8/IMG_0145_1.JPG', 'images/Station_8/IMG_0148_1.JPG', 'images/Station_8/IMG_0149_1.JPG', 'images/Station_8/IMG_0153_1.JPG'],
         galleryDescriptions: { 
           de: ['Totholzbaum mit Spechthöhle', 'Pilz am Totholzstamm', 'Blick auf Wegkreuz Nr. 1', 'Hier geht\'s weiter: Weg Nr. 1', 'Weg Nr. 1', 'Blick auf Totholz im Wald', 'Liegendes Totholz', 'belebter Baumstumpf'],
@@ -181,7 +181,7 @@ const locations = [
     },
     {
       imageSrc: ['images/Station_9/IMG_0158_1.JPG'],
-      lngLat: [8.519714, 49.5392434],
+      lngLat: [8.5197143, 49.5392526],
       gallery: ['images/Station_9/IMG_0158_1.JPG', 'images/Station_9/IMG_0155_1.JPG', 'images/Station_9/IMG_0161_1.JPG', 'images/Station_9/IMG_0163_1.JPG', 'images/Station_9/IMG_0167_1.JPG', 'images/Station_9/IMG_0170_1.JPG', 'images/Station_9/IMG_0175_1.JPG'],
         galleryDescriptions: { 
           de: ['Blick auf Boden rechts vom Weg', 'Rechts weiter auf Weg Nr. 1', 'Weiter links um den Karlstern Weiher', 'Weiter auf Weg Nr. 1', 'Blick auf unseren sandigen Boden', 'Weiter auf Weg Nr. 1', 'sandiger, trockener Boden'],
@@ -203,7 +203,7 @@ const locations = [
     },
     {
       imageSrc: ['images/Station_10/IMG_0086_1.JPG'],
-      lngLat: [8.5168606, 49.53771968],
+      lngLat: [8.5168431, 49.5377149],
       gallery: ['images/Station_10/IMG_0086_1.JPG', 'images/Station_10/IMG_0181_1.JPG', 'images/Station_10/IMG_0183_1.JPG', 'images/Station_10/IMG_0188_1.JPG', 'images/Station_10/IMG_0191_1.JPG', 'images/Station_10/IMG_0194_1.JPG', 'images/Station_10/IMG_0198_1.JPG'],
         galleryDescriptions: { 
           de: ['Nachhaltiger Rohstoff Holz', 'Weiter auf Weg Nr. 1', 'Blick Richtung Weg Nr. 1', 'Blick in die Kieferkronen', 'Auch hier: Spätblühende Traubenkirsche', 'Zurück auf die lange Allee', 'Nachhaltiger Rohstoff Holz'],
@@ -226,7 +226,7 @@ const locations = [
     },
     {
       imageSrc: ['images/Station_11/IMG_0001_1.JPG'],
-      lngLat: [8.5139563, 49.5366505],
+      lngLat: [8.5140882, 49.5366096],
       gallery: ['images/Station_11/IMG_0001_1.JPG', 'images/Station_11/IMG_0108_1.JPG', 'images/Station_11/Impression_Wald_3_Wilhelm.jpg', 'images/Station_11/Käfertaler_Wald_pan_02.jpg', 'images/Station_11/Käfertaler_Wald_pan_03.jpg', 'images/Station_11/Stadtwald_3_Wilhelm.jpg', 'images/Station_11/Stadtwald_4_Wilhelm.jpg'],
         galleryDescriptions: { 
   de: ['Wieder am Karlstern Pavillion', 'Blick in die Kronen:abgestorbene Kiefer', 'Blick von oben', 'Blick von oben: Käfertaler Wald', 'Blick von oben auf den Käfertaler Wald', 'Die Kiefer stirbt ab', 'Eichen Verjüngung'],
