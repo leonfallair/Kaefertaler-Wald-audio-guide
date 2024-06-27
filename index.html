@@ -249,10 +249,15 @@ const closeButton_left = document.createElement('button');
     });
     popupContent.insertBefore(flagContainer, popupContent.firstChild);
 
+    const popup = new maplibregl.Popup().setDOMContent(popupContent);
+
   const marker = new maplibregl.Marker({ element: image })
     .setLngLat(lngLat)
+    .setPopup(popup)
     .addTo(map)
-    .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
+
+    return {marker, popup};
+    
 }
 
         // Standardsprache auf Deutsch setzen
@@ -540,7 +545,7 @@ en: ['Karlstern Pavilion', 'Description for image 2', '3D overview map', '3D Üb
 
 // locationcontent is connected with popups
 locations.forEach(location => {
-  createMarkerAndPopup(location.imageSrc, location.lngLat, location.gallery, location.galleryDescriptions, location.galleryphotographer, location.title, location.description, location.audioSrc);
+  const {marker, popup} = createMarkerAndPopup(location.imageSrc, location.lngLat, location.gallery, location.galleryDescriptions, location.galleryphotographer, location.title, location.description, location.audioSrc);
 });
 
 
@@ -662,9 +667,9 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 function checkNearbyStations(userLocation) {
   let popupOpened = false;
   locations.forEach(location => {
-    const distance = calculateDistance(userLocation.lat, userLocation.lng, location.lngLat[1], location.lngLat[0]);
+    const distance = calculateDistance(userLocation.latitude, userLocation.longitude, location.lngLat[1], location.lngLat[0]);
     if (distance <= 20) { // When the user is less than 20 meters from the station
-      marker.getPopup().addTo(map).openPopup(); // Open the popup window for that station
+      location.popup.addTo(map).setLngLat(location.lngLat).open();// Open the popup window for that station
       popupOpened = true;
     }
   });
