@@ -36,8 +36,9 @@ body {
 }
 
 #download-button {
-
-z-index: 11; /* Make sure it's on top of other elements */
+position: absolute;
+top: 10px;
+z-index: 90; /* Make sure it's on top of other elements */
 padding: 15px;
 background-color: #007bff;
 color: white;
