@@ -75,6 +75,22 @@ cursor: pointer;
   display: none;
 }
 
+@media screen and (max-width: 600px) {
+  .popup-content audio {
+    width: 100%;
+    height: 40px;
+  }
+
+  .popup-content audio::-webkit-media-controls-panel {
+    width: 100%;
+    height: 40px;
+  }
+
+  .popup-content audio::-webkit-media-controls-volume-slider {
+    display: none;
+  }
+}
+
 /* deleting default popupinput */
 .maplibregl-popup-content {
   background: none; 

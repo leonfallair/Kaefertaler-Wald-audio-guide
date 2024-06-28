@@ -553,87 +553,98 @@
     });
 
     async function fetchWithProgress(url, onProgress) {
-      const response = await fetch(url);
-      const reader = response.body.getReader();
-      const contentLength = +response.headers.get('Content-Length');
+  const response = await fetch(url);
+  const reader = response.body.getReader();
+  const contentLength = +response.headers.get('Content-Length');
 
-      let receivedLength = 0; // received that many bytes at the moment
-      let chunks = []; // array of received binary chunks (comprises the body)
-      while (true) {
-        const { done, value } = await reader.read();
+  let receivedLength = 0;
+  let chunks = [];
 
-        if (done) {
-          break;
-        }
+  while (true) {
+    const { done, value } = await reader.read();
 
-        chunks.push(value);
-        receivedLength += value.length;
-
-        if (onProgress) {
-          onProgress(receivedLength, contentLength);
-        }
-      }
-
-      const chunksAll = new Uint8Array(receivedLength); // (4.1)
-      let position = 0;
-      for (let chunk of chunks) {
-        chunksAll.set(chunk, position); // (4.2)
-        position += chunk.length;
-      }
-
-      return new Blob([chunksAll]);
+    if (done) {
+      break;
     }
 
-    async function downloadContent() {
-      const zip = new JSZip();
-      const progressContainer = document.getElementById('progress-container');
-      const progressBar = document.getElementById('download-progress');
-      const progressPercentage = document.getElementById('progress-percentage');
-      progressContainer.style.display = 'block';
+    chunks.push(value);
+    receivedLength += value.length;
 
-      let totalFiles = 0;
-      let loadedFiles = 0;
-      let totalBytes = 0;
-      let loadedBytes = 0;
-
-      const updateProgress = () => {
-        const percentage = Math.round((loadedBytes / totalBytes) * 100);
-        progressBar.value = percentage;
-        progressPercentage.textContent = `${percentage}%`;
-      };
-
-      const fetchAndAddToZip = async (url, path) => {
-        const blob = await fetchWithProgress(url, (loaded, total) => {
-          loadedBytes += loaded;
-          totalBytes += total;
-          updateProgress();
-        });
-        zip.file(path, blob);
-        loadedFiles++;
-        updateProgress();
-      };
-
-      locations.forEach(location => {
-        totalFiles += (location.gallery ? location.gallery.length : 0) + (location.audioSrc ? Object.values(location.audioSrc).length : 0);
-      });
-
-      for (const location of locations) {
-        for (const imgSrc of location.gallery) {
-          const imgName = imgSrc.split('/').pop();
-          await fetchAndAddToZip(imgSrc, `images/${imgName}`);
-        }
-
-        for (const audioSrc of Object.values(location.audioSrc)) {
-          const audioName = audioSrc.split('/').pop();
-          await fetchAndAddToZip(audioSrc, `audio/${audioName}`);
-        }
-      }
-
-      zip.generateAsync({ type: "blob" }).then(function (content) {
-        saveAs(content, "kaefertaler_wald_offline_content.zip");
-        alert('Download fertig!');
-      });
+    if (onProgress) {
+      onProgress(receivedLength, contentLength);
     }
+  }
+
+  const chunksAll = new Uint8Array(receivedLength);
+  let position = 0;
+  for (let chunk of chunks) {
+    chunksAll.set(chunk, position);
+    position += chunk.length;
+  }
+
+  return new Blob([chunksAll]);
+}
+
+function updateProgressBar(percentage) {
+  const progressBar = document.getElementById('download-progress');
+  const progressText = document.getElementById('progress-percentage');
+  progressBar.value = percentage;
+  progressText.textContent = `${percentage}%`;
+}
+
+async function downloadContent() {
+  const zip = new JSZip();
+  const progressContainer = document.getElementById('progress-container');
+  progressContainer.style.display = 'block';
+
+  let totalFiles = 0;
+  let loadedFiles = 0;
+  let totalBytes = 0;
+  let loadedBytes = 0;
+
+  const updateProgress = () => {
+    const percentage = Math.round((loadedBytes / totalBytes) * 100);
+    updateProgressBar(percentage);
+  };
+
+  const fetchAndAddToZip = async (url, path) => {
+    const blob = await fetchWithProgress(url, (loaded, total) => {
+      loadedBytes += loaded;
+      totalBytes = total;  // Set the total bytes correctly here
+      updateProgress();
+    });
+    zip.file(path, blob);
+    loadedFiles++;
+    updateProgress();
+  };
+
+  locations.forEach(location => {
+    totalFiles += (location.gallery ? location.gallery.length : 0) + (location.audioSrc ? Object.values(location.audioSrc).length : 0);
+  });
+
+  for (const location of locations) {
+    for (const imgSrc of location.gallery) {
+      const imgName = imgSrc.split('/').pop();
+      await fetchAndAddToZip(imgSrc, `images/${imgName}`);
+    }
+
+    for (const audioSrc of Object.values(location.audioSrc)) {
+      const audioName = audioSrc.split('/').pop();
+      await fetchAndAddToZip(audioSrc, `audio/${audioName}`);
+    }
+  }
+
+  zip.generateAsync({ type: "blob" }).then(function (content) {
+    saveAs(content, "kaefertaler_wald_offline_content.zip");
+    alert('Download fertig!');
+  });
+}
+
+document.getElementById('download-button').addEventListener('click', downloadContent);
+document.getElementById('close-popup-download').addEventListener('click', function () {
+  document.getElementById('popup-download').style.display = 'none';
+});
+
 
     document.getElementById('download-button').addEventListener('click', downloadContent);
     document.getElementById('close-popup-download').addEventListener('click', function () {

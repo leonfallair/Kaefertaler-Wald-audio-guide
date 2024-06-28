@@ -10,19 +10,20 @@
     <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mediaelement@4.2.9/build/mediaelement-and-player.min.js"></script>
 </head>
 <body>
   <div id="map"></div>
 
   <div id="popup-download">
     <span id="close-popup-download">✖</span>
-    <h2>Willkommen zum Audioguide!</h2>
+    <h2>Willkommen zum Audioguide im Käfertaler Wald!</h2>
     <p>
-      Um den Audioguide im Wald richtig nutzen zu können,
-      müssen Bilder und Audios (150 MB) im Voraus als Ordner heruntergeladen werden (es erfolgt eine Benachrichtigung
+      Da im Käfertaler Wald unter Umständen nicht überall mobiler Empfang gegeben ist,
+      sollten Bilder und Audios (150 MB) im Voraus als Ordner heruntergeladen werden. Während des Downloads müssen Sie auf der Anwendung bleiben (Es erfolgt nach ein paar Minuten eine Benachrichtigung,
       sobald der Download fertig abgeschlossen ist).
-      Es ist problemlos möglich, den Ordner nachträglich wieder aus den lokalen Dateien zu entfernen. <br /> <br /> Viel
-      Spaß!
+      Nachträglich kann der Ordner problemlos wieder aus den lokalen Dateien entfernt werden. <br /> <br /> Viel
+      Spaß bei der Tour!
     </p>
     <button id="download-button">Download</button>
   </div>
@@ -96,22 +97,19 @@ function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions,gal
       welcomeText.className = 'welcome-text';
       popupContent.appendChild(welcomeText);
   
-      const container = document.createElement('div');
-container.className = 'audio-container';
 
-const audioElement = document.createElement('audio');
+      const audioElement = document.createElement('audio');
 audioElement.src = audioSrc[currentLanguage];
 audioElement.controls = true;
 audioElement.style.width = '100%';
-audioElement.style.height = '45%';
+audioElement.style.height = '20px';
 audioElement.style.borderRadius = '10px';
 audioElement.style.cursor = 'pointer';
 audioElement.style.position = 'relative';
-audioElement.style.marginTop = '15px';
-audioElement.style.bottom = '3px';
-container.appendChild(audioElement);
+audioElement.style.marginTop = '20px';
+audioElement.style.bottom = '10px';
+popupContent.appendChild(audioElement);
 
-popupContent.appendChild(container);
 
 const closeButton_left = document.createElement('button');
       closeButton_left.className = 'close-button-left';
