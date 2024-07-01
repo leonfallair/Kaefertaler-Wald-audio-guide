@@ -3,20 +3,16 @@
 
 <head>
   <meta charset="utf-8" />
-  <title></title>
+  <title>Kaefertaler Wald audio guide</title>
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
   <link href="styles.css" rel="stylesheet">
-  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script> 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script> <!-- API für ZIP download in der Webanwendung -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <!-- API für ZIP download in der Webanwendung -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
   <link rel="manifest" href="manifest.json"> <!-- Datei für PWA -->
 </head>
 
 <body>
-  <div id="map"></div>
-
   <!-- Einführungstext mit downloadbutton wird definiert -->
   <div id="popup-download">
     <span id="close-popup-download">✖</span>
@@ -36,18 +32,11 @@
     // Verbindung mit sw.js, damit Online cache funktioniert
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').then(function (registration) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope); 
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
       }, function (error) {
         console.log('ServiceWorker registration failed: ', error);
       });
     }
-
-    const map = new maplibregl.Map({
-      container: 'map',
-      style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K', // key kriegt man kostenlos nach Registrierung
-      center: [8.5140882, 49.5366096], // Mannheim Kaefertaler Wald Koordinaten
-      zoom: 14
-    });
 
     // Funktion mit Inhalten wird definiert für spätere Iteration der Elemente
     function createMarkerAndPopup(imageSrc, lngLat, gallery, galleryDescriptions, galleryphotographer, title, description, audioSrc) {
@@ -189,7 +178,7 @@
 
       const prevButton = document.createElement('button');
       prevButton.className = 'prev-button';
-      prevButton.innerHTML = '&#9664;'; 
+      prevButton.innerHTML = '&#9664;';
       prevButton.style.display = 'none';
       prevButton.style.position = 'absolute';
       prevButton.style.left = '-25px';
@@ -200,7 +189,7 @@
 
       const nextButton = document.createElement('button');
       nextButton.className = 'next-button';
-      nextButton.innerHTML = '&#9654;'; 
+      nextButton.innerHTML = '&#9654;';
       nextButton.style.display = 'none';
       nextButton.style.position = 'absolute';
       nextButton.style.right = '-25px';
@@ -292,7 +281,7 @@
     const locations = [
       {
         imageSrc: 'images/Station_1/IMG_0001_1.JPG',
-        lngLat: [8.687232, 49.382542],
+        lngLat: [8.5138224, 49.5368398],
         gallery: ['images/Station_1/IMG_0001_1.JPG', 'images/Station_1/IMG_0002_1.JPG', 'images/Station_1/IMG_0003_1.JPG', 'images/Station_1/Wanderkarte_Ueberblick.PNG'],
         galleryDescriptions: {
           de: ['Karlstern Pavillion', 'Wegweiser', 'Kastanienallee: Blick Richtung Vogelpark', 'Route mit Stationen'],
@@ -340,8 +329,8 @@
         lngLat: [8.5126713, 49.5399385],
         gallery: ['images/Station_3/IMG_0021_1.JPG', 'images/Station_3/IMG_0022_1.JPG', 'images/Station_3/IMG_0023_1.JPG', 'images/Station_3/IMG_0024_1.JPG', 'images/Station_3/IMG_0034_1.JPG', 'images/Station_3/IMG_0043_1.JPG', 'images/Station_3/IMG_0044_1.JPG', 'images/Station_3/IMG_0046_1.JPG', 'images/Station_3/IMG_0050_1.JPG', 'images/Station_3/Käfertaler_Wald_pan_03.jpg'],
         galleryDescriptions: {
-          de: ['Hier geht\'s weiter: Weg Nr. 7', 'Blick in Weg Nr. 7', 'Kiefer mit befallenen Nadeln (Diplodia)', 'Blick in die Kronen: absterbende Buche', 'Abgestorbene Kiefer und Buche', 'Weiter nach links', 'Hier sind sie richtig!', 'Weiter auf Weg Nr. 6', 'abblätternde Rinde', 'Blick von oben: braun gefärbte Nadeln'],
-          en: ['Continue here: Path No. 7', 'View into Path No. 7', 'Pine with infected needles (Diplodia)', 'View into the crowns: dying beech', 'Dead pine and beech', 'Continue to the left', 'You are right here!', 'Continue on Path No. 6', 'peeling bark', 'View from above: brown-colored needles']
+          de: ['Hier geht\'s weiter: Weg Nr. 7', 'Blick in Weg Nr. 7', 'Kiefer mit befallenen Nadeln (Diplodia)', 'Blick in die Kronen: absterbende Buche', 'Blick in die Kronen: abgestorbene Kiefer und Buche', 'Weiter nach links', 'Hier sind sie richtig!', 'Weiter auf Weg Nr. 6', 'abblätternde Rinde', 'Blick von oben: braun gefärbte Nadeln'],
+          en: ['Continue here: Path No. 7', 'View into Path No. 7', 'Pine with infected needles (Diplodia)', 'View into the crowns: dying beech', 'View into the crowns: dead pine and beech', 'Continue to the left', 'You are right here!', 'Continue on Path No. 6', 'peeling bark', 'View from above: brown-colored needles']
 
         },
         galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Dr. Stefan Wilhelm'],
@@ -363,8 +352,8 @@
         lngLat: [8.5107553, 49.5440812],
         gallery: ['images/Station_4/IMG_0076_1.JPG', 'images/Station_4/IMG_0061_1.JPG', 'images/Station_4/IMG_0070_1.JPG', 'images/Station_4/IMG_0078_1.JPG', 'images/Station_4/IMG_0079_1.JPG', 'images/Station_4/IMG_0087_1.JPG'],
         galleryDescriptions: {
-          de: ['Pflänzliche Kastanienallee', 'Weiter nach links auf die Kastanienallee', 'Blick in Richtung Kastanienallee', 'Pflänzliche Kastanienallee', 'Infofläche an der Pflanzfläche', 'Weiter auf der Kastanienallee'],
-          en: ['Planted Kastanienallee', 'Continue to the left onto Kastanienallee', 'View towards Kastanienallee', 'Planted Kastanienallee', 'Information area at the planting site', 'Continue on Kastanienallee']
+          de: ['Pflänzliche Kastanienallee', 'Weiter nach links auf die Kastanienallee', 'Blick in Richtung Kastanienallee', 'Pflänzliche Kastanienallee', 'Infofläche an der Pflanzfläche', 'Weiter auf der Kastanienallee bis zur Pflanzfläche'],
+          en: ['Planted Kastanienallee', 'Continue to the left onto Kastanienallee', 'View towards Kastanienallee', 'Planted Kastanienallee', 'Information area at the planting site', 'Continue on Kastanienallee to the planting site']
 
         },
         galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy'],
@@ -408,7 +397,7 @@
         lngLat: [8.5143952, 49.5427621],
         gallery: ['images/Station_6/IMG_0042_1.JPG', 'images/Station_6/IMG_0019_1.JPG', 'images/Station_6/IMG_0053_1.JPG', 'images/Station_6/IMG_0057_1.JPG', 'images/Station_6/IMG_0060_1.JPG', 'images/Station_6/IMG_0090_1.JPG', 'images/Station_6/IMG_0092_1.JPG', 'images/Station_6/Stadtwald_Blatt_Nahaufnahme_Wilhelm.jpg'],
         galleryDescriptions: {
-          de: ['Früchte der Spätblühenden Traubenkirsche', 'Blätter der Spätblühenden Traubenkirsche', 'Blick auf die Spätblühenden Traubenkirsche', 'Blick links des Weges', 'Blick vom Weg in den Wald', 'Spätblühende Traubenkirsche', 'Blick auf Weg Nr. 6', 'Blätter der Spätblühenden Traubenkirsche'],
+          de: ['Früchte der Spätblühenden Traubenkirsche', 'Blätter der Spätblühenden Traubenkirsche', 'Blick auf die Spätblühenden Traubenkirsche', 'Blick links des Weges', 'Blick vom Weg in den Wald', 'Spätblühende Traubenkirsche wächst dicht an dicht', 'Blick auf Weg Nr. 6', 'Blätter der Spätblühenden Traubenkirsche'],
           en: ['Fruits of the Late-blooming Bird Cherry', 'Leaves of the Late-blooming Bird Cherry', 'View of the Late-blooming Bird Cherry', 'View to the left of the path', 'View from the path into the forest', 'Late-blooming Bird Cherry grows densely', 'View of Path No. 6', 'Leaves of the Late-blooming Bird Cherry']
         },
         galleryphotographer: ['@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Christine Müller-Beblavy', '@ Dr. Stefan Wilhelm'],
@@ -607,85 +596,7 @@
       addRoute();
     });
 
-
-
-    // Hinzufügen der Standortkontrolle
-    const geolocateControl = new maplibregl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true
-      },
-      trackUserLocation: true
-    });
-
-    map.addControl(geolocateControl);
-
-    // Hinzufügen der Zoom-Steuerelemente
-    map.addControl(new maplibregl.NavigationControl());
-
-    // Variable, um die Verfolgung des Standorts zu überwachen
-    let trackingUserLocation = false;
-
-    // Funktion, um die Standortverfolgung zu starten oder zu stoppen
-    function toggleUserLocationTracking() {
-      if (trackingUserLocation) {
-        map.off('locationfound', onLocationFound);
-        map.off('locationerror', onLocationError);
-        geolocateControl._deactivate();
-        trackingUserLocation = false;
-      } else {
-        map.on('locationfound', onLocationFound);
-        map.on('locationerror', onLocationError);
-        geolocateControl._activate();
-        trackingUserLocation = true;
-      }
-    }
-
-    function showNearestPopup() {
-  const userLocation = map.getCenter();
-  let nearestPopup = null;
-  let nearestDistance = Infinity;
-
-  locations.forEach(location => {
-    const distance = turf.distance(
-      turf.point(userLocation),
-      turf.point(location.lngLat),
-      { units: 'meters' }
-    );
-
-    if (distance < nearestDistance) {
-      nearestDistance = distance;
-      nearestPopup = location;
-    }
-  });
-
-  if (nearestPopup) {
-    const marker = new maplibregl.Marker()
-      .setLngLat(nearestPopup.lngLat)
-      .setPopup(new maplibregl.Popup().setDOMContent(popupContent))
-      .addTo(map);
-  }
-}
-
-map.on('move', () => {
-  if (map.getZoom() >= 15) {
-    locations.forEach(location => {
-      const userLocation = map.getCenter();
-      const distance = turf.distance(
-        turf.point(userLocation),
-        turf.point(location.lngLat),
-        { units: 'meters' }
-      );
-
-      if (distance < 20) {
-        const marker = new maplibregl.Marker()
-          .setLngLat(location.lngLat)
-          .setPopup(new maplibregl.Popup().setDOMContent(popupContent))
-          .addTo(map);
-      }
-    });
-  }
-});
-</script>
+  </script>
 </body>
 
 </html>

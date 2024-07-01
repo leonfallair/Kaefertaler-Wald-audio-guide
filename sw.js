@@ -1,24 +1,19 @@
-const CACHE_NAME = 'offline-map-cache-v1'; // Ändere die Versionsnummer bei Änderungen
+const CACHE_NAME = 'offline-map-cache-v1'; 
 const urlsToCache = [
   '/',
   'index.html',
   'styles.css',
   'https://unpkg.com/maplibre-gl/dist/maplibre-gl.css',
   'https://unpkg.com/maplibre-gl/dist/maplibre-gl.js',
-
-
-
-  // Füge hier alle Ressourcen hinzu, die offline verfügbar sein sollen
 ];
 
 self.addEventListener('install', function(event) {
-  self.skipWaiting(); // Ensure the new service worker is activated immediately
+  self.skipWaiting(); 
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
       console.log('Opened cache');
       return cache.addAll(urlsToCache)
         .then(function() {
-          // Set Cache-Control header to expire after 6 hours
           cache.keys().then(function(keys) {
             keys.forEach(function(key) {
               cache.update(key, {
@@ -56,7 +51,7 @@ self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request).then(function(response) {
       if (response) {
-        return response; // Ressource aus dem Cache laden
+        return response; 
       }
 
       return fetch(event.request).then(function(response) {
@@ -64,7 +59,6 @@ self.addEventListener('fetch', function(event) {
           return response;
         }
 
-        // Neue Ressource zwischenspeichern
         var responseToCache = response.clone();
         caches.open(CACHE_NAME).then(function(cache) {
           cache.put(event.request, responseToCache);
