@@ -10,7 +10,6 @@
   <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script> 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script> <!-- API für ZIP download in der Webanwendung -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
   <link rel="manifest" href="manifest.json"> <!-- Datei für PWA -->
 </head>
 
@@ -664,41 +663,6 @@
         trackingUserLocation = true;
       }
     }
-
-function showNearestPopup() {
-  const userLocation = map.getCenter();
-  let nearestPopup = null;
-  let nearestDistance = Infinity;
-
-  locations.forEach(location => {
-    const distance = turf.distance(
-      turf.point(userLocation),
-      turf.point(location.lngLat),
-      { units: 'meters' }
-    );
-
-    if (distance < nearestDistance) {
-      nearestDistance = distance;
-      nearestPopup = location;
-    }
-  });
-
-  if (nearestPopup) {
-    const marker = new maplibregl.Marker()
-      .setLngLat(nearestPopup.lngLat)
-      .setPopup(new maplibregl.Popup().setDOMContent(popupContent))
-      .addTo(map);
-  }
-}
-      if (distance < 20) {
-        const marker = new maplibregl.Marker()
-          .setLngLat(location.lngLat)
-          .setPopup(new maplibregl.Popup().setDOMContent(popupContent))
-          .addTo(map);
-      }
-    ;
-
-;
   </script>
 </body>
 
