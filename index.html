@@ -690,26 +690,15 @@ function showNearestPopup() {
       .addTo(map);
   }
 }
-
-map.on('move', () => {
-  if (map.getZoom() >= 15) {
-    locations.forEach(location => {
-      const userLocation = map.getCenter();
-      const distance = turf.distance(
-        turf.point(userLocation),
-        turf.point(location.lngLat),
-        { units: 'meters' }
-      );
-
       if (distance < 20) {
         const marker = new maplibregl.Marker()
           .setLngLat(location.lngLat)
           .setPopup(new maplibregl.Popup().setDOMContent(popupContent))
           .addTo(map);
       }
-    });
-  }
-});
+    ;
+
+;
   </script>
 </body>
 
