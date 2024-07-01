@@ -10,6 +10,7 @@
   <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script> 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script> <!-- API für ZIP download in der Webanwendung -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
   <link rel="manifest" href="manifest.json"> <!-- Datei für PWA -->
 </head>
 
@@ -664,62 +665,50 @@
       }
     }
 
-// Function to check proximity and open popup
+function showNearestPopup() {
+  const userLocation = map.getCenter();
+  let nearestPopup = null;
+  let nearestDistance = Infinity;
 
-function checkProximity(location) {
+  locations.forEach(location => {
+    const distance = turf.distance(
+      turf.point(userLocation),
+      turf.point(location.lngLat),
+      { units: 'meters' }
+    );
 
-markers.forEach(marker => {
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearestPopup = location;
+    }
+  });
 
-  const markerLngLat = marker.getLngLat();
-
-  const distance = getDistance(location, markerLngLat);
-
-  if (distance < 20) {
-
-    marker.getPopup().addTo(map);
-
+  if (nearestPopup) {
+    const marker = new maplibregl.Marker()
+      .setLngLat(nearestPopup.lngLat)
+      .setPopup(new maplibregl.Popup().setDOMContent(popupContent))
+      .addTo(map);
   }
-
-});
-
 }
 
+map.on('move', () => {
+  if (map.getZoom() >= 15) {
+    locations.forEach(location => {
+      const userLocation = map.getCenter();
+      const distance = turf.distance(
+        turf.point(userLocation),
+        turf.point(location.lngLat),
+        { units: 'meters' }
+      );
 
-// Function to calculate distance between two points
-
-function getDistance(loc1, loc2) {
-
-const lat1 = loc1.lat;
-
-const lon1 = loc1.lng;
-
-const lat2 = loc2.lat;
-
-const lon2 = loc2.lng;
-
-const R = 6371; // Radius of the earth in km
-
-const dLat = (lat2 - lat1) * Math.PI / 180;
-
-const dLon = (lon2 - lon1) * Math.PI / 180;
-
-const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-const distance = R * c * 1000; // Convert to meters
-
-return distance;
-
-}
-
-
-// Add event listener to locationfound event
-
-map.on('locationfound', e => {
-
-checkProximity(e.lngLat);
-
+      if (distance < 20) {
+        const marker = new maplibregl.Marker()
+          .setLngLat(location.lngLat)
+          .setPopup(new maplibregl.Popup().setDOMContent(popupContent))
+          .addTo(map);
+      }
+    });
+  }
 });
   </script>
 </body>
