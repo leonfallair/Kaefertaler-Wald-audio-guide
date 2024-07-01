@@ -23,13 +23,11 @@
     <p>
       Da im Käfertaler Wald unter Umständen nicht überall mobiler Empfang gegeben ist,
       sollten Bilder und Audios (150 MB) im Voraus als Ordner heruntergeladen werden. Während des Downloads müssen Sie
-      auf der Anwendung bleiben (Es erfolgt nach ein paar Minuten eine Benachrichtigung,
-      sobald der Download fertig abgeschlossen ist).
-      Nachträglich kann der Ordner problemlos wieder aus den lokalen Dateien entfernt werden. <br /> <br /> Viel
+      auf der Anwendung bleiben. Nachträglich kann der Ordner problemlos wieder aus den lokalen Dateien entfernt werden. <br /> <br /> Viel
       Spaß bei der Tour!
     </p>
-    <progress id="download-progress" value="0" max="100"></progress> <!-- Fortschrittsleiste hinzugefügt -->
     <button id="download-button">Download</button>
+    <progress id="download-progress" value="0" max="100"></progress> <!-- Fortschrittsleiste hinzugefügt -->
   </div>
 
   <script>
@@ -666,48 +664,63 @@
       }
     }
 
-    // Function to calculate the distance between two geographical coordinates using the Haversine formula
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371e3; // radius of earth in meters
-      const φ1 = lat1 * Math.PI / 180; // Latitude in radiant
-      const φ2 = lat2 * Math.PI / 180;
-      const Δφ = (lat2 - lat1) * Math.PI / 180;
-      const Δλ = (lon2 - lon1) * Math.PI / 180;
+// Function to check proximity and open popup
 
-      const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-        Math.cos(φ1) * Math.cos(φ2) *
-        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+function checkProximity(location) {
 
-      const distance = R * c; // distance in meters
-      return distance;
-    }
+markers.forEach(marker => {
+
+  const markerLngLat = marker.getLngLat();
+
+  const distance = getDistance(location, markerLngLat);
+
+  if (distance < 20) {
+
+    marker.getPopup().addTo(map);
+
+  }
+
+});
+
+}
 
 
-    // Feature to check if user is near a station and open the popup window
-    function checkNearbyStations(userLocation) {
-      let popupOpened = false;
-      locations.forEach(location => {
-        const distance = calculateDistance(userLocation.lat, userLocation.lng, location.lngLat[1], location.lngLat[0]);
-        if (distance <= 20) { // When the user is less than 20 meters from the station
-          marker.getPopup().addTo(map).openPopup(); // Open the popup window for that station
-          popupOpened = true;
-        }
-      });
-      if (!popupOpened) {
-        map.closePopup(); // Close any open popups if no station is within 20 meters
-      }
-    }
+// Function to calculate distance between two points
 
-    // Track user position and check if stations are nearby when user moves
-    map.on('locationfound', function (e) {
-      checkNearbyStations(e.coords);
-    });
+function getDistance(loc1, loc2) {
 
-    // Initialisieren des Geolocate-Control Event Listeners
-    geolocateControl.on('geolocate', function (position) {
-      checkNearbyStations(position.coords);
-    });
+const lat1 = loc1.lat;
+
+const lon1 = loc1.lng;
+
+const lat2 = loc2.lat;
+
+const lon2 = loc2.lng;
+
+const R = 6371; // Radius of the earth in km
+
+const dLat = (lat2 - lat1) * Math.PI / 180;
+
+const dLon = (lon2 - lon1) * Math.PI / 180;
+
+const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+const distance = R * c * 1000; // Convert to meters
+
+return distance;
+
+}
+
+
+// Add event listener to locationfound event
+
+map.on('locationfound', e => {
+
+checkProximity(e.lngLat);
+
+});
   </script>
 </body>
 
