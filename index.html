@@ -165,6 +165,7 @@
           popupImage.style.height = 'auto';
           popupImage.style.cursor = 'pointer';
           popupImage.style.alignSelf = 'center';
+          popupContent.style.position = 'fixed';
           imageDescription.style.display = 'block';
           imagephotogrpapher.style.display = 'block';
           welcomeText.style.display = 'none';
@@ -198,6 +199,7 @@
           popupImage.style.alignSelf = 'flex-start';
           prevButton.style.display = 'none';
           nextButton.style.display = 'none';
+          popupContent.style.position = 'relative';
 
           if (closeButton_popupImage.parentNode) {
             closeButton_popupImage.parentNode.removeChild(closeButton_popupImage);
