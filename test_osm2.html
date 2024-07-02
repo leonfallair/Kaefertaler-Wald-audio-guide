@@ -165,7 +165,6 @@
           popupImage.style.height = 'auto';
           popupImage.style.cursor = 'pointer';
           popupImage.style.alignSelf = 'center';
-          popupContent.style.position = 'fixed';
           imageDescription.style.display = 'block';
           imagephotogrpapher.style.display = 'block';
           welcomeText.style.display = 'none';
@@ -188,6 +187,37 @@
           popupImage.style.height = 'auto';
         }
       });
+
+      popupImage.addEventListener('touchstart', function (event) {
+  const touch = event.touches[0];
+  const startX = touch.clientX;
+  let swipeDirection;
+
+  popupImage.addEventListener('touchmove', function (event) {
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - startX;
+
+    if (deltaX > 50) {
+      swipeDirection = 'right';
+    } else if (deltaX < -50) {
+      swipeDirection = 'left';
+    }
+  });
+
+  popupImage.addEventListener('touchend', function () {
+    if (swipeDirection === 'right') {
+      currentImageIndex = (currentImageIndex - 1 + gallery.length) % gallery.length;
+      popupImage.src = gallery[currentImageIndex];
+      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+      imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+    } else if (swipeDirection === 'left') {
+      currentImageIndex = (currentImageIndex + 1) % gallery.length;
+      popupImage.src = gallery[currentImageIndex];
+      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+      imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+    }
+  });
+});
 
       closeButton_popupImage.addEventListener('click', function () {
         if (popupImage && imageDescription && imagephotogrpapher) {
