@@ -7,7 +7,7 @@
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
   <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
   <link href="styles.css" rel="stylesheet">
-  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script> 
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script> <!-- API für ZIP download in der Webanwendung -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <link rel="manifest" href="manifest.json"> <!-- Datei für PWA -->
@@ -23,25 +23,23 @@
     <p>
       Da im Käfertaler Wald unter Umständen nicht überall mobiler Empfang gegeben ist,
       sollten Bilder und Audios (150 MB) im Voraus als Ordner heruntergeladen werden. Während des Downloads müssen Sie
-      auf der Anwendung bleiben (Es erfolgt nach ein paar Minuten eine Benachrichtigung,
-      sobald der Download fertig abgeschlossen ist).
-      Nachträglich kann der Ordner problemlos wieder aus den lokalen Dateien entfernt werden. <br /> <br /> Viel
+      auf der Anwendung bleiben. Nachträglich kann der Ordner problemlos wieder aus den lokalen Dateien entfernt werden.
+      <br /> <br /> Viel
       Spaß bei der Tour!
     </p>
     <button id="download-button">Download</button>
+    <progress id="download-progress" value="0" max="100"></progress> <!-- Fortschrittsleiste hinzugefügt -->
   </div>
 
   <script>
     // Verbindung mit sw.js, damit Online cache funktioniert
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').then(function (registration) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope); 
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
       }, function (error) {
         console.log('ServiceWorker registration failed: ', error);
       });
     }
-
-    const markers = [];
 
     const map = new maplibregl.Map({
       container: 'map',
@@ -60,7 +58,7 @@
       image.style.width = '32px';
       image.style.height = '32px';
 
-      // popup an dem weitere Inhalte angehangen werden
+      // popup an dem weitere Elemente angehangen werden
       const popupContent = document.createElement('div');
       popupContent.className = 'popup-content';
 
@@ -70,12 +68,9 @@
         .addTo(map)
         .setPopup(new maplibregl.Popup().setDOMContent(popupContent));
 
-      markers.push(marker);
-
-      return marker;
-
       let currentImageIndex = 0; // damit popupimage und markerimage erstmal identisch sind
 
+      // Erstellte Elemente werden an popupContent angehangen
       const popupImage = document.createElement('img');
       popupImage.src = gallery[currentImageIndex];
       popupImage.className = 'popup-image';
@@ -113,7 +108,6 @@
       welcomeText.className = 'welcome-text';
       popupContent.appendChild(welcomeText);
 
-
       const audioElement = document.createElement('audio');
       audioElement.src = audioSrc[currentLanguage];
       audioElement.controls = true;
@@ -125,7 +119,6 @@
       audioElement.style.marginTop = '20px';
       audioElement.style.bottom = '10px';
       popupContent.appendChild(audioElement);
-
 
       const closeButton_popupImage = document.createElement('button');
       closeButton_popupImage.className = 'close-button-left';
@@ -143,13 +136,36 @@
       closeButton_popupImage.style.display = 'none';
       popupContent.appendChild(closeButton_popupImage);
 
+      const prevButton = document.createElement('button');
+      prevButton.className = 'prev-button';
+      prevButton.innerHTML = '&#9664;';
+      prevButton.style.display = 'none';
+      prevButton.style.position = 'absolute';
+      prevButton.style.left = '-25px';
+      prevButton.style.top = '50%';
+      prevButton.style.zIndex = '9';
+      prevButton.style.transform = 'translateY(-50%)';
+      popupContent.appendChild(prevButton);
 
+      const nextButton = document.createElement('button');
+      nextButton.className = 'next-button';
+      nextButton.innerHTML = '&#9654;';
+      nextButton.style.display = 'none';
+      nextButton.style.position = 'absolute';
+      nextButton.style.right = '-25px';
+      nextButton.style.top = '50%';
+      nextButton.style.zIndex = '9'
+      nextButton.style.transform = 'translateY(-50%)';
+      popupContent.appendChild(nextButton);
+      
+      // Click-Funktionen werden zu Elemnten hinzugefügt
       popupImage.addEventListener('click', function () {
         if (popupImage.style.width === '32px') {
           popupImage.style.width = '120%';
           popupImage.style.height = 'auto';
           popupImage.style.cursor = 'pointer';
           popupImage.style.alignSelf = 'center';
+          popupContent.style.position = 'fixed';
           imageDescription.style.display = 'block';
           imagephotogrpapher.style.display = 'block';
           welcomeText.style.display = 'none';
@@ -183,6 +199,7 @@
           popupImage.style.alignSelf = 'flex-start';
           prevButton.style.display = 'none';
           nextButton.style.display = 'none';
+          popupContent.style.position = 'relative';
 
           if (closeButton_popupImage.parentNode) {
             closeButton_popupImage.parentNode.removeChild(closeButton_popupImage);
@@ -191,28 +208,6 @@
           popupContent.classList.remove('enlarged');
         }
       });
-
-      const prevButton = document.createElement('button');
-      prevButton.className = 'prev-button';
-      prevButton.innerHTML = '&#9664;'; 
-      prevButton.style.display = 'none';
-      prevButton.style.position = 'absolute';
-      prevButton.style.left = '-25px';
-      prevButton.style.top = '50%';
-      prevButton.style.zIndex = '9';
-      prevButton.style.transform = 'translateY(-50%)';
-      popupContent.appendChild(prevButton);
-
-      const nextButton = document.createElement('button');
-      nextButton.className = 'next-button';
-      nextButton.innerHTML = '&#9654;'; 
-      nextButton.style.display = 'none';
-      nextButton.style.position = 'absolute';
-      nextButton.style.right = '-25px';
-      nextButton.style.top = '50%';
-      nextButton.style.zIndex = '9'
-      nextButton.style.transform = 'translateY(-50%)';
-      popupContent.appendChild(nextButton);
 
       prevButton.addEventListener('click', function () {
         currentImageIndex = (currentImageIndex - 1 + gallery.length) % gallery.length;
@@ -297,7 +292,7 @@
     const locations = [
       {
         imageSrc: 'images/Station_1/IMG_0001_1.JPG',
-        lngLat: [8.687232, 49.382542],
+        lngLat: [8.5138224, 49.5368398],
         gallery: ['images/Station_1/IMG_0001_1.JPG', 'images/Station_1/IMG_0002_1.JPG', 'images/Station_1/IMG_0003_1.JPG', 'images/Station_1/Wanderkarte_Ueberblick.PNG'],
         galleryDescriptions: {
           de: ['Karlstern Pavillion', 'Wegweiser', 'Kastanienallee: Blick Richtung Vogelpark', 'Route mit Stationen'],
@@ -551,29 +546,54 @@
     // ZIP Download für Offline-Verwendung
     function downloadContent() {
       const zip = new JSZip();
+      const progressBar = document.getElementById('download-progress');
+      const totalFiles = locations.reduce((sum, location) => sum + location.gallery.length + Object.values(location.audioSrc).length, 0);
+      let loadedFiles = 0;
+
+      function updateProgress() {
+        loadedFiles++;
+        const progress = (loadedFiles / totalFiles) * 100;
+        progressBar.value = progress;
+      }
+
+      const filePromises = [];
 
       locations.forEach(location => {
         location.gallery.forEach((imgSrc, index) => {
           const imgName = imgSrc.split('/').pop();
-          zip.file(`images/${imgName}`, fetch(imgSrc).then(res => res.blob()));
+          const promise = fetch(imgSrc)
+            .then(res => res.blob())
+            .then(blob => {
+              zip.file(`images/${imgName}`, blob);
+              updateProgress();
+            });
+          filePromises.push(promise);
         });
 
         Object.values(location.audioSrc).forEach(audioSrc => {
           const audioName = audioSrc.split('/').pop();
-          zip.file(`audio/${audioName}`, fetch(audioSrc).then(res => res.blob()));
+          const promise = fetch(audioSrc)
+            .then(res => res.blob())
+            .then(blob => {
+              zip.file(`audio/${audioName}`, blob);
+              updateProgress();
+            });
+          filePromises.push(promise);
         });
       });
 
-      zip.generateAsync({ type: "blob" }).then(function (content) {
-        saveAs(content, "kaefertaler_wald_offline_content.zip");
-        alert('Download fertig!');
+      Promise.all(filePromises).then(() => {
+        zip.generateAsync({ type: "blob" }).then(function (content) {
+          saveAs(content, "kaefertaler_wald_offline_content.zip");
+          alert('Download fertig!');
+        });
       });
     }
+
     document.getElementById('download-button').addEventListener('click', downloadContent);
     document.getElementById('close-popup-download').addEventListener('click', function () {
       document.getElementById('popup-download').style.display = 'none';
     });
-
 
     // GeoJSON für die Route um den Kaefertaler Wald
     const geojson = {
@@ -612,8 +632,6 @@
       addRoute();
     });
 
-
-
     // Hinzufügen der Standortkontrolle
     const geolocateControl = new maplibregl.GeolocateControl({
       positionOptions: {
@@ -644,64 +662,6 @@
         trackingUserLocation = true;
       }
     }
-
-// Function to check proximity and open popup
-
-function checkProximity(location) {
-
-markers.forEach(marker => {
-
-  const markerLngLat = marker.getLngLat();
-
-  const distance = getDistance(location, markerLngLat);
-
-  if (distance < 20) {
-
-    marker.getPopup().addTo(map);
-
-  }
-
-});
-
-}
-
-
-// Function to calculate distance between two points
-
-function getDistance(loc1, loc2) {
-
-const lat1 = loc1.lat;
-
-const lon1 = loc1.lng;
-
-const lat2 = loc2.lat;
-
-const lon2 = loc2.lng;
-
-const R = 6371; // Radius of the earth in km
-
-const dLat = (lat2 - lat1) * Math.PI / 180;
-
-const dLon = (lon2 - lon1) * Math.PI / 180;
-
-const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-const distance = R * c * 1000; // Convert to meters
-
-return distance;
-
-}
-
-
-// Add event listener to locationfound event
-
-map.on('locationfound', e => {
-
-checkProximity(e.lngLat);
-
-});
   </script>
 </body>
 
