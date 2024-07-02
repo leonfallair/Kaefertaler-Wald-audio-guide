@@ -95,7 +95,6 @@
 
       const stationText = document.createElement('strong');
       stationText.textContent = title[currentLanguage];
-      stationText.style.fontFamily = 'Arial';
       popupContent.appendChild(stationText);
 
       const moreInfoButton = document.createElement('p');
@@ -162,8 +161,8 @@
       // Click-Funktionen werden zu Elemnten hinzugefügt
       popupImage.addEventListener('click', function () {
         if (popupImage.style.width === '32px') {
-          popupImage.style.width = '120%';
-          popupImage.style.height = 'auto';
+          popupImage.style.width = '500px';
+          popupImage.style.height = '500px';
           popupImage.style.cursor = 'pointer';
           popupImage.style.alignSelf = 'center';
           imageDescription.style.display = 'block';
@@ -184,8 +183,8 @@
           popupImage.src = gallery[currentImageIndex];
           imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
           imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
-          popupImage.style.width = '120%';
-          popupImage.style.height = 'auto';
+          popupImage.style.width = '500px';
+          popupImage.style.height = '500px';
         }
       });
 
@@ -291,7 +290,7 @@
     const locations = [
       {
         imageSrc: 'images/Station_1/IMG_0001_1.JPG',
-        lngLat: [8.687232, 49.382542],
+        lngLat: [8.5138224, 49.5368398],
         gallery: ['images/Station_1/IMG_0001_1.JPG', 'images/Station_1/IMG_0002_1.JPG', 'images/Station_1/IMG_0003_1.JPG', 'images/Station_1/Wanderkarte_Ueberblick.PNG'],
         galleryDescriptions: {
           de: ['Karlstern Pavillion', 'Wegweiser', 'Kastanienallee: Blick Richtung Vogelpark', 'Route mit Stationen'],

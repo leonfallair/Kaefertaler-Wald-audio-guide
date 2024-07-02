@@ -10,8 +10,11 @@ body {
   width: 100%;
 }
 
+* {
+  font-family: Arial, sans-serif;
+}
+
 #popup-download {
-  font-family: Arial;
   position: relative;
   display:flex;
   flex-direction: column;
@@ -95,7 +98,6 @@ z-index: 5;
 }
 
 .image-description {
-font-family: Arial;
 position:relative;
 bottom: 40px;
 background: rgba(0, 0, 0, 0.5);
@@ -106,7 +108,6 @@ z-index: 7;
 }
 
 .image-photographer {
-  font-family: Arial;
 position:relative;
 top: -50px;
 margin-bottom: -40px;
@@ -121,7 +122,6 @@ font-size: 9px;
 }
 
 .moreinfo-button {
-  font-family: Arial;
   cursor: pointer;
   position: relative;
   background-color: #219b21;
@@ -132,7 +132,6 @@ font-size: 9px;
 }
 
 .welcome-text {
-font-family: Arial;
 height: 200px;
 width: auto;
 display: flex;
