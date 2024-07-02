@@ -3,7 +3,15 @@ body {
   padding: 0;
 }
 
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
 #popup-download {
+  font-family: Arial;
   position: relative;
   display:flex;
   flex-direction: column;
@@ -29,9 +37,8 @@ body {
   top: 2px;
   cursor: pointer;
 }
-
 #download-button {
-z-index: 90; /* Make sure it's on top of other elements */
+z-index: 90; 
 padding: 15px;
 background-color: #007bff;
 color: white;
@@ -39,16 +46,8 @@ border: none;
 border-radius: 5px;
 cursor: pointer;
 }
-
 #download-progress {
   margin-top: 5px;
-}
-
-#map {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
 }
 
 .popup-content {
@@ -66,31 +65,84 @@ cursor: pointer;
   width: auto;
   min-width: 200px;
 }
-
-.popup-content.expanded {
-  width:120%;
-}
 .enlarged > *:not(.popup-image) {
   display: none;
 }
 
+/* angepasste Darstellung für Handy */
 @media screen and (max-width: 600px) {
   .popup-content audio {
     width: 100%;
     height: 40px;
   }
-
   .popup-content audio::-webkit-media-controls-panel {
     width: 100%;
     height: 40px;
   }
-
   .popup-content audio::-webkit-media-controls-volume-slider {
     display: none;
   }
 }
 
-/* deleting default popupinput */
+.popup-image {
+align-self: flex-start;
+border-radius: 10px;
+position: relative;
+left:0;
+top: 0;
+cursor:zoom-in;
+z-index: 5;
+}
+
+.image-description {
+font-family: Arial;
+position:relative;
+bottom: 40px;
+background: rgba(0, 0, 0, 0.5);
+color: white;
+font-size: 14px;
+padding: 0;
+z-index: 7;         
+}
+
+.image-photographer {
+  font-family: Arial;
+position:relative;
+top: -50px;
+margin-bottom: -40px;
+color: black;
+font-size: 9px;        
+}
+
+.marker-image {
+  border-radius: 50%;
+  border: 3.5px solid #98da00;
+  cursor: pointer;
+}
+
+.moreinfo-button {
+  font-family: Arial;
+  cursor: pointer;
+  position: relative;
+  background-color: #219b21;
+  color: white;
+  border-radius: 10px;
+  width: 60%;
+  margin-bottom: 2px;
+}
+
+.welcome-text {
+font-family: Arial;
+height: 200px;
+width: auto;
+display: flex;
+overflow-y: scroll;
+text-align: left;
+border: 1px solid #ccc; 
+padding: 10px; 
+}
+
+/* Standard Popupdarstellung wird modifiziert */
 .maplibregl-popup-content {
   background: none; 
   box-shadow: none; 
@@ -111,69 +163,4 @@ border-radius: 10px;
 cursor: pointer;
 padding:2px;
 font-size: 14px;
-}
-
-.closeButtonElement.expanded {
-  position: absolute;
-top: 0px;
-right: -40px;
-background: none;
-color: grey;
-border-radius: 10px;
-cursor: pointer;
-padding:2px;
-font-size: 14px;
-}
-
-.popup-image {
-align-self: flex-start;
-border-radius: 10px;
-position: relative;
-left:0;
-top: 0;
-cursor:zoom-in;
-z-index: 5;
-}
-
-.image-description {
-position:relative;
-bottom: 40px;
-background: rgba(0, 0, 0, 0.5);
-color: white;
-font-size: 14px;
-padding: 0;
-z-index: 7;         
-}
-
-.image-photographer {
-position:relative;
-top: -50px;
-margin-bottom: -40px;
-color: black;
-font-size: 9px;        
-}
-
-.moreinfo-button {
-  cursor: pointer;
-  position: relative;
-  background-color: #1fbd1f;
-  color: white;
-  border-radius: 10px;
-  width: 60%;
-  margin-bottom: 2px;
-}
-.welcome-text {
-height: 200px;
-width: auto;
-display: flex;
-overflow-y: scroll;
-text-align: left;
-border: 1px solid #ccc; 
-padding: 10px; 
-}
-
-.marker-image {
-  border-radius: 50%;
-  border: 3.5px solid #98da00;
-  cursor: pointer;
 }

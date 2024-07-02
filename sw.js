@@ -1,3 +1,4 @@
+// Name des Caches und die cachenden URLs definieren
 const CACHE_NAME = 'offline-map-cache-v1'; 
 const urlsToCache = [
   '/',
@@ -7,6 +8,7 @@ const urlsToCache = [
   'https://unpkg.com/maplibre-gl/dist/maplibre-gl.js',
 ];
 
+// Installation des service workers
 self.addEventListener('install', function(event) {
   self.skipWaiting(); 
   event.waitUntil(
@@ -31,6 +33,7 @@ self.addEventListener('install', function(event) {
   );
 });
 
+// Aktivierung des neuen Service Workers
 self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
@@ -47,6 +50,7 @@ self.addEventListener('activate', function(event) {
   );
 });
 
+// Fetch-Event abfangen und Ressourcen aus dem Cache oder Netzwerk holen
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request).then(function(response) {
@@ -54,6 +58,7 @@ self.addEventListener('fetch', function(event) {
         return response; 
       }
 
+      // Falls Resoource nicht im Cache ist, aus dem Netzwerk holen
       return fetch(event.request).then(function(response) {
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
@@ -69,6 +74,7 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
+
 self.addEventListener('message', function(event) {
   if (event.data.action === 'cache-resources') {
     caches.open(CACHE_NAME).then(function(cache) {
