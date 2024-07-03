@@ -97,6 +97,18 @@ cursor:zoom-in;
 z-index: 5;
 }
 
+.popup-image.enlarged {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 120%; 
+  height: auto;
+  cursor: pointer;
+}
+
+
 .image-description {
 position:relative;
 bottom: 40px;

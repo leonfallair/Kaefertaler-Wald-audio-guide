@@ -161,6 +161,9 @@
       // Click-Funktionen werden zu Elemnten hinzugefügt
       popupImage.addEventListener('click', function () {
         if (popupImage.style.width === '32px') {
+          popupImage.style.position = 'fixed';
+          popupImage.style.top = '50%';
+          popupImage.style.left = '50%';
           popupImage.style.width = '120%';
           popupImage.style.height = 'auto';
           popupImage.style.cursor = 'pointer';
@@ -187,6 +190,37 @@
           popupImage.style.height = 'auto';
         }
       });
+
+      popupImage.addEventListener('touchstart', function (event) {
+  const touch = event.touches[0];
+  const startX = touch.clientX;
+  let swipeDirection;
+
+  popupImage.addEventListener('touchmove', function (event) {
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - startX;
+
+    if (deltaX > 50) {
+      swipeDirection = 'right';
+    } else if (deltaX < -50) {
+      swipeDirection = 'left';
+    }
+  });
+
+  popupImage.addEventListener('touchend', function () {
+    if (swipeDirection === 'right') {
+      currentImageIndex = (currentImageIndex - 1 + gallery.length) % gallery.length;
+      popupImage.src = gallery[currentImageIndex];
+      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+      imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+    } else if (swipeDirection === 'left') {
+      currentImageIndex = (currentImageIndex + 1) % gallery.length;
+      popupImage.src = gallery[currentImageIndex];
+      imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+      imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+    }
+  });
+});
 
       closeButton_popupImage.addEventListener('click', function () {
         if (popupImage && imageDescription && imagephotogrpapher) {
