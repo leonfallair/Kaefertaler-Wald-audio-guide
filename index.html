@@ -159,8 +159,10 @@ popupContent.appendChild(prevButton);
       // Click-Funktionen werden zu Elemnten hinzugefügt
       popupImage.addEventListener('click', function () {
         if (popupImage.style.width === '32px') {
-          popupImage.style.width = '120%';
-          popupImage.style.height = 'auto';
+          popupImage.style.width = '300px';
+          popupImage.style.height = '300px';
+          popupImage.style.objectFit = 'cover';
+          popupImage.style.position = 'center';
           popupImage.style.cursor = 'pointer';
           popupImage.style.alignSelf = 'center';
           imageDescription.style.display = 'block';
@@ -181,8 +183,10 @@ popupContent.appendChild(prevButton);
           popupImage.src = gallery[currentImageIndex];
           imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
           imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
-          popupImage.style.width = '120%';
-          popupImage.style.height = 'auto';
+          popupImage.style.width = '300px';
+          popupImage.style.height = '300px';
+          popupImage.style.objectFit = 'cover';
+          popupImage.style.position = 'center';
         }
       });
 
