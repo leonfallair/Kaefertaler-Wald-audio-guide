@@ -137,34 +137,30 @@
       popupContent.appendChild(closeButton_popupImage);
 
       const prevButton = document.createElement('button');
-      prevButton.className = 'prev-button';
-      prevButton.innerHTML = '&#9664;';
-      prevButton.style.display = 'none';
-      prevButton.style.position = 'absolute';
-      prevButton.style.left = '-25px';
-      prevButton.style.top = '50%';
-      prevButton.style.zIndex = '9';
-      prevButton.style.transform = 'translateY(-50%)';
-      popupContent.appendChild(prevButton);
+prevButton.className = 'prev-button';
+prevButton.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+prevButton.style.display = 'none';
+prevButton.style.position = 'absolute';
+prevButton.style.left = '-25px';
+prevButton.style.top = '50%';
+prevButton.style.zIndex = '9';
+prevButton.style.transform = 'translateY(-50%)';
+popupContent.appendChild(prevButton);
 
-      const nextButton = document.createElement('button');
-      nextButton.className = 'next-button';
-      nextButton.innerHTML = '&#9654;';
-      nextButton.style.display = 'none';
-      nextButton.style.position = 'absolute';
-      nextButton.style.right = '-25px';
-      nextButton.style.top = '50%';
-      nextButton.style.zIndex = '9'
-      nextButton.style.transform = 'translateY(-50%)';
-      popupContent.appendChild(nextButton);
-      
+const nextButton = document.createElement('button');
+nextButton.className = 'next-button';
+nextButton.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+nextButton.style.display = 'none';
+nextButton.style.position = 'absolute';
+nextButton.style.right = '-25px';
+nextButton.style.top = '50%';
+nextButton.style.zIndex = '9';
+nextButton.style.transform = 'translateY(-50%)';
+popupContent.appendChild(nextButton);
+
       // Click-Funktionen werden zu Elemnten hinzugefügt
       popupImage.addEventListener('click', function () {
         if (popupImage.style.width === '32px') {
-          popupImage.style.position = 'fixed';
-          popupImage.style.top = '50%';
-          popupImage.style.left = '50%';
-          popupImage.style.transform = 'translate(-50%, -50%)';
           popupImage.style.width = '120%';
           popupImage.style.height = 'auto';
           popupImage.style.cursor = 'pointer';
