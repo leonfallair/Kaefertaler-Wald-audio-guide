@@ -1,8 +1,10 @@
+/* Allgemeine Zurücksetzungen für den Body */
 body {
   margin: 0;
   padding: 0;
 }
 
+/* Stil für die Karte */
 #map {
   position: absolute;
   top: 0;
@@ -10,13 +12,15 @@ body {
   width: 100%;
 }
 
+/* Globale Schriftartdefinition */
 * {
-  font-family: Arial, Helvetica, sans-serif
+  font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Stil für das Download-Popup */
 #popup-download {
   position: relative;
-  display:flex;
+  display: flex;
   flex-direction: column;
   top: 10px;
   left: 10px;
@@ -30,116 +34,102 @@ body {
   border-radius: 10px;
   z-index: 10;
 }
+
+/* Stil für den Titel im Popup */
 #popup-download h2 {
   margin-top: 0;
   text-align: center;
 }
+
+/* Stil für das Schließen-Icon im Popup */
 #close-popup-download {
   position: absolute;
   right: 2px;
   top: 2px;
   cursor: pointer;
 }
-#download-button {
-z-index: 90; 
-padding: 15px;
-background-color: #007bff;
-color: white;
-border: none;
-border-radius: 5px;
-cursor: pointer;
+
+/* Hover-Effekt für das Schließen-Icon */
+#close-popup-download:hover {
+  transform: scale(1.1);
 }
+
+/* Stil für den Download-Button */
+#download-button {
+  z-index: 90;
+  padding: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Hover-Effekt für den Download-Button */
+#download-button:hover {
+  transform: scale(1.1);
+}
+
+/* Fortschrittsleiste für den Download */
 #download-progress {
   margin-top: 5px;
 }
 
-.popup-content {
-  display:flex;
-  position:relative;
-  flex-direction: column;
-  justify-content: center;
-  background-color: white;
-  align-items: center;
-  text-align: center;
-  border-radius: 10px;
-  margin:0;
-  padding:0;
-  box-sizing: border-box;
-  width: auto;
-  min-width: 200px;
-}
-.enlarged > *:not(.popup-image) {
-  display: none;
-}
-
-/* angepasste Darstellung für Handy */
-@media screen and (max-width: 600px) {
-  .popup-content audio {
-    width: 100%;
-    height: 30px;
-  }
-  .popup-content audio::-webkit-media-controls-panel {
-    width: 100%;
-    height: 30px;
-  }
-}
-
-.popup-image {
-align-self: flex-start;
-border-radius: 10px;
-position: relative;
-left:0;
-top: 0;
-cursor:zoom-in;
-z-index: 5;
-}
-
-/* Styles for navigation buttons */
-.prev-button, .next-button {
-  background: none;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s;
-}
-
-.prev-button:hover, .next-button:hover {
-  transform: scale(1.1); /* Slightly increase size on hover */
-}
-
-/* Styles for SVG */
-.prev-button svg, .next-button svg {
-  width: 24px;
-  height: 24px;
-}
-
-.image-description {
-position:relative;
-bottom: 40px;
-background: rgba(0, 0, 0, 0.5);
-color: white;
-font-size: 14px;
-padding: 0;
-z-index: 7;         
-}
-
-.image-photographer {
-position:relative;
-top: -50px;
-margin-bottom: -40px;
-color: black;
-font-size: 9px;        
-}
-
+/* Stil für Marker-Bilder */
 .marker-image {
   border-radius: 50%;
   border: 3.5px solid #98da00;
   cursor: pointer;
 }
 
+/* Stil für den Inhalt des Popups */
+.popup-content {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+  align-items: center;
+  text-align: center;
+  border-radius: 10px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: auto;
+  min-width: 200px;
+}
+
+/* Versteckte Elemente im vergrößerten Popup */
+.enlarged > *:not(.popup-image) {
+  display: none;
+}
+
+.audio-element {
+  width: 100%;
+  height: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  margin-top: 20px;
+  bottom: 10px;
+}
+
+/* Angepasste Darstellung für Bilder im Popup */
+.popup-image {
+  align-self: flex-start;
+  border-radius: 10px;
+  position: relative;
+  left: 0;
+  top: 0;
+  cursor: zoom-in;
+}
+
+/* Hover-Effekt für Bilder im Popup */
+.popup-image:hover {
+  transform: scale(1.1);
+}
+
+/* Stil für "Mehr Info" Buttons */
 .moreinfo-button {
   cursor: pointer;
   position: relative;
@@ -150,57 +140,138 @@ font-size: 9px;
   margin-bottom: 2px;
 }
 
-.welcome-text {
-height: 200px;
-width: auto;
-display: flex;
-overflow-y: scroll;
-text-align: left;
-border: 1px solid #ccc; 
-padding: 10px; 
+/* Hover-Effekt für "Mehr Info" Buttons */
+.moreinfo-button:hover {
+  transform: scale(1.1);
 }
 
-/* Styles for close button */
-.close-button-popupimage {
+/* Stil für Länderflaggen */
+.flag {
+  width: 20px;
+  height: 15px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+/* Hover-Effekt für Länderflaggen */
+.flag:hover {
+  transform: scale(1.1);
+}
+
+/* Stil für Willkommenstext */
+.welcome-text {
+  height: 200px;
+  width: auto;
+  overflow-y: scroll;
+  text-align: left;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+/* Stile für vor-und zurück button */
+.prev-button,
+.next-button {
+  position: absolute;
   background: none;
   border: none;
+  z-index: 9;
   padding: 10px;
   cursor: pointer;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s;
 }
 
+/* Hover-Effekt für Navigationsbuttons */
+.prev-button:hover,
+.next-button:hover {
+  transform: scale(1.1);
+}
+
+/* Stile für SVG-Icons in Navigationsbuttons */
+.prev-button svg,
+.next-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Stil für Bildbeschreibung im Popup */
+.image-description {
+  display: none;
+  z-index: 7;
+  width: 300px;
+  position: relative;
+  bottom: 40px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 14px;
+  padding: 0;
+  z-index: 7;
+}
+
+/* Stil für Fotografen-Informationen im Popup */
+.image-photographer {
+  display: none;
+  position: relative;
+  top: -50px;
+  margin-bottom: -40px;
+  color: black;
+  font-size: 9px;
+}
+
+/* Stil für Schließen-Button im Popupbild */
+.close-button-popupimage {
+  z-index: 30;
+  right: -35px;
+  position: absolute;
+  display: none;
+  top: -5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  padding: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover-Effekt für Schließen-Button im Popupbild */
 .close-button-popupimage:hover {
-  transform: scale(1.1); /* Slightly increase size on hover */
+  transform: scale(1.1);
 }
 
-/* Styles for SVG */
+/* Stile für SVG-Icons in Schließen-Button im Popupbild */
 .close-button-popupimage svg {
   width: 22px;
   height: 22px;
 }
 
-/* Standard Popupdarstellung wird modifiziert */
+/* Angepasste maplibre Standard-Popup-Darstellung */
 .maplibregl-popup-content {
-  background: none; 
-  box-shadow: none; 
-  padding: 0; 
+  background: none;
+  box-shadow: none;
+  padding: 0;
 }
 
+/* Versteckter Popup-Pfeil */
 .maplibregl-popup-tip {
-  display: none; 
+  display: none;
 }
 
+/* Stil für Schließen-Button im MaplibreGL Popup */
 .maplibregl-popup-close-button {
-position: absolute;
-top: 0px;
-right: 0px;
-background: none;
-color: grey;
-border-radius: 10px;
-cursor: pointer;
-padding:2px;
-font-size: 16px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background: none;
+  color: grey;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 2px;
+  font-size: 16px;
+}
+
+/* Hover-Effekt für Schließen-Button im MaplibreGL Popup */
+.maplibregl-popup-close-button:hover {
+  transform: scale(1.1);
 }
