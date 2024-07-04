@@ -7,10 +7,9 @@
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
   <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
   <link href="styles.css" rel="stylesheet">
-  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script> 
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script> <!-- API für ZIP download in der Webanwendung -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
   <link rel="manifest" href="manifest.json"> <!-- Datei für PWA -->
 </head>
 
@@ -23,25 +22,26 @@
     <h2>Willkommen zum Audioguide im Käfertaler Wald!</h2>
     <p>
       Da im Käfertaler Wald unter Umständen nicht überall mobiler Empfang gegeben ist,
-      sollten Bilder und Audios (150 MB) im Voraus als Ordner heruntergeladen werden. Während des Downloads müssen Sie
-      auf der Anwendung bleiben (Es erfolgt nach ein paar Minuten eine Benachrichtigung,
-      sobald der Download fertig abgeschlossen ist).
-      Nachträglich kann der Ordner problemlos wieder aus den lokalen Dateien entfernt werden. <br /> <br /> Viel
+      sollten Bilder und Audios (140 MB) im Voraus als Ordner heruntergeladen werden. Während des Downloads müssen Sie
+      auf der Anwendung bleiben. Nachträglich kann der Ordner problemlos wieder aus den lokalen Dateien entfernt werden.
+      <br /> <br /> Viel
       Spaß bei der Tour!
     </p>
     <button id="download-button">Download</button>
+    <progress id="download-progress" value="0" max="100"></progress> <!-- Fortschrittsleiste hinzugefügt -->
   </div>
 
   <script>
     // Verbindung mit sw.js, damit Online cache funktioniert
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').then(function (registration) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope); 
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
       }, function (error) {
         console.log('ServiceWorker registration failed: ', error);
       });
     }
 
+    // Initalisierung der Karte mit MapLibre GL
     const map = new maplibregl.Map({
       container: 'map',
       style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=JDOV7DeINS7JXRQ6Jl6K', // key kriegt man kostenlos nach Registrierung
@@ -59,11 +59,11 @@
       image.style.width = '32px';
       image.style.height = '32px';
 
-      // popup an dem weitere Inhalte angehangen werden
+      // popup-container an dem weitere Elemente angehangen werden
       const popupContent = document.createElement('div');
       popupContent.className = 'popup-content';
 
-      // Definition für maplibre marker
+      // marker und popup zur Karte hinzufügen
       const marker = new maplibregl.Marker({ element: image })
         .setLngLat(lngLat)
         .addTo(map)
@@ -71,6 +71,8 @@
 
       let currentImageIndex = 0; // damit popupimage und markerimage erstmal identisch sind
 
+      // Erstellte Elemente werden an popupContent angehangen
+      // popup-Bild erstellen und hinzufügen
       const popupImage = document.createElement('img');
       popupImage.src = gallery[currentImageIndex];
       popupImage.className = 'popup-image';
@@ -79,72 +81,75 @@
       popupImage.style.zIndex = '5';
       popupContent.appendChild(popupImage);
 
+      // Bildbeschreibung erstellen und hinzufügen
       const imageDescription = document.createElement('p');
       imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
       imageDescription.className = 'image-description';
-      imageDescription.style.display = 'none';
-      imageDescription.style.zIndex = '7';
-      imageDescription.style.width = '120%';
       popupContent.appendChild(imageDescription);
 
+      // Fotografeninformation erstellen und hinzufügen
       const imagephotogrpapher = document.createElement('p');
       imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
       imagephotogrpapher.className = 'image-photographer';
       imagephotogrpapher.style.display = 'none';
       popupContent.appendChild(imagephotogrpapher);
 
+      // Titel erstellen und hinzufügen
       const stationText = document.createElement('strong');
       stationText.textContent = title[currentLanguage];
       popupContent.appendChild(stationText);
 
+      // Mehr erfahren Button erstellen und hinzufügen
       const moreInfoButton = document.createElement('p');
       moreInfoButton.textContent = 'Mehr erfahren';
       moreInfoButton.className = 'moreinfo-button';
       popupContent.appendChild(moreInfoButton);
 
+      // Beschreibungstext erstellen und hinzufügen
       const welcomeText = document.createElement('p');
       welcomeText.innerHTML = description[currentLanguage];
-      welcomeText.style.display = 'none';
       welcomeText.className = 'welcome-text';
+      welcomeText.style.display = 'none';
       popupContent.appendChild(welcomeText);
-
-
+      
+      // Audio-Element erstellen und hinzufügen
       const audioElement = document.createElement('audio');
       audioElement.src = audioSrc[currentLanguage];
       audioElement.controls = true;
-      audioElement.style.width = '100%';
-      audioElement.style.height = '20px';
-      audioElement.style.borderRadius = '10px';
-      audioElement.style.cursor = 'pointer';
-      audioElement.style.position = 'relative';
-      audioElement.style.marginTop = '20px';
-      audioElement.style.bottom = '10px';
+      audioElement.className = 'audio-element';
       popupContent.appendChild(audioElement);
 
-
+      // Schließen-Button für das Popup-Bild erstellen und hinzufügen
       const closeButton_popupImage = document.createElement('button');
-      closeButton_popupImage.className = 'close-button-left';
-      closeButton_popupImage.innerHTML = 'X';
-      closeButton_popupImage.style.zIndex = '30';
-      closeButton_popupImage.style.right = '-25px';
-      closeButton_popupImage.style.position = 'absolute';
-      closeButton_popupImage.style.top = '0';
-      closeButton_popupImage.style.fontSize = '10px';
-      closeButton_popupImage.style.background = 'white';
-      closeButton_popupImage.style.color = 'black';
-      closeButton_popupImage.style.cursor = 'pointer';
-      closeButton_popupImage.style.padding = '5px';
-      closeButton_popupImage.style.borderRadius = '5px';
-      closeButton_popupImage.style.display = 'none';
+      closeButton_popupImage.className = 'close-button-popupimage';
+      closeButton_popupImage.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
       popupContent.appendChild(closeButton_popupImage);
 
+      // Navigations-Buttons für Bilder erstellen und hinzufügen
+      const prevButton = document.createElement('button');
+      prevButton.className = 'prev-button';
+      prevButton.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+      prevButton.style.left = '-45px';
+      prevButton.style.top = '40%';
+      popupContent.appendChild(prevButton);
 
+      const nextButton = document.createElement('button');
+      nextButton.className = 'next-button';
+      nextButton.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+      nextButton.style.right = '-45px';
+      nextButton.style.top = '40%';
+      popupContent.appendChild(nextButton);
+
+      // Click-Funktionen werden zu Elemnten hinzugefügt
       popupImage.addEventListener('click', function () {
         if (popupImage.style.width === '32px') {
-          popupImage.style.width = '120%';
-          popupImage.style.height = 'auto';
+          popupImage.style.width = '300px';
+          popupImage.style.height = '300px';
+          popupImage.style.objectFit = 'cover';
+          popupImage.style.position = 'center';
           popupImage.style.cursor = 'pointer';
           popupImage.style.alignSelf = 'center';
+          popupImage.style.transform = 'scale(1.0)';
           imageDescription.style.display = 'block';
           imagephotogrpapher.style.display = 'block';
           welcomeText.style.display = 'none';
@@ -159,15 +164,51 @@
           popupContent.classList.add('enlarged');
 
         } else {
+          // Nächstes Bild anzeigen
           currentImageIndex = (currentImageIndex + 1) % gallery.length;
           popupImage.src = gallery[currentImageIndex];
           imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
           imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
-          popupImage.style.width = '120%';
-          popupImage.style.height = 'auto';
+          popupImage.style.width = '300px';
+          popupImage.style.height = '300px';
+          popupImage.style.objectFit = 'cover';
+          popupImage.style.position = 'center';
         }
       });
 
+      // Wischfuntionen für Bilderwechsel auf dem Handy
+      popupImage.addEventListener('touchstart', function (event) {
+        const touch = event.touches[0];
+        const startX = touch.clientX;
+        let swipeDirection;
+
+        popupImage.addEventListener('touchmove', function (event) {
+          const touch = event.touches[0];
+          const deltaX = touch.clientX - startX;
+
+          if (deltaX > 50) {
+            swipeDirection = 'right';
+          } else if (deltaX < -50) {
+            swipeDirection = 'left';
+          }
+        });
+
+        popupImage.addEventListener('touchend', function () {
+          if (swipeDirection === 'right') {
+            currentImageIndex = (currentImageIndex - 1 + gallery.length) % gallery.length;
+            popupImage.src = gallery[currentImageIndex];
+            imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+            imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+          } else if (swipeDirection === 'left') {
+            currentImageIndex = (currentImageIndex + 1) % gallery.length;
+            popupImage.src = gallery[currentImageIndex];
+            imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
+            imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
+          }
+        });
+      });
+
+      // Funktionen für Popupimage damit Elemente wieder zurückgesetzt werden
       closeButton_popupImage.addEventListener('click', function () {
         if (popupImage && imageDescription && imagephotogrpapher) {
           popupImage.style.width = '32px';
@@ -186,29 +227,8 @@
           popupContent.classList.remove('enlarged');
         }
       });
-
-      const prevButton = document.createElement('button');
-      prevButton.className = 'prev-button';
-      prevButton.innerHTML = '&#9664;'; 
-      prevButton.style.display = 'none';
-      prevButton.style.position = 'absolute';
-      prevButton.style.left = '-25px';
-      prevButton.style.top = '50%';
-      prevButton.style.zIndex = '9';
-      prevButton.style.transform = 'translateY(-50%)';
-      popupContent.appendChild(prevButton);
-
-      const nextButton = document.createElement('button');
-      nextButton.className = 'next-button';
-      nextButton.innerHTML = '&#9654;'; 
-      nextButton.style.display = 'none';
-      nextButton.style.position = 'absolute';
-      nextButton.style.right = '-25px';
-      nextButton.style.top = '50%';
-      nextButton.style.zIndex = '9'
-      nextButton.style.transform = 'translateY(-50%)';
-      popupContent.appendChild(nextButton);
-
+      
+      // Funktion für Navigationkontrolle
       prevButton.addEventListener('click', function () {
         currentImageIndex = (currentImageIndex - 1 + gallery.length) % gallery.length;
         popupImage.src = gallery[currentImageIndex];
@@ -222,6 +242,8 @@
         imageDescription.textContent = galleryDescriptions[currentLanguage][currentImageIndex];
         imagephotogrpapher.textContent = galleryphotographer[currentImageIndex];
       });
+
+      // welcome-text ein und ausklappen
       moreInfoButton.addEventListener('click', function () {
         if (welcomeText.style.display === 'none') {
           welcomeText.style.display = 'block';
@@ -241,10 +263,6 @@
         const flag = document.createElement('img');
         flag.src = `flags/${lang}.png`; // Pfad zu den Flaggen-Bildern
         flag.className = 'flag';
-        flag.style.width = '20px';
-        flag.style.height = '15px';
-        flag.style.cursor = 'pointer';
-        flag.style.margin = '5px';
         flag.addEventListener('click', function () {
           currentLanguage = lang;
           updatePopupContent(popupContent, {
@@ -292,7 +310,7 @@
     const locations = [
       {
         imageSrc: 'images/Station_1/IMG_0001_1.JPG',
-        lngLat: [8.687232, 49.382542],
+        lngLat: [8.5138224, 49.5368398],
         gallery: ['images/Station_1/IMG_0001_1.JPG', 'images/Station_1/IMG_0002_1.JPG', 'images/Station_1/IMG_0003_1.JPG', 'images/Station_1/Wanderkarte_Ueberblick.PNG'],
         galleryDescriptions: {
           de: ['Karlstern Pavillion', 'Wegweiser', 'Kastanienallee: Blick Richtung Vogelpark', 'Route mit Stationen'],
@@ -546,29 +564,54 @@
     // ZIP Download für Offline-Verwendung
     function downloadContent() {
       const zip = new JSZip();
+      const progressBar = document.getElementById('download-progress');
+      const totalFiles = locations.reduce((sum, location) => sum + location.gallery.length + Object.values(location.audioSrc).length, 0);
+      let loadedFiles = 0;
+
+      function updateProgress() {
+        loadedFiles++;
+        const progress = (loadedFiles / totalFiles) * 100;
+        progressBar.value = progress;
+      }
+
+      const filePromises = [];
 
       locations.forEach(location => {
         location.gallery.forEach((imgSrc, index) => {
           const imgName = imgSrc.split('/').pop();
-          zip.file(`images/${imgName}`, fetch(imgSrc).then(res => res.blob()));
+          const promise = fetch(imgSrc)
+            .then(res => res.blob())
+            .then(blob => {
+              zip.file(`images/${imgName}`, blob);
+              updateProgress();
+            });
+          filePromises.push(promise);
         });
 
         Object.values(location.audioSrc).forEach(audioSrc => {
           const audioName = audioSrc.split('/').pop();
-          zip.file(`audio/${audioName}`, fetch(audioSrc).then(res => res.blob()));
+          const promise = fetch(audioSrc)
+            .then(res => res.blob())
+            .then(blob => {
+              zip.file(`audio/${audioName}`, blob);
+              updateProgress();
+            });
+          filePromises.push(promise);
         });
       });
 
-      zip.generateAsync({ type: "blob" }).then(function (content) {
-        saveAs(content, "kaefertaler_wald_offline_content.zip");
-        alert('Download fertig!');
+      Promise.all(filePromises).then(() => {
+        zip.generateAsync({ type: "blob" }).then(function (content) {
+          saveAs(content, "kaefertaler_wald_offline_content.zip");
+          alert('Download fertig!');
+        });
       });
     }
+
     document.getElementById('download-button').addEventListener('click', downloadContent);
     document.getElementById('close-popup-download').addEventListener('click', function () {
       document.getElementById('popup-download').style.display = 'none';
     });
-
 
     // GeoJSON für die Route um den Kaefertaler Wald
     const geojson = {
@@ -607,8 +650,6 @@
       addRoute();
     });
 
-
-
     // Hinzufügen der Standortkontrolle
     const geolocateControl = new maplibregl.GeolocateControl({
       positionOptions: {
@@ -639,53 +680,7 @@
         trackingUserLocation = true;
       }
     }
-
-    function showNearestPopup() {
-  const userLocation = map.getCenter();
-  let nearestPopup = null;
-  let nearestDistance = Infinity;
-
-  locations.forEach(location => {
-    const distance = turf.distance(
-      turf.point(userLocation),
-      turf.point(location.lngLat),
-      { units: 'meters' }
-    );
-
-    if (distance < nearestDistance) {
-      nearestDistance = distance;
-      nearestPopup = location;
-    }
-  });
-
-  if (nearestPopup) {
-    const marker = new maplibregl.Marker()
-      .setLngLat(nearestPopup.lngLat)
-      .setPopup(new maplibregl.Popup().setDOMContent(popupContent))
-      .addTo(map);
-  }
-}
-
-map.on('move', () => {
-  if (map.getZoom() >= 15) {
-    locations.forEach(location => {
-      const userLocation = map.getCenter();
-      const distance = turf.distance(
-        turf.point(userLocation),
-        turf.point(location.lngLat),
-        { units: 'meters' }
-      );
-
-      if (distance < 20) {
-        const marker = new maplibregl.Marker()
-          .setLngLat(location.lngLat)
-          .setPopup(new maplibregl.Popup().setDOMContent(popupContent))
-          .addTo(map);
-      }
-    });
-  }
-});
-</script>
+  </script>
 </body>
 
 </html>
