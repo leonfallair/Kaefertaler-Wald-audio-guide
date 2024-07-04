@@ -314,7 +314,7 @@
     const locations = [
       {
         imageSrc: 'images/Station_1/IMG_0001_1.JPG',
-        lngLat: [8.4706324, 49.4768416],
+        lngLat: [8.5138224, 49.5368398],
         gallery: ['images/Station_1/IMG_0001_1.JPG', 'images/Station_1/IMG_0002_1.JPG', 'images/Station_1/IMG_0003_1.JPG', 'images/Station_1/Wanderkarte_Ueberblick.PNG'],
         galleryDescriptions: {
           de: ['Karlstern Pavillion', 'Wegweiser', 'Kastanienallee: Blick Richtung Vogelpark', 'Route mit Stationen'],
@@ -656,36 +656,6 @@
       addRoute();
     });
 
-    function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-  const R = 6371000; // Radius der Erde in Metern
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a =
-    0.5 - Math.cos(dLat) / 2 +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    (1 - Math.cos(dLon)) / 2;
-  return R * 2 * Math.asin(Math.sqrt(a));
-}
-
-function checkProximityToLocations(position) {
-  const userLat = position.coords.latitude;
-  const userLon = position.coords.longitude;
-
-  locations.forEach(location => {
-    const [locLon, locLat] = location.lngLat;
-    const distance = getDistanceFromLatLonInMeters(userLat, userLon, locLat, locLon);
-
-    if (distance <= 20) {
-      // Popup anzeigen
-      map.flyTo({ center: location.lngLat, zoom: 16 });
-      const marker = new maplibregl.Popup({ closeOnClick: false })
-        .setLngLat(location.lngLat)
-        .setHTML(`<h3>${location.title.de}</h3><p>${location.description.de}</p>`)
-        .addTo(map);
-    }
-  });
-}
-
     // Hinzufügen der Standortkontrolle
     const geolocateControl = new maplibregl.GeolocateControl({
       positionOptions: {
@@ -716,28 +686,6 @@ function checkProximityToLocations(position) {
         trackingUserLocation = true;
       }
     }
-
-// Funktion zur Handhabung der Standortermittlung
-function onLocationFound(position) {
-  checkProximityToLocations(position);
-}
-
-// Funktion zur Handhabung von Standortfehlern
-function onLocationError(error) {
-  console.error('Location error:', error);
-}
-
-// Überwachung der Position aktivieren
-if (navigator.geolocation) {
-  navigator.geolocation.watchPosition(onLocationFound, onLocationError, {
-    enableHighAccuracy: true,
-    maximumAge: 0,
-    timeout: 27000
-  });
-}
-
-// Event-Listener für die Schaltfläche zur Standortverfolgung hinzufügen
-document.getElementById('toggle-tracking-button').addEventListener('click', toggleUserLocationTracking);
   </script>
 </body>
 
