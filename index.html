@@ -678,7 +678,7 @@ function checkProximityToLocations(position) {
     if (distance <= 20) {
       // Popup anzeigen
       map.flyTo({ center: location.lngLat, zoom: 16 });
-      const popup = new maplibregl.Popup({ closeOnClick: false })
+      const marker = new maplibregl.Popup({ closeOnClick: false })
         .setLngLat(location.lngLat)
         .setHTML(`<h3>${location.title.de}</h3><p>${location.description.de}</p>`)
         .addTo(map);
