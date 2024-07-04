@@ -29,6 +29,7 @@
     </p>
     <button id="download-button">Download</button>
     <progress id="download-progress" value="0" max="100"></progress> <!-- Fortschrittsleiste hinzugefügt -->
+    <p id="progress-text">0%</p> <!-- Fortschrittstext hinzugefügt -->
   </div>
 
   <script>
@@ -568,6 +569,7 @@
     function downloadContent() {
       const zip = new JSZip();
       const progressBar = document.getElementById('download-progress');
+      const progressText = document.getElementById('progress-text');
       const totalFiles = locations.reduce((sum, location) => sum + location.gallery.length + Object.values(location.audioSrc).length, 0);
       let loadedFiles = 0;
 
@@ -575,6 +577,7 @@
         loadedFiles++;
         const progress = (loadedFiles / totalFiles) * 100;
         progressBar.value = progress;
+        progressText.textContent = progress.toFixed(2) + '%'; // Fortschrittstext aktualisieren
       }
 
       const filePromises = [];
