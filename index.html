@@ -656,8 +656,7 @@
       addRoute();
     });
 
-// Funktion zur Berechnung der Distanz
-function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+    function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
   const R = 6371000; // Radius der Erde in Metern
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -681,26 +680,27 @@ function checkProximityToLocations(position) {
       map.flyTo({ center: location.lngLat, zoom: 16 });
       const marker = new maplibregl.Popup({ closeOnClick: false })
         .setLngLat(location.lngLat)
-        .setHTML(`<h3>${location.title.de}</h3><p>${location.description.de}</p>`)
+        .setPopup(new maplibregl.Popup().setDOMContent(popupContent))
         .addTo(map);
     }
   });
 }
-// Hinzufügen der Standortkontrolle
-const geolocateControl = new maplibregl.GeolocateControl({
-  positionOptions: {
-    enableHighAccuracy: true
-  },
-  trackUserLocation: true
-});
 
-map.addControl(geolocateControl);
+    // Hinzufügen der Standortkontrolle
+    const geolocateControl = new maplibregl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true
+    });
 
-// Hinzufügen der Zoom-Steuerelemente
-map.addControl(new maplibregl.NavigationControl());
+    map.addControl(geolocateControl);
 
-// Variable, um die Verfolgung des Standorts zu überwachen
-let trackingUserLocation = false;
+    // Hinzufügen der Zoom-Steuerelemente
+    map.addControl(new maplibregl.NavigationControl());
+
+    // Variable, um die Verfolgung des Standorts zu überwachen
+    let trackingUserLocation = false;
 
 // Funktion zur Handhabung der Standortermittlung
 function onLocationFound(position) {
@@ -712,23 +712,14 @@ function onLocationError(error) {
   console.error('Location error:', error);
 }
 
-// Funktion, um die Standortverfolgung zu starten oder zu stoppen
-function toggleUserLocationTracking() {
-  if (trackingUserLocation) {
-    navigator.geolocation.clearWatch(watchId);
-    trackingUserLocation = false;
-  } else {
-    watchId = navigator.geolocation.watchPosition(onLocationFound, onLocationError, {
-      enableHighAccuracy: true,
-      maximumAge: 0,
-      timeout: 27000
-    });
-    trackingUserLocation = true;
-  }
+// Überwachung der Position aktivieren
+if (navigator.geolocation) {
+  navigator.geolocation.watchPosition(onLocationFound, onLocationError, {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 27000
+  });
 }
-
-// Variable zur Überwachung der Standortverfolgung
-let watchId;
 
 // Event-Listener für die Schaltfläche zur Standortverfolgung hinzufügen
 document.getElementById('toggle-tracking-button').addEventListener('click', toggleUserLocationTracking);
