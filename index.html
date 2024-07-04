@@ -314,7 +314,7 @@
     const locations = [
       {
         imageSrc: 'images/Station_1/IMG_0001_1.JPG',
-        lngLat: [8.5138224, 49.5368398],
+        lngLat: [8.4706324, 49.4768416],
         gallery: ['images/Station_1/IMG_0001_1.JPG', 'images/Station_1/IMG_0002_1.JPG', 'images/Station_1/IMG_0003_1.JPG', 'images/Station_1/Wanderkarte_Ueberblick.PNG'],
         galleryDescriptions: {
           de: ['Karlstern Pavillion', 'Wegweiser', 'Kastanienallee: Blick Richtung Vogelpark', 'Route mit Stationen'],
@@ -686,6 +686,55 @@
         trackingUserLocation = true;
       }
     }
+
+    let currentStation = null;
+
+map.on('moveend', () => {
+  const userLocation = geolocateControl.getLastKnownPosition();
+  if (userLocation) {
+    const userLngLat = [userLocation.lng, userLocation.lat];
+    locations.forEach((location) => {
+      const stationLngLat = location.lngLat;
+      const distance = getDistance(userLngLat, stationLngLat);
+      if (distance < 20) { // 20 meters
+        if (currentStation!== location) {
+          currentStation = location;
+          openPopup(location);
+        }
+      } else {
+        if (currentStation === location) {
+          currentStation = null;
+          closePopup();
+        }
+      }
+    });
+  }
+});
+
+function getDistance(lngLat1, lngLat2) {
+  const R = 6371; // Radius of the Earth in kilometers
+  const dLat = (lngLat2[1] - lngLat1[1]) * Math.PI / 180;
+  const dLng = (lngLat2[0] - lngLat1[0]) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lngLat1[1] * Math.PI / 180) * Math.cos(lngLat2[1] * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+  return distance * 1000; // Convert to meters
+}
+
+function openPopup(location) {
+  // Open the popup for the given location
+  const popup = new maplibregl.Popup()
+   .setDOMContent(createPopupContent(location))
+   .setLngLat(location.lngLat);
+  map.addPopup(popup);
+}
+
+function closePopup() {
+  // Close the current popup
+  map.removePopup();
+}
   </script>
 </body>
 
