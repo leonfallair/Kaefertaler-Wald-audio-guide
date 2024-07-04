@@ -656,37 +656,6 @@
       addRoute();
     });
 
-    // Hinzufügen der Standortkontrolle
-    const geolocateControl = new maplibregl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true
-      },
-      trackUserLocation: true
-    });
-
-    map.addControl(geolocateControl);
-
-    // Hinzufügen der Zoom-Steuerelemente
-    map.addControl(new maplibregl.NavigationControl());
-
-    // Variable, um die Verfolgung des Standorts zu überwachen
-    let trackingUserLocation = false;
-
-    // Funktion, um die Standortverfolgung zu starten oder zu stoppen
-    function toggleUserLocationTracking() {
-      if (trackingUserLocation) {
-        map.off('locationfound', onLocationFound);
-        map.off('locationerror', onLocationError);
-        geolocateControl._deactivate();
-        trackingUserLocation = false;
-      } else {
-        map.on('locationfound', onLocationFound);
-        map.on('locationerror', onLocationError);
-        geolocateControl._activate();
-        trackingUserLocation = true;
-      }
-    }
-
     let currentStation = null;
 
 map.on('moveend', () => {
@@ -735,6 +704,37 @@ function closePopup() {
   // Close the current popup
   map.removePopup();
 }
+
+    // Hinzufügen der Standortkontrolle
+    const geolocateControl = new maplibregl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true
+    });
+
+    map.addControl(geolocateControl);
+
+    // Hinzufügen der Zoom-Steuerelemente
+    map.addControl(new maplibregl.NavigationControl());
+
+    // Variable, um die Verfolgung des Standorts zu überwachen
+    let trackingUserLocation = false;
+
+    // Funktion, um die Standortverfolgung zu starten oder zu stoppen
+    function toggleUserLocationTracking() {
+      if (trackingUserLocation) {
+        map.off('locationfound', onLocationFound);
+        map.off('locationerror', onLocationError);
+        geolocateControl._deactivate();
+        trackingUserLocation = false;
+      } else {
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
+        geolocateControl._activate();
+        trackingUserLocation = true;
+      }
+    }
   </script>
 </body>
 
