@@ -668,7 +668,6 @@ function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.asin(Math.sqrt(a));
 }
 
-// Funktion zur Überprüfung der Nähe zu den Standorten
 function checkProximityToLocations(position) {
   const userLat = position.coords.latitude;
   const userLon = position.coords.longitude;
@@ -680,32 +679,13 @@ function checkProximityToLocations(position) {
     if (distance <= 20) {
       // Popup anzeigen
       map.flyTo({ center: location.lngLat, zoom: 16 });
-
-      // Finden des Markers, der mit diesem Standort verknüpft ist
-      const markerElement = document.querySelector(`img[src="${location.imageSrc}"]`);
-      if (markerElement) {
-        const marker = new maplibregl.Marker({ element: markerElement })
-          .setLngLat(location.lngLat)
-          .addTo(map);
-
-        // Popup vom Marker holen und dessen Inhalt anzeigen
-        const popup = marker.getPopup();
-        if (popup) {
-          popup.setDOMContent(popupContent);
-          popup.addTo(map);
-        } else {
-          // Falls der Marker kein Popup hat, ein neues Popup erstellen und das `popupContent` setzen
-          const newPopup = new maplibregl.Popup({ closeOnClick: false })
-            .setDOMContent(popupContent)
-            .setLngLat(location.lngLat)
-            .addTo(map);
-          marker.setPopup(newPopup);
-        }
-      }
+      const marker = new maplibregl.Popup({ closeOnClick: false })
+        .setLngLat(location.lngLat)
+        .setHTML(`<h3>${location.title.de}</h3><p>${location.description.de}</p>`)
+        .addTo(map);
     }
   });
 }
-
 // Hinzufügen der Standortkontrolle
 const geolocateControl = new maplibregl.GeolocateControl({
   positionOptions: {
