@@ -182,7 +182,7 @@
         const startX = touch.clientX;
         let swipeDirection;
 
-        popupImage.addEventListener('touchmove', function (event) {
+        function handleTouchMove(event) {
           const touch = event.touches[0];
           const deltaX = touch.clientX - startX;
 
@@ -191,7 +191,7 @@
           } else if (deltaX < -50) {
             swipeDirection = 'left';
           }
-        });
+        }
 
         function handleTouchEnd() {
           if (swipeDirection === 'right') {
