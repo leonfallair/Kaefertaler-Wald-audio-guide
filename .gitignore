@@ -4,3 +4,8 @@
 
 # Temporäre Dateien von Microsoft Office ignorieren
 ~WRL*.tmp
+
+# Ordner ignorieren
+Audio/
+flags/
+images/
